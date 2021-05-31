@@ -1,0 +1,64 @@
+package de.avesbot.callable.group;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import de.avesbot.Avesbot;
+import de.avesbot.i18n.I18n;
+import de.avesbot.model.Attribute;
+import de.avesbot.model.Group;
+import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.util.RollHelper;
+
+/**
+ * A callable to execute an attribute trial for all members of a group.
+ * @author Nitrout
+ */
+public class GroupAttributeCallable extends GroupCallable {
+	
+	private final HashMap<String, Emote> emoteMap = new HashMap<>();
+	
+	/**
+	 * Creates a new GroupAttributeCallable.
+	 * @param event 
+	 */
+	public GroupAttributeCallable(SlashCommandEvent event) {
+		super(event);
+		
+		guild.getEmotes().stream().forEach(emote -> emoteMap.put(emote.getName(), emote));
+	}
+	
+	@Override
+	public String call() throws Exception {
+		
+		LinkedList<String> results = new LinkedList<>();
+		Optional<Group> group = Avesbot.getStatementManager().getUsersActiveGroup(guild, member);
+		Optional<Attribute> attribute = Optional.empty();
+		byte difficulty = 0;
+		
+		attribute = Optional.of(Attribute.valueOf(this.commandPars.get("attribute").getAsString().toUpperCase()));
+		if(this.commandPars.containsKey("difficulty"))
+			difficulty = (byte)this.commandPars.get("difficulty").getAsLong();
+		
+		if(group.isEmpty()) {
+			return I18n.getInstance().getString(settings.getLocale(), "errorNoActiveGroup");
+		} else if(attribute.isEmpty()) {
+			return I18n.getInstance().getString(settings.getLocale(), "errorNoAttribute");
+		} else {
+			
+			RolePlayCharacter[] charas = Avesbot.getStatementManager().getGroupMemberList(group.get());
+			
+			if(charas.length == 0)
+				return I18n.getInstance().getString(settings.getLocale(), "errorNoGroupMember");
+			
+			for(RolePlayCharacter chara : charas) {
+				results.add(RollHelper.rollAttribute(settings, emoteMap, chara, attribute.get(), difficulty));
+			}
+			
+			return results.stream().collect(Collectors.joining("\n\n"));
+		}
+	}
+}

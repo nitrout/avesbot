@@ -1,0 +1,3 @@
+rootProject.name = 'Aves'
+include ':JDA'
+project(':JDA').projectDir = new File('../JDA')

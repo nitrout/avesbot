@@ -1,0 +1,25 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'application'
+
+
+mainClassName = 'de.avesbot.Aves'
+ext {
+	jdaVersion = '4.2.1_253'
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		name 'm2-dv8tion'
+		url 'https://m2.dv8tion.net/releases'
+	}
+}
+
+dependencies {
+	//compile "net.dv8tion:JDA:$jdaVersion"
+	compile project(":JDA")
+	compile 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
+	compile 'org.apache.commons:commons-text:1.9'
+	testImplementation 'junit:junit:4.13'
+}
