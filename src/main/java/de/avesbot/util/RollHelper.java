@@ -102,22 +102,22 @@ public class RollHelper {
 		result.append("\n");
 		switch (rollResult.getOutcome()) {
 			case SLIP:
-				result.append("**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSlip")+"**");
+				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSlip")).append("**");
 				break;
 			case SPLENDOR:
 				result.append(String.format("%d %s*", taw > 0 ? taw : 1, tapStr));
 				result.append("\n");
-				result.append("**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSplendor")+"**");
+				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSplendor")).append("**");
 				break;
 			case FAILURE:
 				result.append(String.format("%d %s*", rollResult.getTap(), tapStr));
 				result.append("\n");
-				result.append("**"+I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")+"**");
+				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")).append("**");
 				break;
 			case SUCCESS:
 				result.append(String.format("%d %s*", rollResult.getTap(), tapStr));
 				result.append("\n");
-				result.append("**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")+"**");
+				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")).append("**");
 				break;
 		}
 		
@@ -154,20 +154,20 @@ public class RollHelper {
 		
 		switch(rollResult.getOutcome()) {
 			case SLIP:
-				result.append("**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSlip")+"**");
+				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSlip")).append("**");
 				break;
 			case SPLENDOR:
 				result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5SkillResult", rollResult.getQS()));
 				result.append("\n");
-				result.append("**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSplendor")+"**");
+				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSplendor")).append("**");
 				break;
 			case FAILURE:
-				result.append("**"+I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")+"**");
+				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")).append("**");
 				break;
 			case SUCCESS:
 				result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5SkillResult", rollResult.getQS()));
 				result.append("\n");
-				result.append("**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")+"**");
+				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")).append("**");
 				break;
 		}
 		
@@ -214,10 +214,12 @@ public class RollHelper {
 				"**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")+"**" : 
 				"**"+I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")+"**";
 		
+		String attrAbbrStr = I18n.getInstance().getString(settings.getLocale(), attr.getAbbrevation().toLowerCase());
+		
 		if(settings.isHideStats())
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde4AttributeStatsHidden", chara.getName(), attr.getAbbrevation(), rollResultStr, difficulty, rollOutcomeStr));
+			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde4AttributeStatsHidden", chara.getName(), attrAbbrStr, rollResultStr, difficulty, rollOutcomeStr));
 		else
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde4AttributeStatsVisible", chara.getName(), attr.getAbbrevation(), chara.getAttribute(attr), rollResultStr, difficulty, rollOutcomeStr));
+			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde4AttributeStatsVisible", chara.getName(), attrAbbrStr, chara.getAttribute(attr), rollResultStr, difficulty, rollOutcomeStr));
 		
 		return result.toString();
 	}
@@ -244,10 +246,12 @@ public class RollHelper {
 			case SPLENDOR :	rollOutcomeStr = "**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSplendor")+"**"; break;
 		}
 		
+		String attrAbbrStr = I18n.getInstance().getString(settings.getLocale(), attr.getAbbrevation().toLowerCase());
+		
 		if(settings.isHideStats())
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5AttributeStatsHidden", chara.getName(), attr.getAbbrevation(), difficulty, rollResultStr, rollOutcomeStr));
+			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5AttributeStatsHidden", chara.getName(), attrAbbrStr, difficulty, rollResultStr, rollOutcomeStr));
 		else
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5AttributeStatsVisible", chara.getName(), attr.getAbbrevation(), difficulty, chara.getAttribute(attr)+difficulty, rollResultStr, rollOutcomeStr));
+			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5AttributeStatsVisible", chara.getName(), attrAbbrStr, difficulty, chara.getAttribute(attr)+difficulty, rollResultStr, rollOutcomeStr));
 		
 		return result.toString();
 	}
