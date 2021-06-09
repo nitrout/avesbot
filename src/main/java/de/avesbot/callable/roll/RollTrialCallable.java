@@ -6,7 +6,7 @@ import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Attribute;
 import de.avesbot.model.Tradition;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Trial;
 import de.avesbot.callable.RoleplayCharacterRoll;
 
@@ -27,7 +27,7 @@ public class RollTrialCallable extends RollCallable implements RoleplayCharacter
 	@Override
 	public String call() throws Exception {
 		
-		Optional<RolePlayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
+		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		Trial trial;
 		boolean spell = false;
 		int sr = 0;

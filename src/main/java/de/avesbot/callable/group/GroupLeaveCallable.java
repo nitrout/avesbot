@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Group;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 
 /**
  * A callable to leave groups.
@@ -27,7 +27,7 @@ public class GroupLeaveCallable extends GroupCallable {
 		String groupName = this.commandPars.get("groupname").getAsString();
 		
 		Optional<Group> group = Avesbot.getStatementManager().getGuildGroupByName(guild, groupName);
-		Optional<RolePlayCharacter> character = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
+		Optional<RoleplayCharacter> character = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		
 		if(group.isEmpty()) {
 			return I18n.getInstance().getString(settings.getLocale(), "errorUnknownGroup");

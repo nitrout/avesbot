@@ -6,7 +6,7 @@ import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Tradition;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.util.LevenshteinHelper;
 import de.avesbot.callable.RoleplayCharacterRoll;
 
@@ -27,7 +27,7 @@ public class RollSkillCallable extends RollCallable implements RoleplayCharacter
 	@Override
 	public String call() throws Exception {
 		
-		Optional<RolePlayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
+		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		String fullSearch = "";
 		Tradition rep = Tradition.NONE;
 		String[] coverages = new String[]{};

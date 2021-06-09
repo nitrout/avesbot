@@ -6,7 +6,7 @@ import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Tradition;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 
 /**
  * A callable to print character's or his skills information.
@@ -27,7 +27,7 @@ public class CharacterInfoCallable extends CharacterCallable {
 		
 		String result = "";
 		
-		Optional<RolePlayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
+		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		if(chara.isEmpty()) {
 			result = I18n.getInstance().getString(settings.getLocale(), "errorNoActiveCharacter");
 		} else if(!this.commandPars.containsKey("skill")) {

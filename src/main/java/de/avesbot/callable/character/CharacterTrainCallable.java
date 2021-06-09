@@ -7,7 +7,7 @@ import de.avesbot.i18n.I18n;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Attribute;
 import de.avesbot.model.Tradition;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Trial;
 
 /**
@@ -33,7 +33,7 @@ public class CharacterTrainCallable extends CharacterCallable {
 		Tradition tradition = Tradition.NONE;
 		byte sr = 0;
 		
-		Optional<RolePlayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
+		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		
 		String abilityName = this.commandPars.get("skill").getAsString();
 		Attribute attribute1 = Attribute.abbrevationValueOf(this.commandPars.get("attribute1").getAsString());

@@ -15,7 +15,7 @@ import de.avesbot.model.Attribute;
 import de.avesbot.model.Group;
 import de.avesbot.model.GuildSetting;
 import de.avesbot.model.Tradition;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Ruleset;
 import de.avesbot.model.Special;
 import de.avesbot.model.SymbolDice;
@@ -130,7 +130,7 @@ public class StatementManager {
 	 * @param chara the character information
 	 * @return the id of the inserted/updated character
 	 */
-	public Optional<String> insertRoleplayCharacter(String memberId, RolePlayCharacter chara) {
+	public Optional<String> insertRoleplayCharacter(String memberId, RoleplayCharacter chara) {
 		
 		Optional<String> insertId = Optional.empty();
 		
@@ -174,7 +174,7 @@ public class StatementManager {
 	 * @param chara the character who/which will be deleted
 	 * @return true if the deletion was successful
 	 */
-	public boolean deleteRoleplayCharacter(RolePlayCharacter chara) {
+	public boolean deleteRoleplayCharacter(RoleplayCharacter chara) {
 		
 		int updatedRows = 0;
 		
@@ -198,7 +198,7 @@ public class StatementManager {
 	 * @param chara the characer the ability will be added for
 	 * @param ability the ability which will be added
 	 */
-	public void insertAbility(RolePlayCharacter chara, Ability ability) {
+	public void insertAbility(RoleplayCharacter chara, Ability ability) {
 		
 		try {
 			if(abilityInsStmnt.isClosed())
@@ -229,7 +229,7 @@ public class StatementManager {
 	 * @param chara the characer the ability will be added for
 	 * @param vantage the vantage which will be added or updated
 	 */
-	public void insertVantage(RolePlayCharacter chara, Vantage vantage) {
+	public void insertVantage(RoleplayCharacter chara, Vantage vantage) {
 		
 		try {
 			if(vantageInsStmnt.isClosed())
@@ -253,7 +253,7 @@ public class StatementManager {
 	 * @param chara the characer the ability will be added for
 	 * @param special the vantage which will be added
 	 */
-	public void insertSpecial(RolePlayCharacter chara, Special special) {
+	public void insertSpecial(RoleplayCharacter chara, Special special) {
 		
 		try {
 			if(specialInsStmnt.isClosed())
@@ -279,9 +279,9 @@ public class StatementManager {
 	 * @param user the user of the active character
 	 * @return the active character or empty
 	 */
-	public Optional<RolePlayCharacter> getUsersActiveRolePlayCharacter(Member user) {
+	public Optional<RoleplayCharacter> getUsersActiveRolePlayCharacter(Member user) {
 		
-		Optional<RolePlayCharacter> result = Optional.empty();
+		Optional<RoleplayCharacter> result = Optional.empty();
 		
 		try {
 			if(charSelectStmnt.isClosed())
@@ -297,7 +297,7 @@ public class StatementManager {
 				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString("character_id"));
 				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString("character_id"));
 				
-				result = Optional.of(new RolePlayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
+				result = Optional.of(new RoleplayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
 															charaResult.getByte("cou"), charaResult.getByte("sgc"), charaResult.getByte("int"), charaResult.getByte("cha"),
 															charaResult.getByte("dex"), charaResult.getByte("agi"), charaResult.getByte("con"), charaResult.getByte("str"),
 															vantages, specials));
@@ -316,9 +316,9 @@ public class StatementManager {
 	 * @param name the name of the character
 	 * @return the found character or empty if no matching character is found
 	 */
-	public Optional<RolePlayCharacter> getRolePlayCharacterByName(Member user, String name){
+	public Optional<RoleplayCharacter> getRolePlayCharacterByName(Member user, String name){
 		
-		Optional<RolePlayCharacter> result = Optional.empty();
+		Optional<RoleplayCharacter> result = Optional.empty();
 		
 		try {
 			if(charNameSelectStmnt.isClosed())
@@ -335,7 +335,7 @@ public class StatementManager {
 				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString("character_id"));
 				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString("character_id"));
 				
-				result = Optional.of(new RolePlayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
+				result = Optional.of(new RoleplayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
 															charaResult.getByte("cou"), charaResult.getByte("sgc"), charaResult.getByte("int"), charaResult.getByte("cha"),
 															charaResult.getByte("dex"), charaResult.getByte("agi"), charaResult.getByte("con"), charaResult.getByte("str"),
 															vantages, specials));
@@ -353,9 +353,9 @@ public class StatementManager {
 	 * @param user the owning user of the characters
 	 * @return the list of characters
 	 */
-	public RolePlayCharacter[] getRolePlayCharacterList(Member user){
+	public RoleplayCharacter[] getRolePlayCharacterList(Member user){
 		
-		LinkedList<RolePlayCharacter> result = new LinkedList<>();
+		LinkedList<RoleplayCharacter> result = new LinkedList<>();
 		
 		try {
 			if(charListSelectStmnt.isClosed())
@@ -371,7 +371,7 @@ public class StatementManager {
 				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString("character_id"));
 				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString("character_id"));
 				
-				result.add(new RolePlayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
+				result.add(new RoleplayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
 													charaResult.getByte("cou"), charaResult.getByte("sgc"), charaResult.getByte("int"), charaResult.getByte("cha"),
 													charaResult.getByte("dex"), charaResult.getByte("agi"), charaResult.getByte("con"), charaResult.getByte("str"),
 													vantages, specials));
@@ -380,7 +380,7 @@ public class StatementManager {
 			System.err.println(ex.getMessage());
 		}
 		
-		return result.toArray(RolePlayCharacter[]::new);
+		return result.toArray(RoleplayCharacter[]::new);
 	}
 	
 	/**
@@ -475,7 +475,7 @@ public class StatementManager {
 	 * @param rep the representation
 	 * @return the searched ability or empty if no matching ability is found
 	 */
-	public Optional<Ability> getCharacterAbility(RolePlayCharacter chara, String abilityName, Tradition rep) {
+	public Optional<Ability> getCharacterAbility(RoleplayCharacter chara, String abilityName, Tradition rep) {
 		
 		Optional<Ability> result = Optional.empty();
 		try {
@@ -507,7 +507,7 @@ public class StatementManager {
 	 * @param chara the character
 	 * @return the list of ability names of the character
 	 */
-	public String[] getCharacterAbilityList(RolePlayCharacter chara) {
+	public String[] getCharacterAbilityList(RoleplayCharacter chara) {
 		
 		ArrayList<String> result = new ArrayList<>();
 		
@@ -824,7 +824,7 @@ public class StatementManager {
 	 * @param character the character
 	 * @return true on success, false otherwise
 	 */
-	public boolean insertGroupMember(Group group, RolePlayCharacter character) {
+	public boolean insertGroupMember(Group group, RoleplayCharacter character) {
 		int updatedRows = 0;
 		try {
 			if(groupMemberInsStmnt.isClosed())
@@ -848,7 +848,7 @@ public class StatementManager {
 	 * @param character the character
 	 * @return true on succes, false otherwise
 	 */
-	public boolean deleteGroupMember(Group group, RolePlayCharacter character) {
+	public boolean deleteGroupMember(Group group, RoleplayCharacter character) {
 		int updatedRows = 0;
 		try {
 			if(groupMemberDelStmnt.isClosed())
@@ -871,9 +871,9 @@ public class StatementManager {
 	 * @param group the group
 	 * @return list of characters
 	 */
-	public RolePlayCharacter[] getGroupMemberList(Group group) {
+	public RoleplayCharacter[] getGroupMemberList(Group group) {
 		
-		LinkedList<RolePlayCharacter> result = new LinkedList<>();
+		LinkedList<RoleplayCharacter> result = new LinkedList<>();
 		
 		try {
 			if(groupMemberListSelectStmnt.isClosed())
@@ -891,7 +891,7 @@ public class StatementManager {
 				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString("character_id"));
 				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString("character_id"));
 				
-				result.add(new RolePlayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
+				result.add(new RoleplayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
 													charaResult.getByte("cou"), charaResult.getByte("sgc"), charaResult.getByte("int"), charaResult.getByte("cha"),
 													charaResult.getByte("dex"), charaResult.getByte("agi"), charaResult.getByte("con"), charaResult.getByte("str"),
 													vantages, specials));
@@ -901,6 +901,6 @@ public class StatementManager {
 			System.err.println(ex.getMessage());
 		}
 		
-		return result.toArray(RolePlayCharacter[]::new);
+		return result.toArray(RoleplayCharacter[]::new);
 	}
 }

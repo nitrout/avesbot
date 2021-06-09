@@ -11,7 +11,7 @@ import de.avesbot.i18n.I18n;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Group;
 import de.avesbot.model.Tradition;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.util.LevenshteinHelper;
 import de.avesbot.callable.RoleplayCharacterRoll;
 
@@ -51,7 +51,7 @@ public class GroupSkillCallable extends GroupCallable implements RoleplayCharact
 		if(group.isEmpty()) {
 			return I18n.getInstance().getString(settings.getLocale(), "errorNoActiveGroup");
 		} else {
-			RolePlayCharacter[] charas = Avesbot.getStatementManager().getGroupMemberList(group.get());
+			RoleplayCharacter[] charas = Avesbot.getStatementManager().getGroupMemberList(group.get());
 			
 			if(charas.length == 0)
 				return I18n.getInstance().getString(settings.getLocale(), "errorNoGroupMember");
@@ -60,7 +60,7 @@ public class GroupSkillCallable extends GroupCallable implements RoleplayCharact
 			String[] skillbook = Avesbot.getStatementManager().getGroupAbilityList(group.get());
 			String skillStr = LevenshteinHelper.geteClosestSubjectIgnoreCase(fullSearch, skillbook);
 			
-			for(RolePlayCharacter chara : charas) {
+			for(RoleplayCharacter chara : charas) {
 				Optional<Ability> ability = Avesbot.getStatementManager().getCharacterAbility(chara, skillStr, rep);
 				if(ability.isPresent()) {
 					results.add(rollSKill(settings, emoteMap, chara, ability.get(), difficulty, pars));

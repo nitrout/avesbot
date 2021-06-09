@@ -4,7 +4,7 @@ import java.util.Optional;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 
 /**
  * Callable to select an active character.
@@ -31,7 +31,7 @@ public class CharacterChooseCallable extends CharacterCallable {
 		
 		String name = this.commandPars.get("name").getAsString();
 		boolean success = Avesbot.getStatementManager().enableUsersRoleplayCharacter(member, name);
-		Optional<RolePlayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
+		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		
 		if(success && chara.isPresent())
 			result = I18n.getInstance().format(settings.getLocale(), "characterChosen", chara.get().getName());

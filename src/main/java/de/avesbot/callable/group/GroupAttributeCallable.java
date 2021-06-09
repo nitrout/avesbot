@@ -10,7 +10,7 @@ import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Attribute;
 import de.avesbot.model.Group;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.callable.RoleplayCharacterRoll;
 
 /**
@@ -49,12 +49,12 @@ public class GroupAttributeCallable extends GroupCallable implements RoleplayCha
 			return I18n.getInstance().getString(settings.getLocale(), "errorNoAttribute");
 		} else {
 			
-			RolePlayCharacter[] charas = Avesbot.getStatementManager().getGroupMemberList(group.get());
+			RoleplayCharacter[] charas = Avesbot.getStatementManager().getGroupMemberList(group.get());
 			
 			if(charas.length == 0)
 				return I18n.getInstance().getString(settings.getLocale(), "errorNoGroupMember");
 			
-			for(RolePlayCharacter chara : charas) {
+			for(RoleplayCharacter chara : charas) {
 				results.add(rollAttribute(settings, emoteMap, chara, attribute.get(), difficulty));
 			}
 			

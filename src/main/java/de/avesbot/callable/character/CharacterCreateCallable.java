@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.callable.CommandCallable;
 import de.avesbot.i18n.I18n;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Ruleset;
 import de.avesbot.model.Special;
 import de.avesbot.model.Vantage;
@@ -48,7 +48,7 @@ public class CharacterCreateCallable extends CommandCallable {
 		byte constitution = (byte)this.commandPars.get("constitution").getAsLong();
 		byte strength = (byte)this.commandPars.get("strength").getAsLong();
 		
-		RolePlayCharacter chara = new RolePlayCharacter(name, ruleset, courage, sagacity, intuition, charisma, dexterity, agility, constitution, strength, new Vantage[]{}, new Special[]{});
+		RoleplayCharacter chara = new RoleplayCharacter(name, ruleset, courage, sagacity, intuition, charisma, dexterity, agility, constitution, strength, new Vantage[]{}, new Special[]{});
 		Optional<String> charaId = Avesbot.getStatementManager().insertRoleplayCharacter(member.getId(), chara);
 		
 		if(charaId.isPresent())

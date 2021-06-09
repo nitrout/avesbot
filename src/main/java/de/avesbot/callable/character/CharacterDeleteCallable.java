@@ -4,7 +4,7 @@ import java.util.Optional;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 
 /**
  * A callable for character deletion.
@@ -24,7 +24,7 @@ public class CharacterDeleteCallable extends CharacterCallable {
 	public String call() throws Exception {
 		
 		String charaName = this.commandPars.get("name").getAsString();
-		Optional<RolePlayCharacter> chara = Avesbot.getStatementManager().getRolePlayCharacterByName(member, charaName);
+		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getRolePlayCharacterByName(member, charaName);
 		
 		if(chara.isPresent()) {
 			boolean success = Avesbot.getStatementManager().deleteRoleplayCharacter(chara.get());

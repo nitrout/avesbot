@@ -6,7 +6,7 @@ import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Attribute;
 import de.avesbot.model.Outcome;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.RollResult;
 import de.avesbot.util.Formatter;
 
@@ -33,7 +33,7 @@ public class RollAttributeCallable extends RollCallable {
 	public String call() throws Exception {
 		
 		String result;
-		Optional<RolePlayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
+		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		Optional<Attribute> attribute = Optional.empty();
 		byte difficulty = 0;
 		
@@ -60,7 +60,7 @@ public class RollAttributeCallable extends RollCallable {
 	 * @param difficulty the difficulty of the trial
 	 * @return the string result of the roll
 	 */
-	protected String rollAttribute(RolePlayCharacter chara, Attribute attr, byte difficulty) {
+	protected String rollAttribute(RoleplayCharacter chara, Attribute attr, byte difficulty) {
 		
 		String result;
 		
@@ -80,7 +80,7 @@ public class RollAttributeCallable extends RollCallable {
 	 * @param difficulty the difficulty of the trial
 	 * @return the string result of the roll
 	 */
-	protected String rollAttributeTde4(RolePlayCharacter chara, Attribute attr, byte difficulty) {
+	protected String rollAttributeTde4(RoleplayCharacter chara, Attribute attr, byte difficulty) {
 		
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute4(chara, difficulty, attr);
@@ -106,7 +106,7 @@ public class RollAttributeCallable extends RollCallable {
 	 * @param difficulty the difficulty of the trial
 	 * @return the string result of the roll
 	 */
-	protected String rollAttributeTde5(RolePlayCharacter chara, Attribute attr, byte difficulty) {
+	protected String rollAttributeTde5(RoleplayCharacter chara, Attribute attr, byte difficulty) {
 		
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute5(chara, difficulty, attr);

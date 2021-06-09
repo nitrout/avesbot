@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Attribute;
 import de.avesbot.model.Outcome;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.RollResult;
 import de.avesbot.model.SkillRollResult4;
 import de.avesbot.model.SkillRollResult5;
@@ -71,7 +71,7 @@ public class DiceSimulator {
 	 * @param att the attribute comparing with the dice roll
 	 * @return the result of the attribute roll
 	 */
-	public RollResult rollAttribute4(RolePlayCharacter chara, int difficulty, Attribute att) {
+	public RollResult rollAttribute4(RoleplayCharacter chara, int difficulty, Attribute att) {
 		
 		Pair<Integer, Integer> roll = rollDice(1, 20)[0];
 		Outcome outcome;
@@ -97,7 +97,7 @@ public class DiceSimulator {
 	 * @param att the attribute comparing with the dice roll
 	 * @return the result of the attribute roll
 	 */
-	public RollResult rollAttribute4(RolePlayCharacter chara, Attribute att) {
+	public RollResult rollAttribute4(RoleplayCharacter chara, Attribute att) {
 		return rollAttribute4(chara, 0, att);
 	}
 	
@@ -108,7 +108,7 @@ public class DiceSimulator {
 	 * @param att the attribute comparing with the dice roll
 	 * @return the result of the attribute roll
 	 */
-	public RollResult rollAttribute5(RolePlayCharacter chara, int difficulty, Attribute att) {
+	public RollResult rollAttribute5(RoleplayCharacter chara, int difficulty, Attribute att) {
 		
 		Pair<Integer, Integer>[] rolls = rollDice(2, 20);
 		RollResult result;
@@ -134,7 +134,7 @@ public class DiceSimulator {
 	 * @param att the attribute comparing with the dice roll
 	 * @return the result of the attribute roll
 	 */
-	public RollResult rollAttribute5(RolePlayCharacter chara, Attribute att) {
+	public RollResult rollAttribute5(RoleplayCharacter chara, Attribute att) {
 		return rollAttribute5(chara, 0, att);
 	}
 	
@@ -147,7 +147,7 @@ public class DiceSimulator {
 	 * @param spell is the skill a spell
 	 * @return the result of the skill roll
 	 */
-	public SkillRollResult4 rollSkill4(RolePlayCharacter chara, Trial trial, int taw, byte difficulty, boolean spell) {
+	public SkillRollResult4 rollSkill4(RoleplayCharacter chara, Trial trial, int taw, byte difficulty, boolean spell) {
 		
 		byte tap = (byte)(taw - difficulty);
 		Pair<Integer, Integer>[] rolls = rollDice(3, 20);
@@ -164,8 +164,8 @@ public class DiceSimulator {
 			}
 		}
 		
-		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((chara.isClumsy() && !spell) || (chara.getSpellcasterMod() == RolePlayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
-		&& (chara.getSpellcasterMod() != RolePlayCharacter.SpellcasterMod.SOLID || (chara.getSpellcasterMod() == RolePlayCharacter.SpellcasterMod.SOLID && !Stream.of(rolls).anyMatch(p -> p.getLeft() < 18))))
+		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((chara.isClumsy() && !spell) || (chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
+		&& (chara.getSpellcasterMod() != RoleplayCharacter.SpellcasterMod.SOLID || (chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && !Stream.of(rolls).anyMatch(p -> p.getLeft() < 18))))
 			outcome = Outcome.SLIP;
 		else if(Stream.of(rolls).filter(p -> p.getLeft() == 1).count() > 1)
 			outcome = Outcome.SPLENDOR;
@@ -184,7 +184,7 @@ public class DiceSimulator {
 	 * @param difficulty the difficulty of the skill roll
 	 * @return the result of the skill roll
 	 */
-	public SkillRollResult4 rollSkill4(RolePlayCharacter chara, Ability ability, byte difficulty) {
+	public SkillRollResult4 rollSkill4(RoleplayCharacter chara, Ability ability, byte difficulty) {
 
 		return rollSkill4(chara, ability.getTrial(), ability.getTaw(), difficulty, ability.isSpell());
 	}
@@ -195,7 +195,7 @@ public class DiceSimulator {
 	 * @param ability the character's ability of the skill roll
 	 * @return the result of the skill roll
 	 */
-	public SkillRollResult4 rollSkill4(RolePlayCharacter chara, Ability ability) {
+	public SkillRollResult4 rollSkill4(RoleplayCharacter chara, Ability ability) {
 		
 		return rollSkill4(chara, ability, (byte)0);
 	}
@@ -209,7 +209,7 @@ public class DiceSimulator {
 	 * @param spell is the skill a spell
 	 * @return the result of the skill roll
 	 */
-	public SkillRollResult5 rollSkill5(RolePlayCharacter chara, Trial trial, int taw, byte difficulty, boolean spell) {
+	public SkillRollResult5 rollSkill5(RoleplayCharacter chara, Trial trial, int taw, byte difficulty, boolean spell) {
 		
 		byte tap = (byte)(taw);
 		byte qs;
@@ -224,8 +224,8 @@ public class DiceSimulator {
 			}
 		}
 		
-		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((chara.isClumsy() && !spell) || (chara.getSpellcasterMod() == RolePlayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
-		&& (chara.getSpellcasterMod() != RolePlayCharacter.SpellcasterMod.SOLID || (chara.getSpellcasterMod() == RolePlayCharacter.SpellcasterMod.SOLID && !Stream.of(rolls).anyMatch(p -> p.getLeft() < 18))))
+		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((chara.isClumsy() && !spell) || (chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
+		&& (chara.getSpellcasterMod() != RoleplayCharacter.SpellcasterMod.SOLID || (chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && !Stream.of(rolls).anyMatch(p -> p.getLeft() < 18))))
 			outcome = Outcome.SLIP;
 		else if(Stream.of(rolls).filter(p -> p.getLeft() == 1).count() > 1)
 			outcome = Outcome.SPLENDOR;
@@ -260,7 +260,7 @@ public class DiceSimulator {
 	 * @param difficulty the difficulty of the skill roll
 	 * @return the result of the skill roll
 	 */
-	public SkillRollResult5 rollSkill5(RolePlayCharacter chara, Ability ability, byte difficulty) {
+	public SkillRollResult5 rollSkill5(RoleplayCharacter chara, Ability ability, byte difficulty) {
 
 		return rollSkill5(chara, ability.getTrial(), ability.getTaw(), difficulty, ability.isSpell());
 	}
@@ -271,7 +271,7 @@ public class DiceSimulator {
 	 * @param ability the character's ability of the skill roll
 	 * @return the result of the skill roll
 	 */
-	public SkillRollResult5 rollSkill5(RolePlayCharacter chara, Ability ability) {
+	public SkillRollResult5 rollSkill5(RoleplayCharacter chara, Ability ability) {
 		
 		return rollSkill5(chara, ability, (byte)0);
 	}

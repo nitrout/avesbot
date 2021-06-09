@@ -17,7 +17,7 @@ import de.avesbot.Avesbot;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Attribute;
 import de.avesbot.model.Tradition;
-import de.avesbot.model.RolePlayCharacter;
+import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Ruleset;
 import de.avesbot.model.Special;
 import de.avesbot.model.Trial;
@@ -92,12 +92,12 @@ public class ImportCallable extends CommandCallable {
 						.toArray(Byte[]::new);
 					
 					
-					RolePlayCharacter chara = new RolePlayCharacter(name, Ruleset.TDE4, new Vantage[]{}, new Special[]{}, attributes);
+					RoleplayCharacter chara = new RoleplayCharacter(name, Ruleset.TDE4, new Vantage[]{}, new Special[]{}, attributes);
 					Optional<String> insertedId = Avesbot.getStatementManager().insertRoleplayCharacter(member.getId(), chara);
 					
 					if(insertedId.isPresent()) {
 						
-						chara = new RolePlayCharacter(insertedId.get(), chara);
+						chara = new RoleplayCharacter(insertedId.get(), chara);
 						
 						// Get all character's abilities and spells
 						LinkedList<Node> abilityNodeList = new LinkedList<>();
