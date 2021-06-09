@@ -1,4 +1,4 @@
-package de.avesbot.util;
+package de.avesbot.callable;
 
 import java.util.List;
 import java.util.Map;
@@ -15,12 +15,13 @@ import de.avesbot.model.RollResult;
 import de.avesbot.model.SkillRollResult4;
 import de.avesbot.model.SkillRollResult5;
 import de.avesbot.model.Trial;
+import de.avesbot.util.Formatter;
 
 /**
  * Helper class to support the use of rolls for the different rulesets.
  * @author Nitrout
  */
-public class RollHelper {
+public interface RoleplayCharacterRoll {
 	
 	/**
 	 * Executes a skill roll.
@@ -32,7 +33,7 @@ public class RollHelper {
 	 * @param coverage the coverages used in the trial
 	 * @return the string result of the roll
 	 */
-	public static String rollSKill(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, Ability ability, byte difficulty, String...coverage) {
+	default String rollSKill(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, Ability ability, byte difficulty, String...coverage) {
 		
 		return rollSkill(settings, emoteMap, chara, ability.getName(), ability.getRep(), ability.getTrial(), ability.isSpell(), ability.getTaw(), difficulty, coverage);
 	}
@@ -51,7 +52,7 @@ public class RollHelper {
 	 * @param coverage the coverages used in the trial
 	 * @return the string result of the roll
 	 */
-	public static String rollSkill(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, String abilityName, Tradition rep, Trial trial, boolean spell, int taw, byte difficulty, String...coverage) {
+	default String rollSkill(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, String abilityName, Tradition rep, Trial trial, boolean spell, int taw, byte difficulty, String...coverage) {
 		
 		String result;
 		
@@ -78,7 +79,7 @@ public class RollHelper {
 	 * @param coverage the coverages used in the trial
 	 * @return the string result of the roll
 	 */
-	private static String rollSkillTde4(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, String abilityName, Tradition rep, Trial trial, boolean spell, int taw, byte difficulty, String...coverage) {
+	private String rollSkillTde4(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, String abilityName, Tradition rep, Trial trial, boolean spell, int taw, byte difficulty, String...coverage) {
 		
 		StringBuilder result = new StringBuilder();
 		
@@ -130,7 +131,6 @@ public class RollHelper {
 	 * @param emoteMap map for the dice emoticons
 	 * @param chara the character the roll is executed for
 	 * @param abilityName the name of the used ability
-	 * @param rep the used representation
 	 * @param trial the trial used for the roll
 	 * @param spell is the ability a spell
 	 * @param taw the TaW of the ability
@@ -138,7 +138,7 @@ public class RollHelper {
 	 * @param coverage the coverages used in the trial
 	 * @return the string result of the roll
 	 */
-	private static String rollSkillTde5(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, String abilityName, Trial trial, boolean spell, int taw, byte difficulty, String...coverage) {
+	private String rollSkillTde5(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, String abilityName, Trial trial, boolean spell, int taw, byte difficulty, String...coverage) {
 		
 		StringBuilder result = new StringBuilder();
 		SkillRollResult5 rollResult = Avesbot.getDiceSimulator().rollSkill5(chara, trial, taw, difficulty, spell);
@@ -183,7 +183,7 @@ public class RollHelper {
 	 * @param difficulty the difficulty of the trial
 	 * @return the string result of the roll
 	 */
-	public static String rollAttribute(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, Attribute attr, byte difficulty) {
+	default String rollAttribute(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, Attribute attr, byte difficulty) {
 		
 		String result;
 		
@@ -205,7 +205,7 @@ public class RollHelper {
 	 * @param difficulty the difficulty of the trial
 	 * @return the string result of the roll
 	 */
-	private static String rollAttributeTde4(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, Attribute attr, byte difficulty) {
+	private String rollAttributeTde4(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, Attribute attr, byte difficulty) {
 		
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute4(chara, difficulty, attr);
@@ -233,7 +233,7 @@ public class RollHelper {
 	 * @param difficulty the difficulty of the trial
 	 * @return the string result of the roll
 	 */
-	private static String rollAttributeTde5(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, Attribute attr, byte difficulty) {
+	private String rollAttributeTde5(GuildSetting settings, Map<String, Emote> emoteMap, RolePlayCharacter chara, Attribute attr, byte difficulty) {
 		
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute5(chara, difficulty, attr);

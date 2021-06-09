@@ -8,13 +8,13 @@ import de.avesbot.model.Attribute;
 import de.avesbot.model.Tradition;
 import de.avesbot.model.RolePlayCharacter;
 import de.avesbot.model.Trial;
-import de.avesbot.util.RollHelper;
+import de.avesbot.callable.RoleplayCharacterRoll;
 
 /**
  * A callable to execute a custom trial for a character.
  * @author Nitrout
  */
-public class RollTrialCallable extends RollCallable {
+public class RollTrialCallable extends RollCallable implements RoleplayCharacterRoll {
 	
 	/**
 	 * Creates a new RollTrialCallable.
@@ -49,7 +49,7 @@ public class RollTrialCallable extends RollCallable {
 		} else {
 			
 			String abilityName = trial.toString();
-			return RollHelper.rollSkill(settings, emoteMap, chara.get(), abilityName, Tradition.NONE, trial, spell, sr, difficulty);
+			return rollSkill(settings, emoteMap, chara.get(), abilityName, Tradition.NONE, trial, spell, sr, difficulty);
 		}
 	}
 }

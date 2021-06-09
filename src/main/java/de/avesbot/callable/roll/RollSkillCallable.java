@@ -8,13 +8,13 @@ import de.avesbot.model.Ability;
 import de.avesbot.model.Tradition;
 import de.avesbot.model.RolePlayCharacter;
 import de.avesbot.util.LevenshteinHelper;
-import de.avesbot.util.RollHelper;
+import de.avesbot.callable.RoleplayCharacterRoll;
 
 /**
  * A callable to execute a trial for a character's skill.
  * @author Nitrout
  */
-public class RollSkillCallable extends RollCallable {
+public class RollSkillCallable extends RollCallable implements RoleplayCharacterRoll {
 	
 	/**
 	 * Creates a new RollSkillCallable.
@@ -53,7 +53,7 @@ public class RollSkillCallable extends RollCallable {
 			Optional<Ability> ability = Avesbot.getStatementManager().getCharacterAbility(chara.get(), skillStr, rep);
 			
 			if(ability.isPresent()) {
-				return RollHelper.rollSKill(settings, emoteMap, chara.get(), ability.get(), difficulty, coverages);
+				return rollSKill(settings, emoteMap, chara.get(), ability.get(), difficulty, coverages);
 			} else {
 				return I18n.getInstance().getString(settings.getLocale(), "errorUnknownAbility");
 			}

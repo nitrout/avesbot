@@ -11,13 +11,13 @@ import de.avesbot.i18n.I18n;
 import de.avesbot.model.Attribute;
 import de.avesbot.model.Group;
 import de.avesbot.model.RolePlayCharacter;
-import de.avesbot.util.RollHelper;
+import de.avesbot.callable.RoleplayCharacterRoll;
 
 /**
  * A callable to execute an attribute trial for all members of a group.
  * @author Nitrout
  */
-public class GroupAttributeCallable extends GroupCallable {
+public class GroupAttributeCallable extends GroupCallable implements RoleplayCharacterRoll {
 	
 	private final HashMap<String, Emote> emoteMap = new HashMap<>();
 	
@@ -55,7 +55,7 @@ public class GroupAttributeCallable extends GroupCallable {
 				return I18n.getInstance().getString(settings.getLocale(), "errorNoGroupMember");
 			
 			for(RolePlayCharacter chara : charas) {
-				results.add(RollHelper.rollAttribute(settings, emoteMap, chara, attribute.get(), difficulty));
+				results.add(rollAttribute(settings, emoteMap, chara, attribute.get(), difficulty));
 			}
 			
 			return results.stream().collect(Collectors.joining("\n\n"));

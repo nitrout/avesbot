@@ -13,13 +13,13 @@ import de.avesbot.model.Group;
 import de.avesbot.model.Tradition;
 import de.avesbot.model.RolePlayCharacter;
 import de.avesbot.util.LevenshteinHelper;
-import de.avesbot.util.RollHelper;
+import de.avesbot.callable.RoleplayCharacterRoll;
 
 /**
  * A callable to execute a skill trial for all members of a group.
  * @author Nitrout
  */
-public class GroupSkillCallable extends GroupCallable {
+public class GroupSkillCallable extends GroupCallable implements RoleplayCharacterRoll {
 	
 	private final HashMap<String, Emote> emoteMap = new HashMap<>();
 	
@@ -63,7 +63,7 @@ public class GroupSkillCallable extends GroupCallable {
 			for(RolePlayCharacter chara : charas) {
 				Optional<Ability> ability = Avesbot.getStatementManager().getCharacterAbility(chara, skillStr, rep);
 				if(ability.isPresent()) {
-					results.add(RollHelper.rollSKill(settings, emoteMap, chara, ability.get(), difficulty, pars));
+					results.add(rollSKill(settings, emoteMap, chara, ability.get(), difficulty, pars));
 				}
 			}
 			
