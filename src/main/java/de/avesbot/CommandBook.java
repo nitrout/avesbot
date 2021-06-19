@@ -44,31 +44,31 @@ public class CommandBook {
 	
 	private CommandBook() {
 		commandMap = new HashMap<>();
-		commandMap.put("character choose", CharacterChooseCallable.class);
-		commandMap.put("character create", CharacterCreateCallable.class);
-		commandMap.put("character delete", CharacterDeleteCallable.class);
-		commandMap.put("character info", CharacterInfoCallable.class);
-		commandMap.put("character list", CharacterListCallable.class);
-		commandMap.put("character train", CharacterTrainCallable.class);
+		commandMap.put("character/choose", CharacterChooseCallable.class);
+		commandMap.put("character/create", CharacterCreateCallable.class);
+		commandMap.put("character/delete", CharacterDeleteCallable.class);
+		commandMap.put("character/info", CharacterInfoCallable.class);
+		commandMap.put("character/list", CharacterListCallable.class);
+		commandMap.put("character/train", CharacterTrainCallable.class);
 		
 		commandMap.put("dice", DiceCallable.class);
 		
-		commandMap.put("group attribute", GroupAttributeCallable.class);
-		commandMap.put("group choose", GroupChooseCallable.class);
-		commandMap.put("group create", GroupCreateCallable.class);
-		commandMap.put("group join", GroupJoinCallable.class);
-		commandMap.put("group leave", GroupLeaveCallable.class);
-		commandMap.put("group skill", GroupSkillCallable.class);
+		commandMap.put("group/attribute", GroupAttributeCallable.class);
+		commandMap.put("group/choose", GroupChooseCallable.class);
+		commandMap.put("group/create", GroupCreateCallable.class);
+		commandMap.put("group/join", GroupJoinCallable.class);
+		commandMap.put("group/leave", GroupLeaveCallable.class);
+		commandMap.put("group/skill", GroupSkillCallable.class);
 		
-		commandMap.put("roll attribute", RollAttributeCallable.class);
-		commandMap.put("roll dice", RollDiceCallable.class);
-		commandMap.put("roll skill", RollSkillCallable.class);
-		commandMap.put("roll slip", RollSlipCallable.class);
-		commandMap.put("roll sum", RollSumCallable.class);
-		commandMap.put("roll trial", RollTrialCallable.class);
+		commandMap.put("roll/attribute", RollAttributeCallable.class);
+		commandMap.put("roll/dice", RollDiceCallable.class);
+		commandMap.put("roll/skill", RollSkillCallable.class);
+		commandMap.put("roll/slip", RollSlipCallable.class);
+		commandMap.put("roll/sum", RollSumCallable.class);
+		commandMap.put("roll/trial", RollTrialCallable.class);
 		
-		commandMap.put("settings hidestats", SettingsHideStatsCallable.class);
-		commandMap.put("settings language", SettingsLanguageCallable.class);
+		commandMap.put("settings/hidestats", SettingsHideStatsCallable.class);
+		commandMap.put("settings/language", SettingsLanguageCallable.class);
 	}
 	
 	/**
@@ -78,7 +78,7 @@ public class CommandBook {
 	 */
 	public Optional<CommandCallable> getCommand(SlashCommandEvent event) {
 		
-		String commandName = String.join(" ", event.getName(), event.getSubcommandName());
+		String commandName = event.getCommandPath();
 		
 		Optional<CommandCallable> command = Optional.ofNullable(this.commandMap.get(commandName)).map(cc -> {
 			CommandCallable cmd = null;
