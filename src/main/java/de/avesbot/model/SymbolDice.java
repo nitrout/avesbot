@@ -16,7 +16,9 @@ public class SymbolDice {
 	 */
 	public SymbolDice(String name, String...values) {
 		this.name = name;
-		this.values = values;
+		this.values = new String[values.length];
+		for(int i = 0; i < values.length; i++)
+			this.values[i] = values[i].trim();
 	}
 	
 	/**
