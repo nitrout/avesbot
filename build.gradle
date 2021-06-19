@@ -3,7 +3,7 @@ apply plugin: 'jacoco'
 apply plugin: 'application'
 
 
-mainClassName = 'de.avesbot.Aves'
+mainClassName = 'de.avesbot.Avesbot'
 ext {
 	jdaVersion = '4.2.1_253'
 }
