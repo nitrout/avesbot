@@ -18,10 +18,10 @@ public class DiceCallable extends CommandCallable {
 	
 	static {
 		COMMAND
-				.addOption(new OptionData(OptionType.ROLE, "name", "The name of the dice.")
+				.addOption(new OptionData(OptionType.STRING, "name", "The name of the dice.")
 						.setRequired(true)
 				)
-				.addOption(new OptionData(OptionType.ROLE, "areas", "The comma-separated list of the dice areas")
+				.addOption(new OptionData(OptionType.STRING, "areas", "The comma-separated list of the dice areas")
 						.setRequired(true)
 				);
 	}
