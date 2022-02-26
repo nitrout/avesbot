@@ -1,6 +1,5 @@
 package de.avesbot.callable.character;
 
-import static java.lang.String.format;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -19,6 +18,7 @@ import de.avesbot.model.Vantage;
 public class CharacterCreateCallable extends CommandCallable {
 	
 	public static final String MANUAL = "**!char[acter]** Name (DSA4|DSA5) (true|false) (none|wild|solid) MU KL IN CH FF GE KO KK\t- Erstellt einen Charakter mit Name und den Vor-/Nachtteilen Tollpatsch(true/false), Wilde Magie oder Feste Matrix, sowie den angegebenen Werten";
+	@Deprecated
 	private static final Pattern CHARACTER_PATTERN = Pattern.compile("(.*?) (DSA4|DSA5) (true|false) (none|wild|solid) (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d{1,2})");
 	
 	/**

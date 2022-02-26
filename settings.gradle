@@ -1,3 +1,1 @@
 rootProject.name = 'Avesbot'
-include ':JDA'
-project(':JDA').projectDir = new File('../JDA')

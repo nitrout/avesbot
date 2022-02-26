@@ -81,7 +81,7 @@ public class Avesbot {
 						CommandData command = (CommandData)c.getField("COMMAND").get(null);
 						if(command != null) {
 							commands.add(command);
-						}
+		}
 					} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
 						System.err.println(ex.getMessage());
 					}

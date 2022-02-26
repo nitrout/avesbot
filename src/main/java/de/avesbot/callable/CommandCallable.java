@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent.OptionData;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import de.avesbot.Avesbot;
@@ -25,7 +25,7 @@ public abstract class CommandCallable implements Callable<String> {
 	protected final Guild guild;
 	protected final Member member;
 	protected final String[] pars;
-	protected final HashMap<String, OptionData> commandPars;
+	protected final HashMap<String, OptionMapping> commandPars;
 	protected final List<Message.Attachment> attachments;
 	protected final GuildSetting settings;
 	
