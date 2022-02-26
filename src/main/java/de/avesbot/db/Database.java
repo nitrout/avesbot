@@ -1,11 +1,11 @@
 package de.avesbot.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.mariadb.jdbc.MariaDbPoolDataSource;
 
 /**
  * The database connection.
@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 public class Database {
 	
 	public static Connection connection;
+	public static MariaDbPoolDataSource pool;
 	
 	/**
 	 * Initializes the database connection withe the given connection parameters.
@@ -26,7 +27,10 @@ public class Database {
 	 * @throws SQLException 
 	 */
 	public static void init(String host, String user, String password, String database) throws SQLException {
-		connection = DriverManager.getConnection("jdbc:mariadb://"+host+"/"+database+"?autoReconnect=true", user, password);
+		pool = new MariaDbPoolDataSource("jdbc:mariadb://"+host+"/"+database+"?poolName=avesbot&maxPoolSize=10");
+		pool.setUser(user);
+		pool.setPassword(password);
+		//connection = DriverManager.getConnection("jdbc:mariadb://"+host+"/"+database+"?autoReconnect=true", user, password);
 	}
 	
 	/**
@@ -36,7 +40,7 @@ public class Database {
 	 * @throws SQLException 
 	 */
 	public static Statement getNewStatement() throws SQLException {
-		Statement stmt = connection.createStatement();
+		Statement stmt = pool.getConnection().createStatement();
 		return stmt;
 	}
 	
@@ -48,7 +52,7 @@ public class Database {
 	 * @throws SQLException 
 	 */
 	public static PreparedStatement prepareStatement(String stmt) throws SQLException {
-		PreparedStatement prepStmt = connection.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement prepStmt = pool.getConnection().prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
 		return prepStmt;
 	}
 	
@@ -60,7 +64,7 @@ public class Database {
 	 * @throws SQLException 
 	 */
 	public static int update(String query) throws SQLException {
-		Statement stmt = connection.createStatement();
+		Statement stmt = pool.getConnection().createStatement();
 		return stmt.executeUpdate(query);
 	}
 	
@@ -72,7 +76,7 @@ public class Database {
 	 * @throws SQLException 
 	 */
 	public static ResultSet query(String query) throws SQLException {
-		Statement stmt = connection.createStatement();
+		Statement stmt = pool.getConnection().createStatement();
 		return stmt.executeQuery(query);
 	}
 	
@@ -82,6 +86,6 @@ public class Database {
 	 * @throws SQLException 
 	 */
 	public static void close() throws SQLException {
-		connection.close();
+		pool.getConnection().close();
 	}
 }

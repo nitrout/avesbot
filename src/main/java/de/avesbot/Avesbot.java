@@ -97,7 +97,7 @@ public class Avesbot {
 			}
 			
 			// execute a database keep alive request at a fixed rate to keep db connection alive
-			stpe.scheduleAtFixedRate(new DatabaseKeepAlive(), 0, keepAliveInterval, TimeUnit.HOURS);
+//			stpe.scheduleAtFixedRate(new DatabaseKeepAlive(), 0, keepAliveInterval, TimeUnit.HOURS);
 			stpe.schedule(() -> {
 				getJda().getGuilds().forEach(guild -> {
 					stmntManager.insertGuild(guild);

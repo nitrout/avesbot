@@ -58,69 +58,12 @@ public class StatementManager {
 	private static final String GROUP_MEMBER_DELETE = "DELETE FROM `group_member` WHERE `group_id` = ? AND `character_id` = ?";
 	private static final String GROUP_MEMBER_LIST_SELECT = "SELECT `character`.* FROM `character` JOIN `group_member` USING(`character_id`) WHERE `group_id` = ?";
 	
-	private PreparedStatement charInsStmnt;
-	private PreparedStatement charDelStmnt;
-	private PreparedStatement charSelectStmnt;
-	private PreparedStatement charNameSelectStmnt;
-	private PreparedStatement charListSelectStmnt;
-	private PreparedStatement charEnableStmnt;
-	private PreparedStatement charDisableStmnt;
-	private PreparedStatement vantageInsStmnt;
-	private PreparedStatement charVantageSelectStmnt;
-	private PreparedStatement specialInsStmnt;
-	private PreparedStatement charSpecialSelectStmnt;
-	private PreparedStatement abilityInsStmnt;
-	private PreparedStatement abilitySelectStmnt;
-	private PreparedStatement charAbilityListSelectStmnt;
-	private PreparedStatement groupAbilityListSelectStmnt;
-	private PreparedStatement guildInsStmnt;
-	private PreparedStatement guildSelectStmnt;
-	private PreparedStatement guildPrefixUpdateStmnt;
-	private PreparedStatement symbolDiceInsStmnt;
-	private PreparedStatement symbolDiceSelectStmnt;
-	private PreparedStatement groupInsStmnt;
-	private PreparedStatement groupActiveSelectStmnt;
-	private PreparedStatement groupNameSelectStmnt;
-	private PreparedStatement groupEnableStmnt;
-	private PreparedStatement groupDisableStmnt;
-	private PreparedStatement groupMemberInsStmnt;
-	private PreparedStatement groupMemberDelStmnt;
-	private PreparedStatement groupMemberListSelectStmnt;
-	
 	/**
 	 * Prepares alle available Statements
 	 * @throws SQLException 
 	 */
 	public StatementManager()  throws SQLException {
 		
-		charInsStmnt = Database.prepareStatement(CHAR_INSERT);
-		charDelStmnt = Database.prepareStatement(CHAR_DELETE);
-		charSelectStmnt = Database.prepareStatement(CHAR_ACTIVE_SELECT);
-		charNameSelectStmnt = Database.prepareStatement(CHAR_NAME_SELECT);
-		charListSelectStmnt = Database.prepareStatement(CHAR_LIST_SELECT);
-		charEnableStmnt = Database.prepareStatement(CHAR_ENABLE);
-		charDisableStmnt = Database.prepareStatement(CHAR_DISABLE);
-		vantageInsStmnt = Database.prepareStatement(VANTAGE_INSERT);
-		charVantageSelectStmnt = Database.prepareStatement(CHAR_VANTAGES_SELECT);
-		specialInsStmnt = Database.prepareStatement(SPECIAL_INSERT);
-		charSpecialSelectStmnt = Database.prepareStatement(CHAR_SPECIAL_SELECT);
-		abilityInsStmnt = Database.prepareStatement(ABILITY_INSERT);
-		abilitySelectStmnt = Database.prepareStatement(ABILITY_SELECT);
-		charAbilityListSelectStmnt = Database.prepareStatement(CHAR_ABILITY_LIST_SELECT);
-		groupAbilityListSelectStmnt = Database.prepareStatement(GROUP_ABILITY_LIST_SELECT);
-		guildInsStmnt = Database.prepareStatement(GUILD_INSERT);
-		guildSelectStmnt = Database.prepareStatement(GUILD_SETTING_SELECT);
-		guildPrefixUpdateStmnt = Database.prepareStatement(GUILD_SETTING_UPDATE);
-		symbolDiceInsStmnt = Database.prepareStatement(SYMBOL_DICE_INSERT);
-		symbolDiceSelectStmnt = Database.prepareStatement(SYMBOL_DICE_SELECT);
-		groupInsStmnt = Database.prepareStatement(GROUP_INSERT);
-		groupActiveSelectStmnt = Database.prepareStatement(GROUP_ACTIVE_SELECT);
-		groupNameSelectStmnt = Database.prepareStatement(GROUP_NAME_SELECT);
-		groupEnableStmnt = Database.prepareStatement(GROUP_ENABLE);
-		groupDisableStmnt = Database.prepareStatement(GROUP_DISABLE);
-		groupMemberInsStmnt = Database.prepareStatement(GROUP_MEMBER_INSERT);
-		groupMemberDelStmnt = Database.prepareStatement(GROUP_MEMBER_DELETE);
-		groupMemberListSelectStmnt = Database.prepareStatement(GROUP_MEMBER_LIST_SELECT);
 	}
 	
 	/**
@@ -134,10 +77,7 @@ public class StatementManager {
 		
 		Optional<String> insertId = Optional.empty();
 		
-		try {
-			if(charInsStmnt.isClosed())
-				charInsStmnt = Database.prepareStatement(CHAR_INSERT);
-			
+		try(PreparedStatement charInsStmnt = Database.prepareStatement(CHAR_INSERT); PreparedStatement charNameSelectStmnt = Database.prepareStatement(CHAR_NAME_SELECT);) {
 			charInsStmnt.setString(1, memberId);
 			charInsStmnt.setString(2, chara.getName());
 			for(int i = 0; i < Attribute.values().length; i++) {
@@ -152,8 +92,6 @@ public class StatementManager {
 				insertId = Optional.ofNullable(insertResult.getString(1));
 			}
 			else {
-				if(charNameSelectStmnt.isClosed())
-					charNameSelectStmnt = Database.prepareStatement(CHAR_NAME_SELECT);
 				charNameSelectStmnt.setString(1, memberId);
 				charNameSelectStmnt.setString(2, chara.getName());
 				ResultSet updateResult = charNameSelectStmnt.executeQuery();
@@ -178,9 +116,7 @@ public class StatementManager {
 		
 		int updatedRows = 0;
 		
-		try {
-			if(charDelStmnt.isClosed())
-				charDelStmnt = Database.prepareStatement(CHAR_DELETE);
+		try(PreparedStatement charDelStmnt = Database.prepareStatement(CHAR_DELETE)) {
 			
 			charDelStmnt.setString(1, chara.getId());
 			updatedRows = charDelStmnt.executeUpdate();
@@ -200,10 +136,7 @@ public class StatementManager {
 	 */
 	public void insertAbility(RoleplayCharacter chara, Ability ability) {
 		
-		try {
-			if(abilityInsStmnt.isClosed())
-				abilityInsStmnt = Database.prepareStatement(ABILITY_INSERT);
-			
+		try(PreparedStatement abilityInsStmnt = Database.prepareStatement(ABILITY_INSERT);) {
 			abilityInsStmnt.setString(1, chara.getId());
 			abilityInsStmnt.setString(2, ability.getName());
 			abilityInsStmnt.setString(3, ability.getRep().name());
@@ -226,15 +159,12 @@ public class StatementManager {
 	/**
 	 * Adds or updates a (dis)advantage for the given character.
 	 * 
-	 * @param chara the characer the ability will be added for
+	 * @param chara the characer the vantage will be added for
 	 * @param vantage the vantage which will be added or updated
 	 */
 	public void insertVantage(RoleplayCharacter chara, Vantage vantage) {
 		
-		try {
-			if(vantageInsStmnt.isClosed())
-				vantageInsStmnt = Database.prepareStatement(VANTAGE_INSERT);
-			
+		try(PreparedStatement vantageInsStmnt = Database.prepareStatement(VANTAGE_INSERT);) {
 			vantageInsStmnt.setString(1, chara.getId());
 			vantageInsStmnt.setString(2, vantage.getName());
 			vantageInsStmnt.setString(3, vantage.getAttribute1().orElse(""));
@@ -255,10 +185,7 @@ public class StatementManager {
 	 */
 	public void insertSpecial(RoleplayCharacter chara, Special special) {
 		
-		try {
-			if(specialInsStmnt.isClosed())
-				specialInsStmnt = Database.prepareStatement(VANTAGE_INSERT);
-			
+		try(PreparedStatement specialInsStmnt = Database.prepareStatement(SPECIAL_INSERT);) {
 			specialInsStmnt.setString(1, chara.getId());
 			specialInsStmnt.setString(2, special.getName());
 			specialInsStmnt.setString(3, special.getAttribute1().orElse(""));
@@ -283,10 +210,7 @@ public class StatementManager {
 		
 		Optional<RoleplayCharacter> result = Optional.empty();
 		
-		try {
-			if(charSelectStmnt.isClosed())
-				charSelectStmnt = Database.prepareStatement(CHAR_ACTIVE_SELECT);
-			
+		try(PreparedStatement charSelectStmnt = Database.prepareStatement(CHAR_ACTIVE_SELECT);) {
 			charSelectStmnt.setString(1, user.getId());
 			ResultSet charaResult = charSelectStmnt.executeQuery();
 			
@@ -320,9 +244,7 @@ public class StatementManager {
 		
 		Optional<RoleplayCharacter> result = Optional.empty();
 		
-		try {
-			if(charNameSelectStmnt.isClosed())
-				charNameSelectStmnt = Database.prepareStatement(CHAR_NAME_SELECT);
+		try(PreparedStatement charNameSelectStmnt = Database.prepareStatement(CHAR_NAME_SELECT);) {
 			
 			charNameSelectStmnt.setString(1, user.getId());
 			charNameSelectStmnt.setString(2, name+"%");
@@ -357,10 +279,7 @@ public class StatementManager {
 		
 		LinkedList<RoleplayCharacter> result = new LinkedList<>();
 		
-		try {
-			if(charListSelectStmnt.isClosed())
-				charListSelectStmnt = Database.prepareStatement(CHAR_LIST_SELECT);
-			
+		try(PreparedStatement charListSelectStmnt = Database.prepareStatement(CHAR_LIST_SELECT);) {
 			charListSelectStmnt.setString(1, user.getId());
 			ResultSet charaResult = charListSelectStmnt.executeQuery();
 			
@@ -391,10 +310,7 @@ public class StatementManager {
 	private Vantage[] getRoleplayCharacterVantages(String characterId) {
 		
 		LinkedList<Vantage> vantageList = new LinkedList<>();
-		try {
-			if(charVantageSelectStmnt.isClosed())
-				charVantageSelectStmnt = Database.prepareStatement(CHAR_VANTAGES_SELECT);
-			
+		try(PreparedStatement charVantageSelectStmnt = Database.prepareStatement(CHAR_VANTAGES_SELECT);) {
 			charVantageSelectStmnt.setString(1, characterId);
 			ResultSet vantageResult = charVantageSelectStmnt.executeQuery();
 
@@ -417,10 +333,7 @@ public class StatementManager {
 	private Special[] getRoleplayCharacterSpecials(String characterId) {
 		
 		LinkedList<Special> specialList = new LinkedList<>();
-		try {
-			if(charSpecialSelectStmnt.isClosed())
-				charSpecialSelectStmnt = Database.prepareStatement(CHAR_SPECIAL_SELECT);
-			
+		try(PreparedStatement charSpecialSelectStmnt = Database.prepareStatement(CHAR_SPECIAL_SELECT);) {
 			charSpecialSelectStmnt.setString(1, characterId);
 			ResultSet specialResult = charSpecialSelectStmnt.executeQuery();
 			
@@ -446,12 +359,7 @@ public class StatementManager {
 		
 		int updatedRows = 0;
 		
-		try {
-			
-			if(charDisableStmnt.isClosed())
-				charDisableStmnt = Database.prepareStatement(CHAR_DISABLE);
-			if(charEnableStmnt.isClosed())
-				charEnableStmnt = Database.prepareStatement(CHAR_ENABLE);
+		try(PreparedStatement charDisableStmnt = Database.prepareStatement(CHAR_DISABLE); PreparedStatement charEnableStmnt = Database.prepareStatement(CHAR_ENABLE);) {
 			
 			charDisableStmnt.setString(1, user.getId());
 			charDisableStmnt.executeUpdate();
@@ -478,9 +386,7 @@ public class StatementManager {
 	public Optional<Ability> getCharacterAbility(RoleplayCharacter chara, String abilityName, Tradition rep) {
 		
 		Optional<Ability> result = Optional.empty();
-		try {
-			if(abilitySelectStmnt.isClosed())
-				abilitySelectStmnt = Database.prepareStatement(ABILITY_SELECT);
+		try(PreparedStatement abilitySelectStmnt = Database.prepareStatement(ABILITY_SELECT);) {
 			
 			abilitySelectStmnt.setString(1, chara.getId());
 			abilitySelectStmnt.setString(2, abilityName+"%");
@@ -511,9 +417,7 @@ public class StatementManager {
 		
 		ArrayList<String> result = new ArrayList<>();
 		
-		try {
-			if(charAbilityListSelectStmnt.isClosed())
-				charAbilityListSelectStmnt = Database.prepareStatement(CHAR_ABILITY_LIST_SELECT);
+		try(PreparedStatement charAbilityListSelectStmnt = Database.prepareStatement(CHAR_ABILITY_LIST_SELECT);) {
 			
 			charAbilityListSelectStmnt.setString(1, chara.getId());
 			ResultSet abilityResult = charAbilityListSelectStmnt.executeQuery();
@@ -537,9 +441,7 @@ public class StatementManager {
 		
 		ArrayList<String> result = new ArrayList<>();
 		
-		try {
-			if(groupAbilityListSelectStmnt.isClosed())
-				groupAbilityListSelectStmnt = Database.prepareStatement(GROUP_ABILITY_LIST_SELECT);
+		try(PreparedStatement groupAbilityListSelectStmnt = Database.prepareStatement(GROUP_ABILITY_LIST_SELECT);) {
 			
 			groupAbilityListSelectStmnt.setString(1, group.getGroupId());
 			ResultSet abilityResult = groupAbilityListSelectStmnt.executeQuery();
@@ -565,9 +467,7 @@ public class StatementManager {
 		Optional<String> description = Optional.ofNullable(guild.getDescription());
 		String iconUrl = guild.getIconUrl();
 		
-		try {
-			if(guildInsStmnt.isClosed())
-				guildInsStmnt = Database.prepareStatement(GUILD_INSERT);
+		try(PreparedStatement guildInsStmnt = Database.prepareStatement(GUILD_INSERT);) {
 			
 			guildInsStmnt.setString(1, guildId);
 			guildInsStmnt.setString(2, name);
@@ -595,9 +495,7 @@ public class StatementManager {
 		Optional<GuildSetting> guildSetting = Optional.empty();
 		String guildId = guild.getId();
 		
-		try {
-			if(guildSelectStmnt.isClosed())
-				guildSelectStmnt = Database.prepareStatement(GUILD_SETTING_SELECT);
+		try(PreparedStatement guildSelectStmnt = Database.prepareStatement(GUILD_SETTING_SELECT);) {
 			
 			guildSelectStmnt.setString(1, guildId);
 			
@@ -619,14 +517,11 @@ public class StatementManager {
 	/**
 	 * Changes the prefix for the given guild.
 	 * 
-	 * @param guild the guild to update
-	 * @param prefix the new prefix
+	 * @param setting the guild's settings to update
 	 */
 	public void updateGuildSetting(GuildSetting setting) {
 		
-		try {
-			if(guildPrefixUpdateStmnt.isClosed())
-				guildPrefixUpdateStmnt = Database.prepareStatement(GUILD_SETTING_UPDATE);
+		try(PreparedStatement guildPrefixUpdateStmnt = Database.prepareStatement(GUILD_SETTING_UPDATE);) {
 			
 			guildPrefixUpdateStmnt.setString(1, setting.getLocale().toString());
 			guildPrefixUpdateStmnt.setString(2, setting.isHideStats() ? "y" : "n");
@@ -650,9 +545,7 @@ public class StatementManager {
 		String guildId = guild.getId();
 		String values = Stream.of(dice.getValues()).collect(Collectors.joining(","));
 		
-		try {
-			if(symbolDiceInsStmnt.isClosed())
-				symbolDiceInsStmnt = Database.prepareStatement(SYMBOL_DICE_INSERT);
+		try(PreparedStatement symbolDiceInsStmnt = Database.prepareStatement(SYMBOL_DICE_INSERT);) {
 			
 			symbolDiceInsStmnt.setString(1, guildId);
 			symbolDiceInsStmnt.setString(2, dice.getName());
@@ -678,9 +571,7 @@ public class StatementManager {
 		Optional<SymbolDice> dice = Optional.empty();
 		String guildId = guild.getId();
 		
-		try {
-			if(symbolDiceSelectStmnt.isClosed())
-				symbolDiceSelectStmnt = Database.prepareStatement(SYMBOL_DICE_SELECT);
+		try(PreparedStatement symbolDiceSelectStmnt = Database.prepareStatement(SYMBOL_DICE_SELECT);) {
 			
 			symbolDiceSelectStmnt.setString(1, name+"%");
 			symbolDiceSelectStmnt.setString(2, guildId);
@@ -707,9 +598,7 @@ public class StatementManager {
 	 */
 	public void insertGroup(Member user, Guild guild, String groupName) {
 		
-		try {
-			if(groupInsStmnt.isClosed())
-				groupInsStmnt = Database.prepareStatement(GROUP_INSERT);
+		try(PreparedStatement groupInsStmnt = Database.prepareStatement(GROUP_INSERT);) {
 			
 			groupInsStmnt.setString(1, user.getId());
 			groupInsStmnt.setString(2, guild.getId());
@@ -733,9 +622,7 @@ public class StatementManager {
 		
 		Optional<Group> result = Optional.empty();
 		
-		try {
-			if(groupActiveSelectStmnt.isClosed())
-				groupActiveSelectStmnt = Database.prepareStatement(GROUP_ACTIVE_SELECT);
+		try(PreparedStatement groupActiveSelectStmnt = Database.prepareStatement(GROUP_ACTIVE_SELECT);) {
 			
 			groupActiveSelectStmnt.setString(1, user.getId());
 			groupActiveSelectStmnt.setString(2, guild.getId());
@@ -764,12 +651,7 @@ public class StatementManager {
 		
 		int updatedRows = 0;
 		
-		try {
-			
-			if(groupDisableStmnt.isClosed())
-				groupDisableStmnt = Database.prepareStatement(GROUP_DISABLE);
-			if(groupEnableStmnt.isClosed())
-				groupEnableStmnt = Database.prepareStatement(GROUP_ENABLE);
+		try(PreparedStatement groupDisableStmnt = Database.prepareStatement(GROUP_DISABLE); PreparedStatement groupEnableStmnt = Database.prepareStatement(GROUP_ENABLE);) {
 			
 			groupDisableStmnt.setString(1, user.getId());
 			groupDisableStmnt.setString(2, guild.getId());
@@ -798,9 +680,7 @@ public class StatementManager {
 		
 		Optional<Group> result = Optional.empty();
 		
-		try {
-			if(groupNameSelectStmnt.isClosed())
-				groupNameSelectStmnt = Database.prepareStatement(GROUP_NAME_SELECT);
+		try(PreparedStatement groupNameSelectStmnt = Database.prepareStatement(GROUP_NAME_SELECT);) {
 			
 			groupNameSelectStmnt.setString(1, guild.getId());
 			groupNameSelectStmnt.setString(2, name+"%");
@@ -826,9 +706,7 @@ public class StatementManager {
 	 */
 	public boolean insertGroupMember(Group group, RoleplayCharacter character) {
 		int updatedRows = 0;
-		try {
-			if(groupMemberInsStmnt.isClosed())
-				groupMemberInsStmnt = Database.prepareStatement(GROUP_MEMBER_INSERT);
+		try(PreparedStatement groupMemberInsStmnt = Database.prepareStatement(GROUP_MEMBER_INSERT);) {
 			
 			groupMemberInsStmnt.setString(1, group.getGroupId());
 			groupMemberInsStmnt.setString(2, character.getId());
@@ -850,9 +728,7 @@ public class StatementManager {
 	 */
 	public boolean deleteGroupMember(Group group, RoleplayCharacter character) {
 		int updatedRows = 0;
-		try {
-			if(groupMemberDelStmnt.isClosed())
-				groupMemberDelStmnt = Database.prepareStatement(GROUP_MEMBER_DELETE);
+		try(PreparedStatement groupMemberDelStmnt = Database.prepareStatement(GROUP_MEMBER_DELETE);) {
 			
 			groupMemberDelStmnt.setString(1, group.getGroupId());
 			groupMemberDelStmnt.setString(2, character.getId());
@@ -875,11 +751,7 @@ public class StatementManager {
 		
 		LinkedList<RoleplayCharacter> result = new LinkedList<>();
 		
-		try {
-			if(groupMemberListSelectStmnt.isClosed())
-				groupMemberListSelectStmnt = Database.prepareStatement(GROUP_MEMBER_LIST_SELECT);
-			if(charVantageSelectStmnt.isClosed())
-				charVantageSelectStmnt = Database.prepareStatement(CHAR_VANTAGES_SELECT);
+		try(PreparedStatement groupMemberListSelectStmnt = Database.prepareStatement(GROUP_MEMBER_LIST_SELECT);) {
 			
 			groupMemberListSelectStmnt.setString(1, group.getGroupId());
 			ResultSet charaResult = groupMemberListSelectStmnt.executeQuery();

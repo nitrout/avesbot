@@ -6,6 +6,7 @@ import de.avesbot.db.Database;
 /**
  *
  * @author kling
+ * @deprecated 
  */
 public class DatabaseKeepAlive implements Runnable {
 
