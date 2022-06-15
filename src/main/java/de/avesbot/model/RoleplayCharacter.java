@@ -1,7 +1,5 @@
 package de.avesbot.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -10,7 +8,7 @@ import org.apache.commons.lang3.NotImplementedException;
  * 
  * @author nitrout
  */
-public class RoleplayCharacter {
+public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte cou, byte sgc, byte intu, byte cha, byte dex, byte agi, byte con, byte str, List<Vantage> vantages, List<Special> specials) {
 	
 	/**
 	 * represents one of the spellcaster (dis)advantages.
@@ -21,20 +19,6 @@ public class RoleplayCharacter {
 		NONE, WILD, SOLID
 	}
 	
-	private String id;
-	private String name;
-	private byte courage;
-	private byte sagacity;
-	private byte intuition;
-	private byte charisma;
-	private byte dexterity;
-	private byte agility;
-	private byte constitution;
-	private byte strength;
-	private ArrayList<Vantage> vantages;
-	private ArrayList<Special> specials;
-	private Ruleset ruleset;
-	
 	/**
 	 * Creates a new character.
 	 * 
@@ -42,7 +26,7 @@ public class RoleplayCharacter {
 	 * @param name name of the character
 	 * @param rule ruleset of the character DSA4/DSA5
 	 * @param cou the courage attribute
-	 * @param sag the sagacity attribute
+	 * @param sgc the sagacity attribute
 	 * @param intu the intuition attribute
 	 * @param cha the charisma attribute
 	 * @param dex the dexterity attribute
@@ -52,22 +36,8 @@ public class RoleplayCharacter {
 	 * @param vantages the (dis)advantages of the character
 	 * @param specials the special abilities of the character
 	 */
-	public RoleplayCharacter(String id, String name, Ruleset rule, byte cou, byte sag, byte intu, byte cha, byte dex, byte agi, byte con, byte str, Vantage[] vantages, Special[] specials) {
-		this.id = id;
-		this.name = name;
-		this.courage = cou;
-		this.sagacity = sag;
-		this.intuition = intu;
-		this.charisma = cha;
-		this.dexterity = dex;
-		this.agility = agi;
-		this.constitution = con;
-		this.strength = str;
-		this.vantages = new ArrayList<>();
-		this.vantages.addAll(Arrays.asList(vantages));
-		this.specials = new ArrayList<>();
-		this.specials.addAll(Arrays.asList(specials));
-		this.ruleset = rule;
+	public RoleplayCharacter(String id, String name, Ruleset rule, byte cou, byte sgc, byte intu, byte cha, byte dex, byte agi, byte con, byte str, Vantage[] vantages, Special[] specials) {
+		this(id, name, rule, cou, sgc, intu, cha, dex, agi, con, str, List.of(vantages), List.of(specials));
 	}
 	
 	/**
@@ -76,7 +46,7 @@ public class RoleplayCharacter {
 	 * @param name name of the character
 	 * @param rule ruleset of the character DSA4/DSA5
 	 * @param cou the courage attribute
-	 * @param sag the sagacity attribute
+	 * @param sgc the sagacity attribute
 	 * @param intu the intuition attribute
 	 * @param cha the charisma attribute
 	 * @param dex the dexterity attribute
@@ -86,8 +56,8 @@ public class RoleplayCharacter {
 	 * @param vantages the (dis)advantages of the character
 	 * @param specials the special abilities of the character
 	 */
-	public RoleplayCharacter(String name, Ruleset rule, byte cou, byte sag, byte intu, byte cha, byte dex, byte agi, byte con, byte str, Vantage[] vantages, Special[] specials) {
-		this("0", name, rule, cou, sag, intu, cha, dex, agi, con, str, vantages, specials);
+	public RoleplayCharacter(String name, Ruleset rule, byte cou, byte sgc, byte intu, byte cha, byte dex, byte agi, byte con, byte str, Vantage[] vantages, Special[] specials) {
+		this("0", name, rule, cou, sgc, intu, cha, dex, agi, con, str, vantages, specials);
 	}
 	
 	/**
@@ -159,133 +129,7 @@ public class RoleplayCharacter {
 	 * @param chara original character
 	 */
 	public RoleplayCharacter(String id, RoleplayCharacter chara) {
-		this(id, chara.name, chara.ruleset, chara.courage, chara.sagacity, chara.intuition, chara.charisma, chara.dexterity, chara.agility, chara.constitution, chara.strength, chara.vantages.toArray(Vantage[]::new), chara.specials.toArray(Special[]::new));
-	}
-	
-	/**
-	 * @return the courage
-	 */
-	public byte getCourage() {
-		return courage;
-	}
-	
-	/**
-	 * @param courage the courage to set
-	 */
-	public void setCourage(byte courage) {
-		this.courage = courage;
-	}
-	
-	/**
-	 * @return the sagacity
-	 */
-	public byte getSagacity() {
-		return sagacity;
-	}
-	
-	/**
-	 * @param sagacity the sagacity to set
-	 */
-	public void setSagacity(byte sagacity) {
-		this.sagacity = sagacity;
-	}
-	
-	/**
-	 * @return the intuition
-	 */
-	public byte getIntuition() {
-		return intuition;
-	}
-	
-	/**
-	 * @param intuition the intuition to set
-	 */
-	public void setIntuition(byte intuition) {
-		this.intuition = intuition;
-	}
-	
-	/**
-	 * @return the charisma
-	 */
-	public byte getCharisma() {
-		return charisma;
-	}
-	
-	/**
-	 * @param charisma the charisma to set
-	 */
-	public void setCharisma(byte charisma) {
-		this.charisma = charisma;
-	}
-	
-	/**
-	 * @return the dexterity
-	 */
-	public byte getDexterity() {
-		return dexterity;
-	}
-	
-	/**
-	 * @param dexterity the dexterity to set
-	 */
-	public void setDexterity(byte dexterity) {
-		this.dexterity = dexterity;
-	}
-	
-	/**
-	 * @return the agility
-	 */
-	public byte getAgility() {
-		return agility;
-	}
-	
-	/**
-	 * @param agility the agility to set
-	 */
-	public void setAgility(byte agility) {
-		this.agility = agility;
-	}
-	
-	/**
-	 * @return the constitution
-	 */
-	public byte getConstitution() {
-		return constitution;
-	}
-	
-	/**
-	 * @param constitution the constitution to set
-	 */
-	public void setConstitution(byte constitution) {
-		this.constitution = constitution;
-	}
-	
-	/**
-	 * @return the strength
-	 */
-	public byte getStrength() {
-		return strength;
-	}
-	
-	/**
-	 * @param strength the strength to set
-	 */
-	public void setStrength(byte strength) {
-		this.strength = strength;
-	}
-	
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-	
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(String id) {
-		this.id = id;
+		this(id, chara.name, chara.ruleset, chara.cou, chara.sgc, chara.intu, chara.cha, chara.dex, chara.agi, chara.con, chara.str, chara.vantages.toArray(Vantage[]::new), chara.specials.toArray(Special[]::new));
 	}
 	
 	/**
@@ -295,31 +139,17 @@ public class RoleplayCharacter {
 	 */
 	public byte getAttribute(Attribute att) {
 		byte result = 0;
-		switch(att) {
-			case COURAGE : result = this.getCourage(); break;
-			case SAGACITY : result = this.getSagacity(); break;
-			case INTUITION : result = this.getIntuition(); break;
-			case CHARISMA : result = this.getCharisma(); break;
-			case DEXTERITY : result = this.getDexterity(); break;
-			case AGILITY : result = this.getAgility(); break;
-			case CONSTITUTION : result = this.getConstitution(); break;
-			case STRENGTH : result = this.getStrength(); break;
-		}
+		result = switch(att) {
+			case COURAGE -> this.cou;
+			case SAGACITY -> this.sgc;
+			case INTUITION -> this.intu;
+			case CHARISMA -> this.cha;
+			case DEXTERITY -> this.dex;
+			case AGILITY -> this.agi;
+			case CONSTITUTION -> this.con;
+			case STRENGTH -> this.str;
+		};
 		return result;
-	}
-	
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-	
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
 	}
 	
 	/**
@@ -363,34 +193,14 @@ public class RoleplayCharacter {
 	public void setSpellcasterMod(SpellcasterMod spellcasterMod) {
 		throw new NotImplementedException();
 	}
-
-	/**
-	 * @return the ruleset
-	 */
-	public Ruleset getRuleset() {
-		return ruleset;
-	}
-
-	/**
-	 * @param ruleset the ruleset to set
-	 */
-	public void setRuleset(Ruleset ruleset) {
-		this.ruleset = ruleset;
-	}
 	
 	/**
 	 * Modifies all attributes.
 	 * @param mod the amount to modify
 	 */
-	public void modifyAttributes(byte mod) {
-		this.courage += mod;
-		this.sagacity += mod;
-		this.intuition += mod;
-		this.charisma += mod;
-		this.dexterity += mod;
-		this.agility += mod;
-		this.constitution += mod;
-		this.strength += mod;
+	public RoleplayCharacter modifyAttributes(byte mod) {
+		
+		return new RoleplayCharacter(id, name, ruleset, (byte)(cou+mod), (byte)(sgc+mod), (byte)(intu+mod), (byte)(cha+mod), (byte)(dex+mod), (byte)(agi+mod), (byte)(con+mod), (byte)(str+mod), vantages, specials);
 	}
 	
 	/**
@@ -407,7 +217,7 @@ public class RoleplayCharacter {
 	 * 
 	 * @param vantages the vantages to add
 	 */
-	public void setVantages(List<Vantage> vantages) {
+	public void addVantages(List<Vantage> vantages) {
 		this.vantages.addAll(vantages);
 	}
 	
@@ -418,7 +228,7 @@ public class RoleplayCharacter {
 	 * @return true if the character has the vantage
 	 */
 	public boolean hasVantage(String vantageName) {
-		return this.vantages.stream().anyMatch(vantage -> vantage.getName().equals(vantageName));
+		return this.vantages.stream().anyMatch(vantage -> vantage.name().equals(vantageName));
 	}
 	
 	/**
@@ -435,7 +245,7 @@ public class RoleplayCharacter {
 	 * 
 	 * @param specials the vantages to add
 	 */
-	public void setSpecials(List<Special> specials) {
+	public void addSpecials(List<Special> specials) {
 		this.specials.addAll(specials);
 	}
 	
@@ -446,14 +256,14 @@ public class RoleplayCharacter {
 	 * @return true if the character has the vantage
 	 */
 	public boolean hasSpecial(String specialName) {
-		return this.specials.stream().anyMatch(special -> special.getName().equals(specialName));
+		return this.specials.stream().anyMatch(special -> special.name().equals(specialName));
 	}
 	
 	@Override
 	public String toString() {
 		
 		return String.format("%s[COU:%d SGC:%d INT:%d CHA:%d DEX:%d AGI:%d CON:%d STR:%d]",
-								name, courage, sagacity, intuition, charisma, dexterity, agility, constitution, strength);
+								name, cou, sgc, intu, cha, dex, agi, con, str);
 	}
 	
 	/**
@@ -463,6 +273,6 @@ public class RoleplayCharacter {
 	 */
 	public String getTrialValues(Trial t) {
 		
-		return String.format("(%d/%d/%d)", this.getAttribute(t.getAtt1()), this.getAttribute(t.getAtt2()), this.getAttribute(t.getAtt3()));
+		return String.format("(%d/%d/%d)", this.getAttribute(t.attribute1()), this.getAttribute(t.attribute2()), this.getAttribute(t.attribute3()));
 	}
 }
