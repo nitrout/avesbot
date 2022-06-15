@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Ability;
@@ -14,6 +13,7 @@ import de.avesbot.model.Tradition;
 import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.util.LevenshteinHelper;
 import de.avesbot.callable.RoleplayCharacterRoll;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * A callable to execute a skill trial for all members of a group.
@@ -27,7 +27,7 @@ public class GroupSkillCallable extends GroupCallable implements RoleplayCharact
 	 * Creates a new GroupSkillCallable.
 	 * @param event 
 	 */
-	public GroupSkillCallable(SlashCommandEvent event) {
+	public GroupSkillCallable(SlashCommandInteractionEvent event) {
 		super(event);
 		guild.getEmotes().stream().forEach(emote -> emoteMap.put(emote.getName(), emote));
 	}
@@ -49,12 +49,12 @@ public class GroupSkillCallable extends GroupCallable implements RoleplayCharact
 			difficulty = (byte)this.commandPars.get("difficulty").getAsLong();
 		
 		if(group.isEmpty()) {
-			return I18n.getInstance().getString(settings.getLocale(), "errorNoActiveGroup");
+			return I18n.getInstance().getString(settings.locale(), "errorNoActiveGroup");
 		} else {
 			RoleplayCharacter[] charas = Avesbot.getStatementManager().getGroupMemberList(group.get());
 			
 			if(charas.length == 0)
-				return I18n.getInstance().getString(settings.getLocale(), "errorNoGroupMember");
+				return I18n.getInstance().getString(settings.locale(), "errorNoGroupMember");
 			
 			// get the best matching skill
 			String[] skillbook = Avesbot.getStatementManager().getGroupAbilityList(group.get());

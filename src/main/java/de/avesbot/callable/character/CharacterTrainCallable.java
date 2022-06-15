@@ -1,7 +1,6 @@
 package de.avesbot.callable.character;
 
 import java.util.Optional;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Ability;
@@ -9,6 +8,7 @@ import de.avesbot.model.Attribute;
 import de.avesbot.model.Tradition;
 import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Trial;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * A callable to train a new skill for the current character.
@@ -20,7 +20,7 @@ public class CharacterTrainCallable extends CharacterCallable {
 	 * Creates a new TrainCallable.
 	 * @param event 
 	 */
-	public CharacterTrainCallable(SlashCommandEvent event) {
+	public CharacterTrainCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -50,10 +50,10 @@ public class CharacterTrainCallable extends CharacterCallable {
 			
 			Ability ability = new Ability(abilityName, tradition, trial, sr, type);
 			Avesbot.getStatementManager().insertAbility(chara.get(), ability);
-			result = I18n.getInstance().format(settings.getLocale(), "characterTrained", chara.get().getName(), type, abilityName, tradition.name(), sr);
+			result = I18n.getInstance().format(settings.locale(), "characterTrained", chara.get().name(), type, abilityName, tradition.name(), sr);
 		}
 		else {
-			result = I18n.getInstance().getString(settings.getLocale(), "errorNoActiveCharacter");
+			result = I18n.getInstance().getString(settings.locale(), "errorNoActiveCharacter");
 		}
 		
 		return result;

@@ -25,6 +25,7 @@ import de.avesbot.db.StatementManager;
 import de.avesbot.runnable.ActiveGuildsRunnable;
 import de.avesbot.runnable.LeaveGuildRunnable;
 import de.avesbot.util.DatabaseKeepAlive;
+import net.dv8tion.jda.api.entities.Activity;
 
 /**
  * Bot invite Link
@@ -72,6 +73,7 @@ public class Avesbot {
 			builder.addEventListeners(new MessageListener());
 			builder.addEventListeners(new BroadcastListener());
 			builder.addEventListeners(new JoinListener());
+			builder.setActivity(Activity.of(Activity.ActivityType.CUSTOM_STATUS, "Forging destiny"));
 			jda = builder.build();
 			
 			if(Stream.of(args).anyMatch(arg -> arg.equals("--regCmd"))) {
@@ -97,7 +99,7 @@ public class Avesbot {
 			}
 			
 			// execute a database keep alive request at a fixed rate to keep db connection alive
-//			stpe.scheduleAtFixedRate(new DatabaseKeepAlive(), 0, keepAliveInterval, TimeUnit.HOURS);
+			stpe.scheduleAtFixedRate(new DatabaseKeepAlive(), 0, keepAliveInterval, TimeUnit.HOURS);
 			stpe.schedule(() -> {
 				getJda().getGuilds().forEach(guild -> {
 					stmntManager.insertGuild(guild);

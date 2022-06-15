@@ -1,7 +1,6 @@
 package de.avesbot.callable.roll;
 
 import java.util.Optional;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Attribute;
@@ -9,6 +8,7 @@ import de.avesbot.model.Tradition;
 import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Trial;
 import de.avesbot.callable.RoleplayCharacterRoll;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * A callable to execute a custom trial for a character.
@@ -20,7 +20,7 @@ public class RollTrialCallable extends RollCallable implements RoleplayCharacter
 	 * Creates a new RollTrialCallable.
 	 * @param event 
 	 */
-	public RollTrialCallable(SlashCommandEvent event) {
+	public RollTrialCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -45,7 +45,7 @@ public class RollTrialCallable extends RollCallable implements RoleplayCharacter
 			difficulty = (byte)this.commandPars.get("difficulty").getAsLong();
 		
 		if(chara.isEmpty()) {
-			return I18n.getInstance().getString(settings.getLocale(), "errorNoActiveCharacter");
+			return I18n.getInstance().getString(settings.locale(), "errorNoActiveCharacter");
 		} else {
 			
 			String abilityName = trial.toString();

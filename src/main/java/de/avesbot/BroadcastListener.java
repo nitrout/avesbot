@@ -2,9 +2,10 @@ package de.avesbot;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 /**
@@ -18,7 +19,7 @@ public class BroadcastListener extends ListenerAdapter {
 	private final Consumer<Guild> BROADCAST_ACTION = new Consumer<Guild>() {
 		@Override
 		public void accept(Guild t) {
-			Optional<TextChannel> defaultChannel = Optional.ofNullable(t.getDefaultChannel());
+			Optional<BaseGuildMessageChannel> defaultChannel = Optional.ofNullable(t.getDefaultChannel());
 			if(defaultChannel.isPresent() && defaultChannel.get().canTalk()) {
 				defaultChannel.get().sendMessage(broadcastMessage).queue();
 			} else {
@@ -28,12 +29,12 @@ public class BroadcastListener extends ListenerAdapter {
 	};
 	
 	@Override
-	public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+	public void onMessageReceived(MessageReceivedEvent event) {
 		
 		String authorId = event.getAuthor().getId();
 		String message = event.getMessage().getContentRaw();
 		
-		if(authorId.equals(Avesbot.getProperties().getProperty("control_user"))) {
+		if(authorId.equals(Avesbot.getProperties().getProperty("control_user")) && event.isFromType(ChannelType.PRIVATE)) {
 			
 			if("!broadcast".equals(message)) {
 				Avesbot.getJda().getGuilds().forEach(BROADCAST_ACTION);

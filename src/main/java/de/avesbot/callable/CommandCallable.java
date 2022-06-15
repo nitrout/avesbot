@@ -7,12 +7,12 @@ import java.util.concurrent.Callable;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import de.avesbot.Avesbot;
 import de.avesbot.model.GuildSetting;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  *
@@ -41,7 +41,7 @@ public abstract class CommandCallable implements Callable<String> {
 		this.settings = Avesbot.getStatementManager().getGuildSetting(guild).orElse(GuildSetting.DEFAULT);
 	}
 	
-	public CommandCallable(SlashCommandEvent event) {
+	public CommandCallable(SlashCommandInteractionEvent event) {
 		this.guild = event.getGuild();
 		this.member = event.getMember();
 		this.pars = new String[] {};

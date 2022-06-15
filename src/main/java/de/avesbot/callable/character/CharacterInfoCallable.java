@@ -1,12 +1,12 @@
 package de.avesbot.callable.character;
 
 import java.util.Optional;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Tradition;
 import de.avesbot.model.RoleplayCharacter;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * A callable to print character's or his skills information.
@@ -18,7 +18,7 @@ public class CharacterInfoCallable extends CharacterCallable {
 	 * Creates a new InfoCallable.
 	 * @param event 
 	 */
-	public CharacterInfoCallable(SlashCommandEvent event) {
+	public CharacterInfoCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -29,7 +29,7 @@ public class CharacterInfoCallable extends CharacterCallable {
 		
 		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		if(chara.isEmpty()) {
-			result = I18n.getInstance().getString(settings.getLocale(), "errorNoActiveCharacter");
+			result = I18n.getInstance().getString(settings.locale(), "errorNoActiveCharacter");
 		} else if(!this.commandPars.containsKey("skill")) {
 			result = chara.get().toString();
 		} else {
@@ -42,9 +42,9 @@ public class CharacterInfoCallable extends CharacterCallable {
 			Optional<Ability> ability = Avesbot.getStatementManager().getCharacterAbility(chara.get(), skill, rep);
 			
 			if(ability.isPresent()) {
-				result = I18n.getInstance().format(settings.getLocale(), "characterAbilityInfo", chara.get().getName(), ability.get());
+				result = I18n.getInstance().format(settings.locale(), "characterAbilityInfo", chara.get().name(), ability.get());
 			} else {
-				result = I18n.getInstance().getString(settings.getLocale(), "errorUnknownAbility");
+				result = I18n.getInstance().getString(settings.locale(), "errorUnknownAbility");
 			}
 		}
 		

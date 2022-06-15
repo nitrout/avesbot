@@ -2,12 +2,13 @@ package de.avesbot.callable.roll;
 
 import java.util.HashMap;
 import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import de.avesbot.callable.CommandCallable;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * Abstract class for roll callables.
@@ -15,7 +16,7 @@ import de.avesbot.callable.CommandCallable;
  */
 public abstract class RollCallable extends CommandCallable {
 	
-	public static final CommandData COMMAND = new CommandData("roll", "Execute simple or character rolls.");
+	public static final SlashCommandData COMMAND = Commands.slash("roll", "Execute simple or character rolls.");
 	
 	protected final HashMap<String, Emote> emoteMap;
 	
@@ -94,7 +95,7 @@ public abstract class RollCallable extends CommandCallable {
 		);
 	}
 
-	public RollCallable(SlashCommandEvent event) {
+	public RollCallable(SlashCommandInteractionEvent event) {
 		super(event);
 		emoteMap = new HashMap<>();
 		guild.getEmotes().stream().forEach(emote -> emoteMap.put(emote.getName(), emote));

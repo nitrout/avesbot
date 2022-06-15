@@ -1,12 +1,13 @@
 package de.avesbot.callable;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.SymbolDice;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * Creates a new symbol dice for a guild.
@@ -14,7 +15,7 @@ import de.avesbot.model.SymbolDice;
  */
 public class DiceCallable extends CommandCallable {
 	
-	public static final CommandData COMMAND = new CommandData("dice", "Creates a new symbol dice");
+	public static final SlashCommandData COMMAND = Commands.slash("dice", "Creates a new symbol dice");
 	
 	static {
 		COMMAND
@@ -27,7 +28,7 @@ public class DiceCallable extends CommandCallable {
 	 * Creates a new DiceCallable.
 	 * @param event 
 	 */
-	public DiceCallable(SlashCommandEvent event) {
+	public DiceCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -41,6 +42,6 @@ public class DiceCallable extends CommandCallable {
 		
 		Avesbot.getStatementManager().insertSymbolDice(guild, dice);
 		
-		return I18n.getInstance().format(settings.getLocale(), "diceCreated", name);
+		return I18n.getInstance().format(settings.locale(), "diceCreated", name);
 	}
 }

@@ -35,7 +35,7 @@ public interface RoleplayCharacterRoll {
 	 */
 	default String rollSKill(GuildSetting settings, Map<String, Emote> emoteMap, RoleplayCharacter chara, Ability ability, byte difficulty, String...coverage) {
 		
-		return rollSkill(settings, emoteMap, chara, ability.getName(), ability.getRep(), ability.getTrial(), ability.isSpell(), ability.getTaw(), difficulty, coverage);
+		return rollSkill(settings, emoteMap, chara, ability.name(), ability.rep(), ability.trial(), ability.type() == Ability.Type.SPELL, ability.taw(), difficulty, coverage);
 	}
 	
 	/**
@@ -56,11 +56,11 @@ public interface RoleplayCharacterRoll {
 		
 		String result;
 		
-		switch(chara.getRuleset()) {
-			case TDE4 : result = rollSkillTde4(settings, emoteMap, chara, abilityName, rep, trial, spell, taw, difficulty, coverage); break;
-			case TDE5 : result = rollSkillTde5(settings, emoteMap, chara, abilityName, trial, spell, taw, difficulty, coverage); break;
-			default : result = I18n.getInstance().getString(settings.getLocale(), "errorUnknownRuleset");
-		}
+		result = switch (chara.ruleset()) {
+			case TDE4 -> rollSkillTde4(settings, emoteMap, chara, abilityName, rep, trial, spell, taw, difficulty, coverage);
+			case TDE5 -> rollSkillTde5(settings, emoteMap, chara, abilityName, trial, spell, taw, difficulty, coverage);
+			default -> I18n.getInstance().getString(settings.locale(), "errorUnknownRuleset");
+		};
 		
 		return result;
 	}
@@ -84,42 +84,40 @@ public interface RoleplayCharacterRoll {
 		StringBuilder result = new StringBuilder();
 		
 		// is there a specialization of the character for that roll, then add 2 to the taw
-		if(	(spell && chara.getSpecials().stream().anyMatch(sp -> sp.getName().equals("Zauberspezialisierung") && sp.getAttribute1().orElse("").equals(abilityName) && sp.getAttribute2().orElse("").equalsIgnoreCase(rep.name()) && List.of(coverage).contains(sp.getAttribute3().orElse(""))))
-			|| (!spell && chara.getSpecials().stream().anyMatch(sp -> sp.getName().equals("Talentspezialisierung") && sp.getAttribute1().orElse("").equals(abilityName) && List.of(coverage).contains(sp.getAttribute2().orElse(""))))) {
+		if(	(spell && chara.getSpecials().stream().anyMatch(sp -> sp.name().equals("Zauberspezialisierung") && sp.attribute1().orElse("").equals(abilityName) && sp.attribute2().orElse("").equalsIgnoreCase(rep.name()) && List.of(coverage).contains(sp.attribute3().orElse(""))))
+			|| (!spell && chara.getSpecials().stream().anyMatch(sp -> sp.name().equals("Talentspezialisierung") && sp.attribute1().orElse("").equals(abilityName) && List.of(coverage).contains(sp.attribute2().orElse(""))))) {
 			taw+=2;
 		}
 		
 		SkillRollResult4 rollResult = Avesbot.getDiceSimulator().rollSkill4(chara, trial, taw, difficulty, spell);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.getRolls());
-		String tapStr = spell ? I18n.getInstance().getString(settings.getLocale(), "spP") : I18n.getInstance().getString(settings.getLocale(), "skP");
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls());
+		String tapStr = spell ? I18n.getInstance().getString(settings.locale(), "spP") : I18n.getInstance().getString(settings.locale(), "skP");
 		
-		if(settings.isHideStats())
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde4SkillStatsHidden", chara.getName(), abilityName, difficulty));
+		if(settings.hideStats())
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde4SkillStatsHidden", chara.name(), abilityName, difficulty));
 		else
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde4SkillStatsVisible", chara.getName(), abilityName, taw, chara.getTrialValues(trial), difficulty));
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde4SkillStatsVisible", chara.name(), abilityName, taw, chara.getTrialValues(trial), difficulty));
 		
 		result.append("\n");
 		result.append(rollResultStr);
 		result.append("\n");
-		switch (rollResult.getOutcome()) {
-			case SLIP:
-				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSlip")).append("**");
-				break;
-			case SPLENDOR:
+		switch (rollResult.outcome()) {
+			case SLIP -> result.append("**").append(I18n.getInstance().getString(settings.locale(), "outcomeSlip")).append("**");
+			case SPLENDOR -> {
 				result.append(String.format("%d %s*", taw > 0 ? taw : 1, tapStr));
 				result.append("\n");
-				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSplendor")).append("**");
-				break;
-			case FAILURE:
-				result.append(String.format("%d %s*", rollResult.getTap(), tapStr));
+				result.append("**").append(I18n.getInstance().getString(settings.locale(), "outcomeSplendor")).append("**");
+			}
+			case FAILURE -> {
+				result.append(String.format("%d %s*", rollResult.tap(), tapStr));
 				result.append("\n");
-				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")).append("**");
-				break;
-			case SUCCESS:
-				result.append(String.format("%d %s*", rollResult.getTap(), tapStr));
+				result.append("**").append(I18n.getInstance().getString(settings.locale(), "outcomeFailure")).append("**");
+			}
+			case SUCCESS -> {
+				result.append(String.format("%d %s*", rollResult.tap(), tapStr));
 				result.append("\n");
-				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")).append("**");
-				break;
+				result.append("**").append(I18n.getInstance().getString(settings.locale(), "outcomeSuccess")).append("**");
+			}
 		}
 		
 		return result.toString();
@@ -142,33 +140,29 @@ public interface RoleplayCharacterRoll {
 		
 		StringBuilder result = new StringBuilder();
 		SkillRollResult5 rollResult = Avesbot.getDiceSimulator().rollSkill5(chara, trial, taw, difficulty, spell);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.getRolls());
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls());
 		
-		if(settings.isHideStats())
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5SkillStatsHidden", chara.getName(), abilityName, difficulty));
+		if(settings.hideStats())
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde5SkillStatsHidden", chara.name(), abilityName, difficulty));
 		else
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5SkillStatsVisible", chara.getName(), abilityName, taw, chara.getTrialValues(trial), difficulty));
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde5SkillStatsVisible", chara.name(), abilityName, taw, chara.getTrialValues(trial), difficulty));
 		result.append("\n");
 		result.append(rollResultStr);
 		result.append("\n");
 		
-		switch(rollResult.getOutcome()) {
-			case SLIP:
-				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSlip")).append("**");
-				break;
-			case SPLENDOR:
-				result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5SkillResult", rollResult.getQS()));
+		switch(rollResult.outcome()) {
+			case SLIP -> result.append("**").append(I18n.getInstance().getString(settings.locale(), "outcomeSlip")).append("**");
+			case SPLENDOR -> {
+				result.append(I18n.getInstance().format(settings.locale(), "rollTde5SkillResult", rollResult.qs()));
 				result.append("\n");
-				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSplendor")).append("**");
-				break;
-			case FAILURE:
-				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")).append("**");
-				break;
-			case SUCCESS:
-				result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5SkillResult", rollResult.getQS()));
+				result.append("**").append(I18n.getInstance().getString(settings.locale(), "outcomeSplendor")).append("**");
+			}
+			case FAILURE -> result.append("**").append(I18n.getInstance().getString(settings.locale(), "outcomeFailure")).append("**");
+			case SUCCESS -> {
+				result.append(I18n.getInstance().format(settings.locale(), "rollTde5SkillResult", rollResult.qs()));
 				result.append("\n");
-				result.append("**").append(I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")).append("**");
-				break;
+				result.append("**").append(I18n.getInstance().getString(settings.locale(), "outcomeSuccess")).append("**");
+			}
 		}
 		
 		return result.toString();
@@ -187,11 +181,11 @@ public interface RoleplayCharacterRoll {
 		
 		String result;
 		
-		switch (chara.getRuleset()) {
-			case TDE4 :	result = rollAttributeTde4(settings, emoteMap, chara, attr, difficulty); break;
-			case TDE5 :	result = rollAttributeTde5(settings, emoteMap, chara, attr, difficulty); break;
-			default :	result = I18n.getInstance().getString(settings.getLocale(), "errorUnknownRuleset");
-		}
+		result = switch (chara.ruleset()) {
+			case TDE4 -> rollAttributeTde4(settings, emoteMap, chara, attr, difficulty);
+			case TDE5 -> rollAttributeTde5(settings, emoteMap, chara, attr, difficulty);
+			default -> I18n.getInstance().getString(settings.locale(), "errorUnknownRuleset");
+		};
 		
 		return result;
 	}
@@ -209,17 +203,17 @@ public interface RoleplayCharacterRoll {
 		
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute4(chara, difficulty, attr);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.getRolls());
-		String rollOutcomeStr = rollResult.getOutcome() == Outcome.SPLENDOR || rollResult.getOutcome() == Outcome.SUCCESS ? 
-				"**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")+"**" : 
-				"**"+I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")+"**";
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls());
+		String rollOutcomeStr = rollResult.outcome()== Outcome.SPLENDOR || rollResult.outcome()== Outcome.SUCCESS ? 
+				"**"+I18n.getInstance().getString(settings.locale(), "outcomeSuccess")+"**" : 
+				"**"+I18n.getInstance().getString(settings.locale(), "outcomeFailure")+"**";
 		
-		String attrAbbrStr = I18n.getInstance().getString(settings.getLocale(), attr.getAbbrevation().toLowerCase());
+		String attrAbbrStr = I18n.getInstance().getString(settings.locale(), attr.getAbbrevation().toLowerCase());
 		
-		if(settings.isHideStats())
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde4AttributeStatsHidden", chara.getName(), attrAbbrStr, rollResultStr, difficulty, rollOutcomeStr));
+		if(settings.hideStats())
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde4AttributeStatsHidden", chara.name(), attrAbbrStr, rollResultStr, difficulty, rollOutcomeStr));
 		else
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde4AttributeStatsVisible", chara.getName(), attrAbbrStr, chara.getAttribute(attr), rollResultStr, difficulty, rollOutcomeStr));
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde4AttributeStatsVisible", chara.name(), attrAbbrStr, chara.getAttribute(attr), rollResultStr, difficulty, rollOutcomeStr));
 		
 		return result.toString();
 	}
@@ -237,21 +231,21 @@ public interface RoleplayCharacterRoll {
 		
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute5(chara, difficulty, attr);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.getRolls());
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls());
 		String rollOutcomeStr = "";
-		switch(rollResult.getOutcome()) {
-			case SLIP :		rollOutcomeStr = "**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSlip")+"**"; break;
-			case FAILURE :	rollOutcomeStr = "**"+I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")+"**"; break;
-			case SUCCESS :	rollOutcomeStr = "**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")+"**"; break;
-			case SPLENDOR :	rollOutcomeStr = "**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSplendor")+"**"; break;
+		switch(rollResult.outcome()) {
+			case SLIP -> rollOutcomeStr = "**"+I18n.getInstance().getString(settings.locale(), "outcomeSlip")+"**";
+			case FAILURE -> rollOutcomeStr = "**"+I18n.getInstance().getString(settings.locale(), "outcomeFailure")+"**";
+			case SUCCESS -> rollOutcomeStr = "**"+I18n.getInstance().getString(settings.locale(), "outcomeSuccess")+"**";
+			case SPLENDOR -> rollOutcomeStr = "**"+I18n.getInstance().getString(settings.locale(), "outcomeSplendor")+"**";
 		}
 		
-		String attrAbbrStr = I18n.getInstance().getString(settings.getLocale(), attr.getAbbrevation().toLowerCase());
+		String attrAbbrStr = I18n.getInstance().getString(settings.locale(), attr.getAbbrevation().toLowerCase());
 		
-		if(settings.isHideStats())
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5AttributeStatsHidden", chara.getName(), attrAbbrStr, difficulty, rollResultStr, rollOutcomeStr));
+		if(settings.hideStats())
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde5AttributeStatsHidden", chara.name(), attrAbbrStr, difficulty, rollResultStr, rollOutcomeStr));
 		else
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5AttributeStatsVisible", chara.getName(), attrAbbrStr, difficulty, chara.getAttribute(attr)+difficulty, rollResultStr, rollOutcomeStr));
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde5AttributeStatsVisible", chara.name(), attrAbbrStr, difficulty, chara.getAttribute(attr)+difficulty, rollResultStr, rollOutcomeStr));
 		
 		return result.toString();
 	}

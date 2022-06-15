@@ -79,13 +79,13 @@ public class StatementManager {
 		
 		try(PreparedStatement charInsStmnt = Database.prepareStatement(CHAR_INSERT); PreparedStatement charNameSelectStmnt = Database.prepareStatement(CHAR_NAME_SELECT);) {
 			charInsStmnt.setString(1, memberId);
-			charInsStmnt.setString(2, chara.getName());
+			charInsStmnt.setString(2, chara.name());
 			for(int i = 0; i < Attribute.values().length; i++) {
 				charInsStmnt.setByte(i+3, chara.getAttribute(Attribute.values()[i]));
 				charInsStmnt.setByte(i+12,  chara.getAttribute(Attribute.values()[i]));
 			}
-			charInsStmnt.setString(11, chara.getRuleset().name().toLowerCase());
-			charInsStmnt.setString(20, chara.getRuleset().name().toLowerCase());
+			charInsStmnt.setString(11, chara.ruleset().name().toLowerCase());
+			charInsStmnt.setString(20, chara.ruleset().name().toLowerCase());
 			charInsStmnt.executeUpdate();
 			ResultSet insertResult = charInsStmnt.getGeneratedKeys();
 			if(insertResult.next()) {
@@ -93,7 +93,7 @@ public class StatementManager {
 			}
 			else {
 				charNameSelectStmnt.setString(1, memberId);
-				charNameSelectStmnt.setString(2, chara.getName());
+				charNameSelectStmnt.setString(2, chara.name());
 				ResultSet updateResult = charNameSelectStmnt.executeQuery();
 				if(updateResult.next()) {
 					insertId = Optional.ofNullable(updateResult.getString("character_id"));
@@ -118,7 +118,7 @@ public class StatementManager {
 		
 		try(PreparedStatement charDelStmnt = Database.prepareStatement(CHAR_DELETE)) {
 			
-			charDelStmnt.setString(1, chara.getId());
+			charDelStmnt.setString(1, chara.id());
 			updatedRows = charDelStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
@@ -137,19 +137,19 @@ public class StatementManager {
 	public void insertAbility(RoleplayCharacter chara, Ability ability) {
 		
 		try(PreparedStatement abilityInsStmnt = Database.prepareStatement(ABILITY_INSERT);) {
-			abilityInsStmnt.setString(1, chara.getId());
-			abilityInsStmnt.setString(2, ability.getName());
-			abilityInsStmnt.setString(3, ability.getRep().name());
-			abilityInsStmnt.setString(4, ability.getTrial().getAtt1().name());
-			abilityInsStmnt.setString(5, ability.getTrial().getAtt2().name());
-			abilityInsStmnt.setString(6, ability.getTrial().getAtt3().name());
-			abilityInsStmnt.setByte(7, ability.getTaw());
-			abilityInsStmnt.setString(8, ability.getType().toString().toLowerCase());
-			abilityInsStmnt.setString(9, ability.getTrial().getAtt1().name());
-			abilityInsStmnt.setString(10, ability.getTrial().getAtt2().name());
-			abilityInsStmnt.setString(11, ability.getTrial().getAtt3().name());
-			abilityInsStmnt.setByte(12, ability.getTaw());
-			abilityInsStmnt.setString(13, ability.getType().toString().toLowerCase());
+			abilityInsStmnt.setString(1, chara.id());
+			abilityInsStmnt.setString(2, ability.name());
+			abilityInsStmnt.setString(3, ability.rep().name());
+			abilityInsStmnt.setString(4, ability.trial().attribute1().name());
+			abilityInsStmnt.setString(5, ability.trial().attribute2().name());
+			abilityInsStmnt.setString(6, ability.trial().attribute3().name());
+			abilityInsStmnt.setByte(7, ability.taw());
+			abilityInsStmnt.setString(8, ability.type().toString().toLowerCase());
+			abilityInsStmnt.setString(9, ability.trial().attribute1().name());
+			abilityInsStmnt.setString(10, ability.trial().attribute2().name());
+			abilityInsStmnt.setString(11, ability.trial().attribute3().name());
+			abilityInsStmnt.setByte(12, ability.taw());
+			abilityInsStmnt.setString(13, ability.type().toString().toLowerCase());
 			abilityInsStmnt.execute();
 		} catch(SQLException ex) {
 			System.err.println(ex.getMessage());
@@ -165,12 +165,12 @@ public class StatementManager {
 	public void insertVantage(RoleplayCharacter chara, Vantage vantage) {
 		
 		try(PreparedStatement vantageInsStmnt = Database.prepareStatement(VANTAGE_INSERT);) {
-			vantageInsStmnt.setString(1, chara.getId());
-			vantageInsStmnt.setString(2, vantage.getName());
-			vantageInsStmnt.setString(3, vantage.getAttribute1().orElse(""));
-			vantageInsStmnt.setString(4, vantage.getAttribute2().orElse(""));
-			vantageInsStmnt.setString(5, vantage.getAttribute1().orElse(""));
-			vantageInsStmnt.setString(6, vantage.getAttribute2().orElse(""));
+			vantageInsStmnt.setString(1, chara.id());
+			vantageInsStmnt.setString(2, vantage.name());
+			vantageInsStmnt.setString(3, vantage.attribute1().orElse(""));
+			vantageInsStmnt.setString(4, vantage.attribute2().orElse(""));
+			vantageInsStmnt.setString(5, vantage.attribute1().orElse(""));
+			vantageInsStmnt.setString(6, vantage.attribute2().orElse(""));
 			vantageInsStmnt.execute();
 		} catch(SQLException ex) {
 			System.err.println(ex.getMessage());
@@ -186,14 +186,14 @@ public class StatementManager {
 	public void insertSpecial(RoleplayCharacter chara, Special special) {
 		
 		try(PreparedStatement specialInsStmnt = Database.prepareStatement(SPECIAL_INSERT);) {
-			specialInsStmnt.setString(1, chara.getId());
-			specialInsStmnt.setString(2, special.getName());
-			specialInsStmnt.setString(3, special.getAttribute1().orElse(""));
-			specialInsStmnt.setString(4, special.getAttribute2().orElse(""));
-			specialInsStmnt.setString(5, special.getAttribute3().orElse(""));
-			specialInsStmnt.setString(6, special.getAttribute1().orElse(""));
-			specialInsStmnt.setString(7, special.getAttribute2().orElse(""));
-			specialInsStmnt.setString(8, special.getAttribute3().orElse(""));
+			specialInsStmnt.setString(1, chara.id());
+			specialInsStmnt.setString(2, special.name());
+			specialInsStmnt.setString(3, special.attribute1().orElse(""));
+			specialInsStmnt.setString(4, special.attribute2().orElse(""));
+			specialInsStmnt.setString(5, special.attribute3().orElse(""));
+			specialInsStmnt.setString(6, special.attribute1().orElse(""));
+			specialInsStmnt.setString(7, special.attribute2().orElse(""));
+			specialInsStmnt.setString(8, special.attribute3().orElse(""));
 			specialInsStmnt.execute();
 		} catch(SQLException ex) {
 			System.err.println(ex.getMessage());
@@ -388,7 +388,7 @@ public class StatementManager {
 		Optional<Ability> result = Optional.empty();
 		try(PreparedStatement abilitySelectStmnt = Database.prepareStatement(ABILITY_SELECT);) {
 			
-			abilitySelectStmnt.setString(1, chara.getId());
+			abilitySelectStmnt.setString(1, chara.id());
 			abilitySelectStmnt.setString(2, abilityName+"%");
 			abilitySelectStmnt.setString(3, rep.name().toLowerCase());
 			abilitySelectStmnt.setString(4, rep.name().toLowerCase());
@@ -419,7 +419,7 @@ public class StatementManager {
 		
 		try(PreparedStatement charAbilityListSelectStmnt = Database.prepareStatement(CHAR_ABILITY_LIST_SELECT);) {
 			
-			charAbilityListSelectStmnt.setString(1, chara.getId());
+			charAbilityListSelectStmnt.setString(1, chara.id());
 			ResultSet abilityResult = charAbilityListSelectStmnt.executeQuery();
 			while(abilityResult.next()) {
 				result.add(abilityResult.getString("ability_name"));
@@ -443,7 +443,7 @@ public class StatementManager {
 		
 		try(PreparedStatement groupAbilityListSelectStmnt = Database.prepareStatement(GROUP_ABILITY_LIST_SELECT);) {
 			
-			groupAbilityListSelectStmnt.setString(1, group.getGroupId());
+			groupAbilityListSelectStmnt.setString(1, group.groupId());
 			ResultSet abilityResult = groupAbilityListSelectStmnt.executeQuery();
 			while(abilityResult.next()) {
 				result.add(abilityResult.getString("ability_name"));
@@ -523,9 +523,9 @@ public class StatementManager {
 		
 		try(PreparedStatement guildPrefixUpdateStmnt = Database.prepareStatement(GUILD_SETTING_UPDATE);) {
 			
-			guildPrefixUpdateStmnt.setString(1, setting.getLocale().toString());
-			guildPrefixUpdateStmnt.setString(2, setting.isHideStats() ? "y" : "n");
-			guildPrefixUpdateStmnt.setString(3, setting.getId());
+			guildPrefixUpdateStmnt.setString(1, setting.locale().toString());
+			guildPrefixUpdateStmnt.setString(2, setting.hideStats() ? "y" : "n");
+			guildPrefixUpdateStmnt.setString(3, setting.id());
 			
 			guildPrefixUpdateStmnt.executeUpdate();
 			
@@ -543,12 +543,12 @@ public class StatementManager {
 	public void insertSymbolDice(Guild guild, SymbolDice dice) {
 		
 		String guildId = guild.getId();
-		String values = Stream.of(dice.getValues()).collect(Collectors.joining(","));
+		String values = Stream.of(dice.values()).collect(Collectors.joining(","));
 		
 		try(PreparedStatement symbolDiceInsStmnt = Database.prepareStatement(SYMBOL_DICE_INSERT);) {
 			
 			symbolDiceInsStmnt.setString(1, guildId);
-			symbolDiceInsStmnt.setString(2, dice.getName());
+			symbolDiceInsStmnt.setString(2, dice.name());
 			symbolDiceInsStmnt.setString(3, values);
 			symbolDiceInsStmnt.setString(4, values);
 			
@@ -708,8 +708,8 @@ public class StatementManager {
 		int updatedRows = 0;
 		try(PreparedStatement groupMemberInsStmnt = Database.prepareStatement(GROUP_MEMBER_INSERT);) {
 			
-			groupMemberInsStmnt.setString(1, group.getGroupId());
-			groupMemberInsStmnt.setString(2, character.getId());
+			groupMemberInsStmnt.setString(1, group.groupId());
+			groupMemberInsStmnt.setString(2, character.id());
 			updatedRows = groupMemberInsStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
@@ -730,8 +730,8 @@ public class StatementManager {
 		int updatedRows = 0;
 		try(PreparedStatement groupMemberDelStmnt = Database.prepareStatement(GROUP_MEMBER_DELETE);) {
 			
-			groupMemberDelStmnt.setString(1, group.getGroupId());
-			groupMemberDelStmnt.setString(2, character.getId());
+			groupMemberDelStmnt.setString(1, group.groupId());
+			groupMemberDelStmnt.setString(2, character.id());
 			updatedRows = groupMemberDelStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
@@ -753,7 +753,7 @@ public class StatementManager {
 		
 		try(PreparedStatement groupMemberListSelectStmnt = Database.prepareStatement(GROUP_MEMBER_LIST_SELECT);) {
 			
-			groupMemberListSelectStmnt.setString(1, group.getGroupId());
+			groupMemberListSelectStmnt.setString(1, group.groupId());
 			ResultSet charaResult = groupMemberListSelectStmnt.executeQuery();
 			
 			while(charaResult.next()) {

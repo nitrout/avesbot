@@ -1,11 +1,12 @@
 package de.avesbot.callable.settings;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import de.avesbot.callable.CommandCallable;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * Abstract class for setting callables.
@@ -13,7 +14,7 @@ import de.avesbot.callable.CommandCallable;
  */
 public abstract class SettingsCallable extends CommandCallable {
 	
-	public static final CommandData COMMAND = new CommandData("settings", "Execute simple or character rolls.");
+	public static final SlashCommandData COMMAND = Commands.slash("settings", "Execute simple or character rolls.");
 	
 	static {
 		COMMAND.addSubcommands(
@@ -28,7 +29,7 @@ public abstract class SettingsCallable extends CommandCallable {
 		);
 	}
 	
-	public SettingsCallable(SlashCommandEvent event) {
+	public SettingsCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 }

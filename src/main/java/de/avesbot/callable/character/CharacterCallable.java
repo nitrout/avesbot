@@ -1,11 +1,12 @@
 package de.avesbot.callable.character;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import de.avesbot.callable.CommandCallable;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * Abstract class for character callables.
@@ -13,7 +14,7 @@ import de.avesbot.callable.CommandCallable;
  */
 public abstract class CharacterCallable extends CommandCallable {
 	
-	public static final CommandData COMMAND = new CommandData("character", "Execute character related commands.");
+	public static final SlashCommandData COMMAND = Commands.slash("character", "Execute character related commands.");
 	
 	static {
 		COMMAND.addSubcommands(
@@ -96,7 +97,7 @@ public abstract class CharacterCallable extends CommandCallable {
 	 * Creates a new character creation callable.
 	 * @param event
 	 */
-	public CharacterCallable(SlashCommandEvent event) {
+	public CharacterCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 }

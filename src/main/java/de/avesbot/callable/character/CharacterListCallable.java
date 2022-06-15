@@ -2,9 +2,9 @@ package de.avesbot.callable.character;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.model.RoleplayCharacter;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * A callable that lists every available character of an user.
@@ -16,7 +16,7 @@ public class CharacterListCallable extends CharacterCallable {
 	 * Creates a new ListCallable.
 	 * @param event 
 	 */
-	public CharacterListCallable(SlashCommandEvent event) {
+	public CharacterListCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 

@@ -1,11 +1,12 @@
 package de.avesbot.callable.group;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import de.avesbot.callable.CommandCallable;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
  * Abstract class for group callables.
@@ -13,7 +14,7 @@ import de.avesbot.callable.CommandCallable;
  */
 public abstract class GroupCallable extends CommandCallable {
 	
-	public static final CommandData COMMAND = new CommandData("group", "Manage and execute rolls for character groups.");
+	public static final SlashCommandData COMMAND = Commands.slash("group", "Manage and execute rolls for character groups.");
 	
 	static {
 		COMMAND.addSubcommands(
@@ -49,7 +50,7 @@ public abstract class GroupCallable extends CommandCallable {
 		);
 	}
 
-	public GroupCallable(SlashCommandEvent event) {
+	public GroupCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 }

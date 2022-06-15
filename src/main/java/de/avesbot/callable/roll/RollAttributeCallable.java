@@ -1,7 +1,6 @@
 package de.avesbot.callable.roll;
 
 import java.util.Optional;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Attribute;
@@ -9,6 +8,7 @@ import de.avesbot.model.Outcome;
 import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.RollResult;
 import de.avesbot.util.Formatter;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * Executes an attribute trial for the character.
@@ -20,7 +20,7 @@ public class RollAttributeCallable extends RollCallable {
 	 * Creates a new attribute trial callable.
 	 * @param event
 	 */
-	public RollAttributeCallable(SlashCommandEvent event) {
+	public RollAttributeCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -42,9 +42,9 @@ public class RollAttributeCallable extends RollCallable {
 			difficulty = (byte)this.commandPars.get("difficulty").getAsLong();
 		
 		if(chara.isEmpty()) {
-			result = I18n.getInstance().getString(settings.getLocale(), "errorNoActiveCharacter");
+			result = I18n.getInstance().getString(settings.locale(), "errorNoActiveCharacter");
 		} else if(attribute.isEmpty()) {
-			result = I18n.getInstance().getString(settings.getLocale(), "errorNoAttribute");
+			result = I18n.getInstance().getString(settings.locale(), "errorNoAttribute");
 		} else {
 			result = rollAttribute(chara.get(), attribute.get(), difficulty);
 		}
@@ -64,11 +64,11 @@ public class RollAttributeCallable extends RollCallable {
 		
 		String result;
 		
-		switch (chara.getRuleset()) {
-			case TDE4 :	result = rollAttributeTde4(chara, attr, difficulty); break;
-			case TDE5 :	result = rollAttributeTde5(chara, attr, difficulty); break;
-			default :	result = I18n.getInstance().getString(settings.getLocale(), "errorUnknownRuleset");
-		}
+		result = switch (chara.ruleset()) {
+			case TDE4 -> rollAttributeTde4(chara, attr, difficulty);
+			case TDE5 -> rollAttributeTde5(chara, attr, difficulty);
+			default -> I18n.getInstance().getString(settings.locale(), "errorUnknownRuleset");
+		};
 		
 		return result;
 	}
@@ -84,17 +84,17 @@ public class RollAttributeCallable extends RollCallable {
 		
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute4(chara, difficulty, attr);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.getRolls());
-		String rollOutcomeStr = rollResult.getOutcome() == Outcome.SPLENDOR || rollResult.getOutcome() == Outcome.SUCCESS ? 
-				"**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")+"**" : 
-				"**"+I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")+"**";
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls());
+		String rollOutcomeStr = rollResult.outcome()== Outcome.SPLENDOR || rollResult.outcome()== Outcome.SUCCESS ? 
+				"**"+I18n.getInstance().getString(settings.locale(), "outcomeSuccess")+"**" : 
+				"**"+I18n.getInstance().getString(settings.locale(), "outcomeFailure")+"**";
 		
-		String attrAbbrStr = I18n.getInstance().getString(settings.getLocale(), attr.getAbbrevation().toLowerCase());
+		String attrAbbrStr = I18n.getInstance().getString(settings.locale(), attr.getAbbrevation().toLowerCase());
 		
-		if(settings.isHideStats())
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde4AttributeStatsHidden", chara.getName(), attrAbbrStr, rollResultStr, difficulty, rollOutcomeStr));
+		if(settings.hideStats())
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde4AttributeStatsHidden", chara.name(), attrAbbrStr, rollResultStr, difficulty, rollOutcomeStr));
 		else
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde4AttributeStatsVisible", chara.getName(), attrAbbrStr, chara.getAttribute(attr), rollResultStr, difficulty, rollOutcomeStr));
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde4AttributeStatsVisible", chara.name(), attrAbbrStr, chara.getAttribute(attr), rollResultStr, difficulty, rollOutcomeStr));
 		
 		return result.toString();
 	}
@@ -110,21 +110,21 @@ public class RollAttributeCallable extends RollCallable {
 		
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute5(chara, difficulty, attr);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.getRolls());
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls());
 		String rollOutcomeStr = "";
-		switch(rollResult.getOutcome()) {
-			case SLIP :		rollOutcomeStr = "**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSlip")+"**"; break;
-			case FAILURE :	rollOutcomeStr = "**"+I18n.getInstance().getString(settings.getLocale(), "outcomeFailure")+"**"; break;
-			case SUCCESS :	rollOutcomeStr = "**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSuccess")+"**"; break;
-			case SPLENDOR :	rollOutcomeStr = "**"+I18n.getInstance().getString(settings.getLocale(), "outcomeSplendor")+"**"; break;
+		switch(rollResult.outcome()) {
+			case SLIP -> rollOutcomeStr = "**"+I18n.getInstance().getString(settings.locale(), "outcomeSlip")+"**";
+			case FAILURE -> rollOutcomeStr = "**"+I18n.getInstance().getString(settings.locale(), "outcomeFailure")+"**";
+			case SUCCESS -> rollOutcomeStr = "**"+I18n.getInstance().getString(settings.locale(), "outcomeSuccess")+"**";
+			case SPLENDOR -> rollOutcomeStr = "**"+I18n.getInstance().getString(settings.locale(), "outcomeSplendor")+"**";
 		}
 		
-		String attrAbbrStr = I18n.getInstance().getString(settings.getLocale(), attr.getAbbrevation().toLowerCase());
+		String attrAbbrStr = I18n.getInstance().getString(settings.locale(), attr.getAbbrevation().toLowerCase());
 		
-		if(settings.isHideStats())
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5AttributeStatsHidden", chara.getName(), attrAbbrStr, difficulty, rollResultStr, rollOutcomeStr));
+		if(settings.hideStats())
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde5AttributeStatsHidden", chara.name(), attrAbbrStr, difficulty, rollResultStr, rollOutcomeStr));
 		else
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollTde5AttributeStatsVisible", chara.getName(), attrAbbrStr, difficulty, chara.getAttribute(attr)+difficulty, rollResultStr, rollOutcomeStr));
+			result.append(I18n.getInstance().format(settings.locale(), "rollTde5AttributeStatsVisible", chara.name(), attrAbbrStr, difficulty, chara.getAttribute(attr)+difficulty, rollResultStr, rollOutcomeStr));
 		
 		return result.toString();
 	}

@@ -27,7 +27,7 @@ public class JoinListener extends ListenerAdapter {
 		// can we manage emotes and do we have 26 free emotes?
 		// then add aves dice icons to guild
 		aves.ifPresent(a -> {
-			if(a.getRoles().stream().anyMatch(role -> role.hasPermission(Permission.MANAGE_EMOTES)) && guild.getBoostTier().getMaxEmotes()-guild.getEmotes().size() >= 26) {
+			if(a.getRoles().stream().anyMatch(role -> role.hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS)) && guild.getBoostTier().getMaxEmotes()-guild.getEmotes().size() >= 26) {
 				try {
 					for(int i = 1; i <= 20; i++) {
 						InputStream emoteStream = Avesbot.class.getResourceAsStream("assets/"+i+"d20.png");

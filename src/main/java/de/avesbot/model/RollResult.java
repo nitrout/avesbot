@@ -7,32 +7,15 @@ import de.avesbot.util.Pair;
  * 
  * @author nitrout
  */
-public class RollResult {
-	
-	private final Outcome outcome;
-	private final Pair<Integer, Integer>[] rolls;
-	
-	/**
-	 * Creates a new RollResult
-	 * @param outcome the outcome
-	 * @param rolls the results of the dices
-	 */
-	public RollResult(Outcome outcome, Pair<Integer, Integer>...rolls) {
-		this.outcome = outcome;
-		this.rolls = rolls;
-	}
+public interface RollResult {
 	
 	/**
 	 * @return the outcome
 	 */
-	public Outcome getOutcome() {
-		return outcome;
-	}
+	Outcome outcome();
 	
 	/**
 	 * @return the rolls
 	 */
-	public Pair<Integer, Integer>[] getRolls() {
-		return rolls;
-	}
+	Pair<Integer, Integer>[] rolls();
 }

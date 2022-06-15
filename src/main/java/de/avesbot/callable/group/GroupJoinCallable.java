@@ -1,11 +1,11 @@
 package de.avesbot.callable.group;
 
 import java.util.Optional;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Group;
 import de.avesbot.model.RoleplayCharacter;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * A callable to join groups.
@@ -17,7 +17,7 @@ public class GroupJoinCallable extends GroupCallable {
 	 * Creates a new JoinCallable.
 	 * @param event 
 	 */
-	public GroupJoinCallable(SlashCommandEvent event) {
+	public GroupJoinCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -30,15 +30,15 @@ public class GroupJoinCallable extends GroupCallable {
 		Optional<RoleplayCharacter> character = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		
 		if(group.isEmpty()) {
-			return I18n.getInstance().getString(settings.getLocale(), "errorUnknownGroup");
+			return I18n.getInstance().getString(settings.locale(), "errorUnknownGroup");
 		} else if(character.isEmpty()) {
-			return I18n.getInstance().getString(settings.getLocale(), "errorNoActiveCharacter");
+			return I18n.getInstance().getString(settings.locale(), "errorNoActiveCharacter");
 		} else {
 			boolean success = Avesbot.getStatementManager().insertGroupMember(group.get(), character.get());
 			if(success)
-				return  I18n.getInstance().format(settings.getLocale(), "groupCharacterJoin", character.get(), group.get());
+				return  I18n.getInstance().format(settings.locale(), "groupCharacterJoin", character.get(), group.get());
 			else
-				return  I18n.getInstance().format(settings.getLocale(), "errorGroupCharacterJoin", character.get(), group.get());
+				return  I18n.getInstance().format(settings.locale(), "errorGroupCharacterJoin", character.get(), group.get());
 		}
 	}
 }

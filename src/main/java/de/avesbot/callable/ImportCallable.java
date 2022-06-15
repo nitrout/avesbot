@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Attribute;
@@ -23,6 +22,12 @@ import de.avesbot.model.Special;
 import de.avesbot.model.Trial;
 import de.avesbot.model.Vantage;
 import de.avesbot.util.XmlUtil;
+import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -41,13 +46,19 @@ public class ImportCallable extends CommandCallable {
 	private static final Pattern TRIAL_PATTERN = Pattern.compile("\\((MU|KL|IN|CH|FF|GE|KO|KK)/(MU|KL|IN|CH|FF|GE|KO|KK)/(MU|KL|IN|CH|FF|GE|KO|KK)\\)", Pattern.CASE_INSENSITIVE);
 	private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("Mut|Klugheit|Intuition|Charisma|Fingerfertigkeit|Gewandtheit|Konstitution|Körperkraft", Pattern.CASE_INSENSITIVE);
 	
+	public static final SlashCommandData COMMAND = Commands.slash("import", "Import a character from file");
+	
+	static {
+		COMMAND.addOptions(new OptionData(OptionType.ATTACHMENT, "file", "A character file from Heldensoftware or Optolith", true));
+	}
+	
 	private DocumentBuilder db;
 	
 	/**
 	 * Creates a new ImportCallable.
 	 * @param event 
 	 */
-	public ImportCallable(MessageReceivedEvent event) {
+	public ImportCallable(SlashCommandInteractionEvent event) {
 		
 		super(event);
 		
@@ -66,11 +77,13 @@ public class ImportCallable extends CommandCallable {
 		
 		StringBuilder result = new StringBuilder();
 		
-		if(attachments.size() > 0) {
+		if(this.commandPars.containsKey("file")) {
 			
-			if("XML".equalsIgnoreCase(attachments.get(0).getFileExtension())) {
+			Attachment attachment = this.commandPars.get("file").getAsAttachment();
+			
+			if("XML".equalsIgnoreCase(attachment.getFileExtension())) {
 				
-				try(InputStream is = attachments.get(0).retrieveInputStream().get()) {
+				try(InputStream is = attachment.retrieveInputStream().get()) {
 					
 					Document doc = db.parse(is);
 					

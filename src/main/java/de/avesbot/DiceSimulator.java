@@ -7,6 +7,7 @@ import de.avesbot.model.Attribute;
 import de.avesbot.model.Outcome;
 import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.RollResult;
+import de.avesbot.model.SimpleRollResult;
 import de.avesbot.model.SkillRollResult4;
 import de.avesbot.model.SkillRollResult5;
 import de.avesbot.model.SymbolDice;
@@ -61,7 +62,7 @@ public class DiceSimulator {
 	 */
 	public String rollSymbolDice(SymbolDice dice) {
 		
-		return dice.getSide(this.rand.nextInt(dice.getValues().length));
+		return dice.side(this.rand.nextInt(dice.values().length));
 	}
 	
 	/**
@@ -86,7 +87,7 @@ public class DiceSimulator {
 			outcome = Outcome.SUCCESS;
 		}
 		
-		RollResult result = new RollResult(outcome, roll);
+		RollResult result = new SimpleRollResult(outcome, roll);
 		
 		return result;
 	}
@@ -116,13 +117,13 @@ public class DiceSimulator {
 		int effectiveValue = chara.getAttribute(att)+difficulty;
 		
 		if(rolls[0].getLeft() == 1 && rolls[1].getLeft() <= effectiveValue) {
-			result = new RollResult(Outcome.SPLENDOR, rolls);
+			result = new SimpleRollResult(Outcome.SPLENDOR, rolls);
 		} else if(rolls[0].getLeft() == 20 && rolls[1].getLeft() > effectiveValue) {
-			result = new RollResult(Outcome.SLIP, rolls);
+			result = new SimpleRollResult(Outcome.SLIP, rolls);
 		} else if(rolls[0].getLeft() > effectiveValue) {
-			result = new RollResult(Outcome.FAILURE, rolls[0]);
+			result = new SimpleRollResult(Outcome.FAILURE, rolls[0]);
 		} else {
-			result = new RollResult(Outcome.SUCCESS, rolls[0]);
+			result = new SimpleRollResult(Outcome.SUCCESS, rolls[0]);
 		}
 		
 		return result;
@@ -153,19 +154,19 @@ public class DiceSimulator {
 		Pair<Integer, Integer>[] rolls = rollDice(3, 20);
 		Outcome outcome;
 		
+		RoleplayCharacter trialChara = chara.modifyAttributes(tap < 0 ? tap : 0);
 		if(tap < 0) {
-			chara.modifyAttributes(tap);
 			tap = 0;
 		}
 		
 		for(int i = 0; i < 3; i++) {
-			if(rolls[i].getLeft() > chara.getAttribute(trial.getAttributes()[i])) {
-				tap -= (rolls[i].getLeft() - chara.getAttribute(trial.getAttributes()[i]));
+			if(rolls[i].getLeft() > trialChara.getAttribute(trial.getAttributes()[i])) {
+				tap -= (rolls[i].getLeft() - trialChara.getAttribute(trial.getAttributes()[i]));
 			}
 		}
 		
-		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((chara.isClumsy() && !spell) || (chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
-		&& (chara.getSpellcasterMod() != RoleplayCharacter.SpellcasterMod.SOLID || (chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && !Stream.of(rolls).anyMatch(p -> p.getLeft() < 18))))
+		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((trialChara.isClumsy() && !spell) || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
+		&& (trialChara.getSpellcasterMod() != RoleplayCharacter.SpellcasterMod.SOLID || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && !Stream.of(rolls).anyMatch(p -> p.getLeft() < 18))))
 			outcome = Outcome.SLIP;
 		else if(Stream.of(rolls).filter(p -> p.getLeft() == 1).count() > 1)
 			outcome = Outcome.SPLENDOR;
@@ -186,7 +187,7 @@ public class DiceSimulator {
 	 */
 	public SkillRollResult4 rollSkill4(RoleplayCharacter chara, Ability ability, byte difficulty) {
 
-		return rollSkill4(chara, ability.getTrial(), ability.getTaw(), difficulty, ability.isSpell());
+		return rollSkill4(chara, ability.trial(), ability.taw(), difficulty, ability.type() == Ability.Type.SPELL);
 	}
 	
 	/**
@@ -216,16 +217,16 @@ public class DiceSimulator {
 		Pair<Integer, Integer>[] rolls = rollDice(3, 20);
 		Outcome outcome;
 		
-		chara.modifyAttributes(difficulty);
+		RoleplayCharacter trialChara = chara.modifyAttributes(difficulty);
 		
 		for(int i = 0; i < 3; i++) {
-			if(rolls[i].getLeft() > chara.getAttribute(trial.getAttributes()[i])) {
-				tap -= (rolls[i].getLeft() - chara.getAttribute(trial.getAttributes()[i]));
+			if(rolls[i].getLeft() > trialChara.getAttribute(trial.getAttributes()[i])) {
+				tap -= (rolls[i].getLeft() - trialChara.getAttribute(trial.getAttributes()[i]));
 			}
 		}
 		
-		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((chara.isClumsy() && !spell) || (chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
-		&& (chara.getSpellcasterMod() != RoleplayCharacter.SpellcasterMod.SOLID || (chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && !Stream.of(rolls).anyMatch(p -> p.getLeft() < 18))))
+		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((trialChara.isClumsy() && !spell) || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
+		&& (trialChara.getSpellcasterMod() != RoleplayCharacter.SpellcasterMod.SOLID || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && !Stream.of(rolls).anyMatch(p -> p.getLeft() < 18))))
 			outcome = Outcome.SLIP;
 		else if(Stream.of(rolls).filter(p -> p.getLeft() == 1).count() > 1)
 			outcome = Outcome.SPLENDOR;
@@ -262,7 +263,7 @@ public class DiceSimulator {
 	 */
 	public SkillRollResult5 rollSkill5(RoleplayCharacter chara, Ability ability, byte difficulty) {
 
-		return rollSkill5(chara, ability.getTrial(), ability.getTaw(), difficulty, ability.isSpell());
+		return rollSkill5(chara, ability.trial(), ability.taw(), difficulty, ability.type() == Ability.Type.SPELL);
 	}
 	
 	/**

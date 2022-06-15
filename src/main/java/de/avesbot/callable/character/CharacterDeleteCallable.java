@@ -1,10 +1,10 @@
 package de.avesbot.callable.character;
 
 import java.util.Optional;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.RoleplayCharacter;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * A callable for character deletion.
@@ -16,7 +16,7 @@ public class CharacterDeleteCallable extends CharacterCallable {
 	 * Creates a new DeleteCallable.
 	 * @param event
 	 */
-	public CharacterDeleteCallable(SlashCommandEvent event) {
+	public CharacterDeleteCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -29,12 +29,12 @@ public class CharacterDeleteCallable extends CharacterCallable {
 		if(chara.isPresent()) {
 			boolean success = Avesbot.getStatementManager().deleteRoleplayCharacter(chara.get());
 			if(success) {
-				return I18n.getInstance().format(settings.getLocale(), "characterDeleted", chara.get().getName());
+				return I18n.getInstance().format(settings.locale(), "characterDeleted", chara.get().name());
 			} else {
-				return I18n.getInstance().getString(settings.getLocale(), "errorCharacterDeletion");
+				return I18n.getInstance().getString(settings.locale(), "errorCharacterDeletion");
 			}
 		} else {
-			return I18n.getInstance().getString(settings.getLocale(), "errorUnknownCharacter");
+			return I18n.getInstance().getString(settings.locale(), "errorUnknownCharacter");
 		}
 	}
 }

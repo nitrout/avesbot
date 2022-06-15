@@ -1,10 +1,10 @@
 package de.avesbot.callable.character;
 
 import java.util.Optional;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.RoleplayCharacter;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * Callable to select an active character.
@@ -16,7 +16,7 @@ public class CharacterChooseCallable extends CharacterCallable {
 	 * Creates a new choose character callable.
 	 * @param event
 	 */
-	public CharacterChooseCallable(SlashCommandEvent event) {
+	public CharacterChooseCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 
@@ -34,9 +34,9 @@ public class CharacterChooseCallable extends CharacterCallable {
 		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		
 		if(success && chara.isPresent())
-			result = I18n.getInstance().format(settings.getLocale(), "characterChosen", chara.get().getName());
+			result = I18n.getInstance().format(settings.locale(), "characterChosen", chara.get().name());
 		else
-			result = I18n.getInstance().getString(settings.getLocale(), "errorUnknownCharacter");
+			result = I18n.getInstance().getString(settings.locale(), "errorUnknownCharacter");
 		
 		return result;
 	}

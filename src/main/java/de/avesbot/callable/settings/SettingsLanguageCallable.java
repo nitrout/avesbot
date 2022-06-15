@@ -1,10 +1,10 @@
 package de.avesbot.callable.settings;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.GuildSetting;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * Callable to set a new localisation for the guild.
@@ -12,7 +12,7 @@ import de.avesbot.model.GuildSetting;
  */
 public class SettingsLanguageCallable extends SettingsCallable {
 	
-	public SettingsLanguageCallable(SlashCommandEvent event) {
+	public SettingsLanguageCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -23,11 +23,11 @@ public class SettingsLanguageCallable extends SettingsCallable {
 		
 		if(member.hasPermission(Permission.ADMINISTRATOR)) {
 			
-			GuildSetting newSetting = new GuildSetting(settings.getId(), settings.getName(), settings.getDescription(), settings.getIconUrl(), settings.isPromote(), localeStr, settings.isHideStats());
+			GuildSetting newSetting = new GuildSetting(settings.id(), settings.name(), settings.description(), settings.iconUrl(), settings.promote(), localeStr, settings.hideStats());
 			Avesbot.getStatementManager().updateGuildSetting(newSetting);
-			return I18n.getInstance().format(newSetting.getLocale(), "settingsLocaleChanged", newSetting.getLocale().toString());
+			return I18n.getInstance().format(newSetting.locale(), "settingsLocaleChanged", newSetting.locale().toString());
 		} else {
-			return I18n.getInstance().getString(settings.getLocale(), "errorInsufficientPermissions");
+			return I18n.getInstance().getString(settings.locale(), "errorInsufficientPermissions");
 		}
 	}
 }

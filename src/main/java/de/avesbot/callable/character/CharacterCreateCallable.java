@@ -2,7 +2,6 @@ package de.avesbot.callable.character;
 
 import java.util.Optional;
 import java.util.regex.Pattern;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.callable.CommandCallable;
 import de.avesbot.i18n.I18n;
@@ -10,6 +9,7 @@ import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Ruleset;
 import de.avesbot.model.Special;
 import de.avesbot.model.Vantage;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * Callable to create a new character.
@@ -25,7 +25,7 @@ public class CharacterCreateCallable extends CommandCallable {
 	 * Creates a new character creation callable.
 	 * @param event
 	 */
-	public CharacterCreateCallable(MessageReceivedEvent event) {
+	public CharacterCreateCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -52,8 +52,8 @@ public class CharacterCreateCallable extends CommandCallable {
 		Optional<String> charaId = Avesbot.getStatementManager().insertRoleplayCharacter(member.getId(), chara);
 		
 		if(charaId.isPresent())
-			return I18n.getInstance().format(settings.getLocale(), "characterCreated", chara);
+			return I18n.getInstance().format(settings.locale(), "characterCreated", chara);
 		else
-			return I18n.getInstance().getString(settings.getLocale(), "errorCharacterCreation");
+			return I18n.getInstance().getString(settings.locale(), "errorCharacterCreation");
 	}
 }

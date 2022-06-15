@@ -1,7 +1,6 @@
 package de.avesbot.callable.roll;
 
 import java.util.Optional;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.Ability;
@@ -9,6 +8,7 @@ import de.avesbot.model.Tradition;
 import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.util.LevenshteinHelper;
 import de.avesbot.callable.RoleplayCharacterRoll;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * A callable to execute a trial for a character's skill.
@@ -20,7 +20,7 @@ public class RollSkillCallable extends RollCallable implements RoleplayCharacter
 	 * Creates a new RollSkillCallable.
 	 * @param event 
 	 */
-	public RollSkillCallable(SlashCommandEvent event) {
+	public RollSkillCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -42,9 +42,9 @@ public class RollSkillCallable extends RollCallable implements RoleplayCharacter
 			rep = Tradition.valueOf(this.commandPars.get("tradition").getAsString().toUpperCase());
 		
 		if(chara.isEmpty()) {
-			return I18n.getInstance().getString(settings.getLocale(), "errorNoActiveCharacter");
+			return I18n.getInstance().getString(settings.locale(), "errorNoActiveCharacter");
 		} else if(fullSearch.length() == 0) {
-			return I18n.getInstance().getString(settings.getLocale(), "errorEmptySkill");
+			return I18n.getInstance().getString(settings.locale(), "errorEmptySkill");
 		} else {
 			String[] skillbook = Avesbot.getStatementManager().getCharacterAbilityList(chara.get());
 			
@@ -55,7 +55,7 @@ public class RollSkillCallable extends RollCallable implements RoleplayCharacter
 			if(ability.isPresent()) {
 				return rollSKill(settings, emoteMap, chara.get(), ability.get(), difficulty, coverages);
 			} else {
-				return I18n.getInstance().getString(settings.getLocale(), "errorUnknownAbility");
+				return I18n.getInstance().getString(settings.locale(), "errorUnknownAbility");
 			}
 		}
 	}

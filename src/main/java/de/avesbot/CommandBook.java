@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.callable.roll.RollAttributeCallable;
 import de.avesbot.callable.character.CharacterChooseCallable;
 import de.avesbot.callable.group.GroupChooseCallable;
@@ -27,6 +26,7 @@ import de.avesbot.callable.roll.RollSumCallable;
 import de.avesbot.callable.roll.RollTrialCallable;
 import de.avesbot.callable.settings.SettingsHideStatsCallable;
 import de.avesbot.callable.settings.SettingsLanguageCallable;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * Class for managing the available commands.
@@ -76,14 +76,14 @@ public class CommandBook {
 	 * @param event the event for creating the new CommandCallable
 	 * @return optional with the CommandCallable or empty if there is no such command
 	 */
-	public Optional<CommandCallable> getCommand(SlashCommandEvent event) {
+	public Optional<CommandCallable> getCommand(SlashCommandInteractionEvent event) {
 		
 		String commandName = event.getCommandPath();
 		
 		Optional<CommandCallable> command = Optional.ofNullable(this.commandMap.get(commandName)).map(cc -> {
 			CommandCallable cmd = null;
 			try {
-				cmd = (CommandCallable)cc.getConstructor(SlashCommandEvent.class).newInstance(event);
+				cmd = (CommandCallable)cc.getConstructor(SlashCommandInteractionEvent.class).newInstance(event);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 				System.err.println(ex.getMessage());
 			}

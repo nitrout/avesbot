@@ -3,12 +3,12 @@ package de.avesbot.callable.roll;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.SymbolDice;
 import de.avesbot.util.Formatter;
 import de.avesbot.util.Pair;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * A callable to execute a dice roll.
@@ -22,7 +22,7 @@ public class RollDiceCallable extends RollCallable {
 	 * Creates a new RollDiceCallable.
 	 * @param event the triggering event
 	 */
-	public RollDiceCallable(SlashCommandEvent event) {
+	public RollDiceCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -45,19 +45,19 @@ public class RollDiceCallable extends RollCallable {
 			if(num <= Integer.parseInt(Avesbot.getProperties().getProperty("max_dice", "70"))) {
 				Pair<Integer, Integer>[] rolls = Avesbot.getDiceSimulator().rollDice(num, dice);
 				rollResultStr = Formatter.formatRollResult(emoteMap, rolls);
-				result.append(I18n.getInstance().format(settings.getLocale(), "roll", member.getEffectiveName(), rollResultStr));
+				result.append(I18n.getInstance().format(settings.locale(), "roll", member.getEffectiveName(), rollResultStr));
 			} else {
-				result.append(I18n.getInstance().format(settings.getLocale(), "errorTooManyDice", Integer.parseInt(Avesbot.getProperties().getProperty("max_dice", "70"))));
+				result.append(I18n.getInstance().format(settings.locale(), "errorTooManyDice", Integer.parseInt(Avesbot.getProperties().getProperty("max_dice", "70"))));
 			}
 		}
 		else if(symbolDice.isPresent()) {
 			SymbolDice dice = symbolDice.get();
 			rollResultStr = Avesbot.getDiceSimulator().rollSymbolDice(symbolDice.get());
 			
-			result.append(I18n.getInstance().format(settings.getLocale(), "rollSymbol", member.getEffectiveName(), dice.getName(), rollResultStr));
+			result.append(I18n.getInstance().format(settings.locale(), "rollSymbol", member.getEffectiveName(), dice.name(), rollResultStr));
 		}
 		else {
-			result.append(I18n.getInstance().getString(settings.getLocale(), "errorRoll"));
+			result.append(I18n.getInstance().getString(settings.locale(), "errorRoll"));
 		}
 		
 		return result.toString();

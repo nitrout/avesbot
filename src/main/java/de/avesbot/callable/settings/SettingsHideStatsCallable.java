@@ -1,10 +1,10 @@
 package de.avesbot.callable.settings;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.GuildSetting;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  *
@@ -12,7 +12,7 @@ import de.avesbot.model.GuildSetting;
  */
 public class SettingsHideStatsCallable extends SettingsCallable {
 	
-	public SettingsHideStatsCallable(SlashCommandEvent event) {
+	public SettingsHideStatsCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 	
@@ -23,11 +23,11 @@ public class SettingsHideStatsCallable extends SettingsCallable {
 		
 		if(member.hasPermission(Permission.ADMINISTRATOR)) {
 			
-			GuildSetting newSetting = new GuildSetting(settings.getId(), settings.getName(), settings.getDescription(), settings.getIconUrl(), settings.isPromote(), settings.getLocale().toString(), hideStats);
+			GuildSetting newSetting = new GuildSetting(settings.id(), settings.name(), settings.description(), settings.iconUrl(), settings.promote(), settings.locale().toString(), hideStats);
 			Avesbot.getStatementManager().updateGuildSetting(newSetting);
-			return I18n.getInstance().format(settings.getLocale(), "settingsHiddenStatsChanged", newSetting.isHideStats());
+			return I18n.getInstance().format(settings.locale(), "settingsHiddenStatsChanged", newSetting.hideStats());
 		} else {
-			return I18n.getInstance().getString(settings.getLocale(), "errorInsufficientPermissions");
+			return I18n.getInstance().getString(settings.locale(), "errorInsufficientPermissions");
 		}
 	}
 }

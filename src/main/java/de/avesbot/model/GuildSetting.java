@@ -7,17 +7,9 @@ import java.util.Locale;
  * 
  * @author Nitrout
  */
-public class GuildSetting {
+public record GuildSetting(String id, String name, String description, String iconUrl, boolean promote, Locale locale, boolean hideStats) {
 	
 	public static final GuildSetting DEFAULT = new GuildSetting("", "", "", "", false, "en_US", false);
-	
-	private final String id;
-	private final String name;
-	private final String description;
-	private final String iconUrl;
-	private final boolean promote;
-	private final Locale locale;
-	private final boolean hideStats;
 	
 	/**
 	 * Creates a new representation of guild settings
@@ -30,64 +22,8 @@ public class GuildSetting {
 	 * @param localeStr locale settings as string like xx_XX
 	 * @param hideStats are the character's stats hidden in the roll commands
 	 */
-	public GuildSetting(String id, String name, String description, String icon, boolean promote, String localeStr, boolean hideStats) {
+	public GuildSetting(String id, String name, String description, String iconUrl, boolean promote, String localeStr, boolean hideStats) {
 		
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.iconUrl = icon;
-		this.promote = promote;
-		String[] localeParts = localeStr.split("_");
-		this.locale = new Locale(localeParts[0], localeParts[1]);
-		this.hideStats = hideStats;
-	}
-
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @return the iconUrl
-	 */
-	public String getIconUrl() {
-		return iconUrl;
-	}
-
-	/**
-	 * @return the promote
-	 */
-	public boolean isPromote() {
-		return promote;
-	}
-
-	/**
-	 * @return the locale
-	 */
-	public Locale getLocale() {
-		return locale;
-	}
-
-	/**
-	 * @return the hideStats
-	 */
-	public boolean isHideStats() {
-		return hideStats;
+		this(id, name, description, iconUrl, promote, new Locale(localeStr.substring(0, localeStr.indexOf("_")), localeStr.substring(localeStr.indexOf("_")+1)), hideStats);
 	}
 }
