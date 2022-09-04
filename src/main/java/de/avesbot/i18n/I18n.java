@@ -2,7 +2,9 @@ package de.avesbot.i18n;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 
 /**
  *
@@ -11,35 +13,38 @@ import java.util.ResourceBundle;
 public class I18n {
 	
 	private static final String FILE = "de.avesbot.i18n.messages";
-	private static final I18n INSTANCE = new I18n();
+	private static final Locale[] AVAILABLE_LOCALES = new Locale[] {Locale.ENGLISH, Locale.GERMAN};
 	
 	private final HashMap<Locale, ResourceBundle> bundles;
 	
-	public static I18n getInstance() {
-		return INSTANCE;
-	}
-	
-	public I18n() {
+	public I18n(String ressource) {
 		
 		this.bundles = new HashMap<>();
-//		this.bundles.put(Locale.GERMANY, loadBundle(Locale.GERMANY));
-//		this.bundles.put(Locale.FRANCE, loadBundle(Locale.FRANCE));
-//		this.bundles.put(Locale.UK, loadBundle(Locale.UK));
-//		this.bundles.put(Locale.US, loadBundle(Locale.US));
+		for(Locale l : AVAILABLE_LOCALES)
+			this.bundles.put(l, ResourceBundle.getBundle(ressource, l));
 	}
 	
-	public String getString(Locale locale, String str) {
+	public String getTranslation(String key) {
+		return this.getTranslation(AVAILABLE_LOCALES[0], key);
+	}
+	
+	public String getTranslation(Locale l, String key) {
 		
-		if(!this.bundles.containsKey(locale))
-			this.loadLocalization(locale);
-		return this.bundles.get(locale).getString(str);
+		if(this.bundles.containsKey(l))
+			return this.bundles.get(l).getString(key);
+		else
+			return this.bundles.get(AVAILABLE_LOCALES[0]).getString(key);
 	}
 	
 	public String format(Locale l, String key, Object...vals) {
-		return String.format(l, this.getString(l, key), vals);
+		return String.format(l, this.getTranslation(l, key), vals);
 	}
 	
-	private void loadLocalization(Locale l) {
-		this.bundles.put(l, ResourceBundle.getBundle(FILE, l));
+	public Map<DiscordLocale, String> getLocalizations(String key) {
+		HashMap<DiscordLocale, String> map = new HashMap<>();
+		for(Locale l : AVAILABLE_LOCALES)
+			map.put(DiscordLocale.from(l), key);
+		
+		return map;
 	}
 }
