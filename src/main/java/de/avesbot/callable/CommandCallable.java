@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 public abstract class CommandCallable implements Callable<String> {
 	
 	public static final CommandData COMMAND = null;
+	public static final int TIMEOUT = 2;
 	
 	protected final Guild guild;
 	protected final Member member;
@@ -50,5 +51,10 @@ public abstract class CommandCallable implements Callable<String> {
 		
 		this.attachments = List.of();
 		this.settings = Avesbot.getStatementManager().getGuildSetting(guild).orElse(GuildSetting.DEFAULT);
+	}
+	
+	public int getTimeout() {
+		
+		return TIMEOUT;
 	}
 }

@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import de.avesbot.callable.CommandCallable;
-import de.avesbot.callable.ImportCallable;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.GuildSetting;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -28,7 +27,7 @@ public class MessageListener extends ListenerAdapter {
 		command.ifPresentOrElse(callable -> {
 			try {
 				Future<String> result = Avesbot.getThreadPoolExecutor().submit(callable);
-				answer.append(result.get(callable instanceof ImportCallable ? 15 : 2, TimeUnit.SECONDS));
+				answer.append(result.get(callable.getTimeout(), TimeUnit.SECONDS));
 			} catch (ExecutionException ex) {
 				ex.printStackTrace(System.err);
 				answer.append(I18n.getInstance().getString(settings.locale(), "errorCommandExecution"));
