@@ -8,6 +8,9 @@ import de.avesbot.i18n.I18n;
 import de.avesbot.util.Formatter;
 import de.avesbot.util.Pair;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 /**
  * A callable to roll and sum up the dices.
@@ -16,6 +19,15 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 public class RollSumCallable extends RollCallable {
 
 	private static final Pattern SUM_DICE_PATTERN = Pattern.compile("^([1-9]\\d{0,2})?[dw]([1-9]\\d{0,2})?([+-]\\d{1,3})?$", Pattern.CASE_INSENSITIVE);
+	
+	static {
+		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "rollSum", "rollSumDescription");
+		
+		OptionData sumDiceOption = buildTranslatedOption(I18N, OptionType.STRING, "sumDiceOption", "sumDiceOptionDescription", true);
+		subcommand.addOptions(sumDiceOption);
+		
+		COMMAND.addSubcommands(subcommand);
+	}
 	
 	/**
 	 * Creates a new SumCallable.
@@ -42,13 +54,13 @@ public class RollSumCallable extends RollCallable {
 				Pair<Integer, Integer>[] rolls = Avesbot.getDiceSimulator().rollDice(num, dice);
 				rollResult = Formatter.formatRollResult(emoteMap, rolls);
 
-				result = I18n.getInstance().format(settings.locale(), "rollSum", member.getEffectiveName(), rollResult, mod, Stream.of(rolls).mapToInt(roll -> roll.getLeft()).sum()+mod);
+				result = I18N.format(settings.locale(), "rollSumMessage", member.getEffectiveName(), rollResult, mod, Stream.of(rolls).mapToInt(roll -> roll.getLeft()).sum()+mod);
 			} else {
-				result = I18n.getInstance().format(settings.locale(), "errorTooManyDice", Integer.parseInt(Avesbot.getProperties().getProperty("max_dice", "70")));
+				result = I18N.format(settings.locale(), "errorTooManyDice", Integer.valueOf(Avesbot.getProperties().getProperty("max_dice", "70")));
 			}
 		}
 		else {
-			result = I18n.getInstance().getString(settings.locale(), "errorRoll");
+			result = I18N.getTranslation(settings.locale(), "errorRoll");
 		}
 		
 		return result;

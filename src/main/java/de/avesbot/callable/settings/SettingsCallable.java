@@ -1,11 +1,8 @@
 package de.avesbot.callable.settings;
 
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import de.avesbot.callable.CommandCallable;
+import de.avesbot.i18n.I18n;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
@@ -14,20 +11,8 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
  */
 public abstract class SettingsCallable extends CommandCallable {
 	
-	public static final SlashCommandData COMMAND = Commands.slash("settings", "Execute simple or character rolls.");
-	
-	static {
-		COMMAND.addSubcommands(
-			new SubcommandData("language", "Set the localization of the bot.").addOptions(
-				new OptionData(OptionType.STRING, "locale", "The locale like en_US or de_DE.", true)
-			),
-			new SubcommandData("hidestats", "Set the language of the bot.").addOptions(
-				new OptionData(OptionType.STRING, "hide", "Hide the stats?.", true)
-					.addChoice("N", "false")
-					.addChoice("Y", "true")
-			)
-		);
-	}
+	protected static final I18n I18N = new I18n("de.avesbot.i18n.settings");
+	public static final SlashCommandData COMMAND = buildTranslatedSlashCommand(I18N, "settings", "settingsDescription");
 	
 	public SettingsCallable(SlashCommandInteractionEvent event) {
 		super(event);

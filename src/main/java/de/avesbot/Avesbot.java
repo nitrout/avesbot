@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
-import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -73,17 +72,29 @@ public class Avesbot {
 			builder.addEventListeners(new MessageListener());
 			builder.addEventListeners(new BroadcastListener());
 			builder.addEventListeners(new JoinListener());
-			builder.setActivity(Activity.of(Activity.ActivityType.CUSTOM_STATUS, "Forging destiny"));
+			builder.setActivity(Activity.of(Activity.ActivityType.WATCHING, "adventures"));
 			jda = builder.build();
 			
-			if(Stream.of(args).anyMatch(arg -> arg.equals("--regCmd"))) {
+			if(Stream.of(args).anyMatch(arg -> arg.equals("--resetCommands"))) {
+				jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue((v) -> System.out.println("Deleted Command "+c.getFullCommandName()))));
+				CommandBook.getAvailableSlashCommands().stream()
+						.forEach(command -> {
+							jda.upsertCommand(command).queue(
+								cmd -> {
+									System.out.println("Command "+cmd.getName()+" registered");
+								}, err -> {
+									System.err.println(err.getMessage());
+								});
+						});
+			}
+			if(Stream.of(args).anyMatch(arg -> arg.equals("--updateCommands"))) {
 				HashSet<CommandData> commands = new HashSet<>();
 				CommandBook.getInstance().getRegisteredCommands().forEach((Class c) -> {
 					try {
 						CommandData command = (CommandData)c.getField("COMMAND").get(null);
 						if(command != null) {
 							commands.add(command);
-		}
+						}
 					} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
 						System.err.println(ex.getMessage());
 					}
@@ -131,7 +142,7 @@ public class Avesbot {
 			// close DB connection after shutdown
 			Database.close();
 		}
-		catch(LoginException | SQLException | IOException le) {
+		catch(SQLException | IOException le) {
 			System.err.println(le.getMessage());
 		}
 		finally {

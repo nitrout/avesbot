@@ -4,29 +4,34 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
-import de.avesbot.callable.roll.RollAttributeCallable;
-import de.avesbot.callable.character.CharacterChooseCallable;
-import de.avesbot.callable.group.GroupChooseCallable;
 import de.avesbot.callable.CommandCallable;
 import de.avesbot.callable.DiceCallable;
-import de.avesbot.callable.group.GroupAttributeCallable;
-import de.avesbot.callable.group.GroupCreateCallable;
-import de.avesbot.callable.group.GroupSkillCallable;
+import de.avesbot.callable.character.CharacterChooseCallable;
 import de.avesbot.callable.character.CharacterCreateCallable;
 import de.avesbot.callable.character.CharacterDeleteCallable;
 import de.avesbot.callable.character.CharacterInfoCallable;
+import de.avesbot.callable.character.CharacterLearnCallable;
+import de.avesbot.callable.character.CharacterListCallable;
+import de.avesbot.callable.group.GroupAttributeCallable;
+import de.avesbot.callable.group.GroupChooseCallable;
+import de.avesbot.callable.group.GroupCreateCallable;
 import de.avesbot.callable.group.GroupJoinCallable;
 import de.avesbot.callable.group.GroupLeaveCallable;
-import de.avesbot.callable.character.CharacterListCallable;
-import de.avesbot.callable.character.CharacterTrainCallable;
+import de.avesbot.callable.group.GroupSkillCallable;
+import de.avesbot.callable.roll.RollAttributeCallable;
 import de.avesbot.callable.roll.RollDiceCallable;
 import de.avesbot.callable.roll.RollSkillCallable;
 import de.avesbot.callable.roll.RollSlipCallable;
 import de.avesbot.callable.roll.RollSumCallable;
 import de.avesbot.callable.roll.RollTrialCallable;
-import de.avesbot.callable.settings.SettingsHideStatsCallable;
 import de.avesbot.callable.settings.SettingsLanguageCallable;
+import de.avesbot.callable.settings.SettingsStatsCallable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 /**
  * Class for managing the available commands.
@@ -42,33 +47,65 @@ public class CommandBook {
 		return INSTANCE;
 	}
 	
+	public static Set<CommandData> getAvailableSlashCommands() {
+		
+		HashSet<CommandData> commandSet = new HashSet<>();
+		
+		commandSet.add(CharacterChooseCallable.COMMAND);
+		commandSet.add(CharacterCreateCallable.COMMAND);
+		commandSet.add(CharacterDeleteCallable.COMMAND);
+		commandSet.add(CharacterInfoCallable.COMMAND);
+		commandSet.add(CharacterLearnCallable.COMMAND);
+		commandSet.add(CharacterListCallable.COMMAND);
+		
+		commandSet.add(GroupAttributeCallable.COMMAND);
+		commandSet.add(GroupChooseCallable.COMMAND);
+		commandSet.add(GroupCreateCallable.COMMAND);
+		commandSet.add(GroupJoinCallable.COMMAND);
+		commandSet.add(GroupLeaveCallable.COMMAND);
+		commandSet.add(GroupSkillCallable.COMMAND);
+		
+		commandSet.add(RollAttributeCallable.COMMAND);
+		commandSet.add(RollDiceCallable.COMMAND);
+		commandSet.add(RollSkillCallable.COMMAND);
+		commandSet.add(RollSlipCallable.COMMAND);
+		commandSet.add(RollSumCallable.COMMAND);
+		commandSet.add(RollTrialCallable.COMMAND);
+		
+		commandSet.add(SettingsLanguageCallable.COMMAND);
+		commandSet.add(SettingsStatsCallable.COMMAND);
+		
+		commandSet.add(DiceCallable.COMMAND);
+		
+		return commandSet;
+		
+	}
+	
 	private CommandBook() {
 		commandMap = new HashMap<>();
-		commandMap.put("character/choose", CharacterChooseCallable.class);
-		commandMap.put("character/create", CharacterCreateCallable.class);
-		commandMap.put("character/delete", CharacterDeleteCallable.class);
-		commandMap.put("character/info", CharacterInfoCallable.class);
-		commandMap.put("character/list", CharacterListCallable.class);
-		commandMap.put("character/train", CharacterTrainCallable.class);
 		
-		commandMap.put("dice", DiceCallable.class);
+		List<Command> commands = Avesbot.getJda().retrieveCommands().complete();
 		
-		commandMap.put("group/attribute", GroupAttributeCallable.class);
-		commandMap.put("group/choose", GroupChooseCallable.class);
-		commandMap.put("group/create", GroupCreateCallable.class);
-		commandMap.put("group/join", GroupJoinCallable.class);
-		commandMap.put("group/leave", GroupLeaveCallable.class);
-		commandMap.put("group/skill", GroupSkillCallable.class);
-		
-		commandMap.put("roll/attribute", RollAttributeCallable.class);
-		commandMap.put("roll/dice", RollDiceCallable.class);
-		commandMap.put("roll/skill", RollSkillCallable.class);
-		commandMap.put("roll/slip", RollSlipCallable.class);
-		commandMap.put("roll/sum", RollSumCallable.class);
-		commandMap.put("roll/trial", RollTrialCallable.class);
-		
-		commandMap.put("settings/hidestats", SettingsHideStatsCallable.class);
-		commandMap.put("settings/language", SettingsLanguageCallable.class);
+		commands.forEach(com -> {
+			List<Command.Subcommand> subs = com.getSubcommands();
+			if(subs.isEmpty()) {
+				try {
+					Class c = Avesbot.class.getClassLoader().loadClass(getCommandCallableClassName(com.getName()));
+					commandMap.put(com.getName(), c);
+				} catch (ClassNotFoundException ex) {
+					System.err.println(ex.getMessage());
+				}
+			} else {
+				subs.forEach(sub -> {
+					try {
+						Class c = Avesbot.class.getClassLoader().loadClass(getCommandCallableClassName(com.getName(), sub.getName()));
+						commandMap.put(com.getName()+"/"+sub.getName(), c);
+					} catch (ClassNotFoundException ex) {
+						System.err.println(ex.getMessage());
+					}
+				});
+			}
+		});
 	}
 	
 	/**
@@ -78,7 +115,7 @@ public class CommandBook {
 	 */
 	public Optional<CommandCallable> getCommand(SlashCommandInteractionEvent event) {
 		
-		String commandName = event.getCommandPath();
+		String commandName = event.getFullCommandName();
 		
 		Optional<CommandCallable> command = Optional.ofNullable(this.commandMap.get(commandName)).map(cc -> {
 			CommandCallable cmd = null;
@@ -97,5 +134,16 @@ public class CommandBook {
 	public Collection<Class<? extends CommandCallable>> getRegisteredCommands() {
 		
 		return this.commandMap.values();
+	}
+	
+	private String getCommandCallableClassName(String...commands) {
+		StringBuilder sb = new StringBuilder();
+		for(String comPart : commands) {
+			sb.append(comPart.charAt(0));
+			sb.append(comPart.substring(1));
+		}
+		sb.append("Callable");
+		
+		return sb.toString();
 	}
 }

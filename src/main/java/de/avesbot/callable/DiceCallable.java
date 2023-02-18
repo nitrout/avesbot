@@ -6,7 +6,6 @@ import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.SymbolDice;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
@@ -15,13 +14,15 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
  */
 public class DiceCallable extends CommandCallable {
 	
-	public static final SlashCommandData COMMAND = Commands.slash("dice", "Creates a new symbol dice");
+	protected static final I18n I18N = new I18n("de.avesbot.i18n.messages");
+	public static final SlashCommandData COMMAND = buildTranslatedSlashCommand(I18N, "dice", "diceDescription");
 	
 	static {
-		COMMAND
-				.addOptions(new OptionData(OptionType.STRING, "name", "The name of the dice.", true),
-							new OptionData(OptionType.STRING, "areas", "The comma-separated list of the dice areas", true)
-				);
+		
+		OptionData nameOption = new OptionData(OptionType.STRING, "nameOption", "nameOptionDescription", true);
+		OptionData areaOption = new OptionData(OptionType.STRING, "areasOption", "areasOptionDescription", true);
+		
+		COMMAND.addOptions(nameOption, areaOption);
 	}
 	
 	/**
@@ -42,6 +43,6 @@ public class DiceCallable extends CommandCallable {
 		
 		Avesbot.getStatementManager().insertSymbolDice(guild, dice);
 		
-		return I18n.getInstance().format(settings.locale(), "diceCreated", name);
+		return I18N.format(settings.locale(), "diceCreated", name);
 	}
 }

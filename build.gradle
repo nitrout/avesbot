@@ -5,7 +5,8 @@ apply plugin: 'application'
 
 mainClassName = 'de.avesbot.Avesbot'
 ext {
-	jdaVersion = '4.4.0_350'
+	jdaVersion = '5.0.0-beta.3'
+	mariadbVersion = '3.0.7'
 }
 
 repositories {
@@ -18,7 +19,7 @@ repositories {
 
 dependencies {
 	implementation "net.dv8tion:JDA:$jdaVersion"
-	implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.3'
+	implementation "org.mariadb.jdbc:mariadb-java-client:$mariadbVersion"
 	implementation 'org.apache.commons:commons-text:1.9'
 	testImplementation 'junit:junit:4.13'
 }

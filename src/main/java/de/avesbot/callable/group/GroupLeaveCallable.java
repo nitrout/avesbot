@@ -2,16 +2,27 @@ package de.avesbot.callable.group;
 
 import java.util.Optional;
 import de.avesbot.Avesbot;
-import de.avesbot.i18n.I18n;
 import de.avesbot.model.Group;
 import de.avesbot.model.RoleplayCharacter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 /**
  * A callable to leave groups.
  * @author Nitrout
  */
 public class GroupLeaveCallable extends GroupCallable {
+	
+	static {
+		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "groupLeave", "groupLeaveDescription");
+		
+		OptionData groupnameOption = buildTranslatedOption(I18N, OptionType.STRING, "groupnameOption", "groupnameOptionDescription", true);
+		subcommand.addOptions(groupnameOption);
+		
+		COMMAND.addSubcommands(subcommand);
+	}
 	
 	/**
 	 * Creates a new LeaveCallable.
@@ -30,15 +41,15 @@ public class GroupLeaveCallable extends GroupCallable {
 		Optional<RoleplayCharacter> character = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		
 		if(group.isEmpty()) {
-			return I18n.getInstance().getString(settings.locale(), "errorUnknownGroup");
+			return I18N.getTranslation(settings.locale(), "errorUnknownGroup");
 		} else if(character.isEmpty()) {
-			return I18n.getInstance().getString(settings.locale(), "errorNoActiveCharacter");
+			return I18N.getTranslation(settings.locale(), "errorNoActiveCharacter");
 		} else {
 			boolean success = Avesbot.getStatementManager().deleteGroupMember(group.get(), character.get());
 			if(success)
-				return I18n.getInstance().format(settings.locale(),"groupCharacterLeave", character.get(), group.get());
+				return I18N.format(settings.locale(),"groupCharacterLeave", character.get(), group.get());
 			else
-				return I18n.getInstance().format(settings.locale(), "errorGroupCharacterLeave", character.get(), group.get());
+				return I18N.format(settings.locale(), "errorGroupCharacterLeave", character.get(), group.get());
 		}
 	}
 }

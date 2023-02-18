@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
  * @author nitrout
  */
 public class MessageListener extends ListenerAdapter {
+	
+	private static final I18n I18N = new I18n("de.avesbot.i18n.messages");
 
 	@Override
 	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
@@ -30,21 +32,19 @@ public class MessageListener extends ListenerAdapter {
 				answer.append(result.get(callable.getTimeout(), TimeUnit.SECONDS));
 			} catch (ExecutionException ex) {
 				ex.printStackTrace(System.err);
-				answer.append(I18n.getInstance().getString(settings.locale(), "errorCommandExecution"));
+				answer.append(I18N.getTranslation(settings.locale(), "errorCommandExecution"));
 			} catch (TimeoutException ex) {
 				System.err.println(ex.getMessage());
-				answer.append(I18n.getInstance().getString(settings.locale(), "errorCommandTimeLimit"));
+				answer.append(I18N.getTranslation(settings.locale(), "errorCommandTimeLimit"));
 			} catch (InterruptedException ex) {
 				System.err.println(ex.getMessage());
-				answer.append(I18n.getInstance().getString(settings.locale(), "errorCommandInterrupted"));
+				answer.append(I18N.getTranslation(settings.locale(), "errorCommandInterrupted"));
 			}
 		},
-		() -> answer.append(I18n.getInstance().getString(settings.locale(), "errorCommandNotImplemented")));
+		() -> answer.append(I18N.getTranslation(settings.locale(), "errorCommandNotImplemented")));
 		
 		event
 			.reply(answer.toString())
 			.queue();
 	}
-	
-	
 }

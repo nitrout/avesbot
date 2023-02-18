@@ -3,7 +3,7 @@ package de.avesbot.util;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 /**
  *
@@ -11,21 +11,21 @@ import net.dv8tion.jda.api.entities.Emote;
  */
 public class Formatter {
 	
-	private static String formatEmotelessRollResult(Pair<Integer, Integer>...rolls) {
+	private static String formatEmojilessRollResult(Pair<Integer, Integer>...rolls) {
 		
 		return Stream.of(rolls).map(roll -> Integer.toString(roll.getLeft())).collect(Collectors.joining(", ", "[", "]"));
 	}
 	
-	private static String formatEmoteRollResult(Map<String, Emote> emoteMap, Pair<Integer, Integer>...rolls) {
+	private static String formatEmojiRollResult(Map<String, Emoji> emoteMap, Pair<Integer, Integer>...rolls) {
 		
-		return Stream.of(rolls).map(roll -> emoteMap.get(roll.getLeft()+"d"+roll.getRight()).getAsMention()).collect(Collectors.joining(" "));
+		return Stream.of(rolls).map(roll -> emoteMap.get(roll.getLeft()+"d"+roll.getRight()).getFormatted()).collect(Collectors.joining(" "));
 	}
 	
-	public static String formatRollResult(Map<String, Emote> emoteMap, Pair<Integer, Integer>...rolls) {
+	public static String formatRollResult(Map<String, Emoji> emoteMap, Pair<Integer, Integer>...rolls) {
 		if(Stream.of(rolls).allMatch(roll -> emoteMap.containsKey(roll.getLeft()+"d"+roll.getRight()))) {
-			return formatEmoteRollResult(emoteMap, rolls);
+			return formatEmojiRollResult(emoteMap, rolls);
 		} else {
-			return formatEmotelessRollResult(rolls);
+			return formatEmojilessRollResult(rolls);
 		}
 	}
 }

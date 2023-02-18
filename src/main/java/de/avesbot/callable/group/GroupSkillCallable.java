@@ -4,16 +4,19 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import net.dv8tion.jda.api.entities.Emote;
 import de.avesbot.Avesbot;
-import de.avesbot.i18n.I18n;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Group;
 import de.avesbot.model.Tradition;
 import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.util.LevenshteinHelper;
 import de.avesbot.callable.RoleplayCharacterRoll;
+import de.avesbot.i18n.I18n;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 /**
  * A callable to execute a skill trial for all members of a group.
@@ -21,7 +24,21 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
  */
 public class GroupSkillCallable extends GroupCallable implements RoleplayCharacterRoll {
 	
-	private final HashMap<String, Emote> emoteMap = new HashMap<>();
+	protected static final I18n I18N = GroupCallable.I18N;
+	
+	static {
+		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "groupSkill", "groupSkillDescription");
+		
+		OptionData skillOption = buildTranslatedOption(I18N, OptionType.STRING, "skillOption", "skillOptionDescription", true);
+		OptionData difficultyOption = buildTranslatedOption(I18N, OptionType.INTEGER, "difficultyOption", "difficultyOptionDescription", false);
+		OptionData traditionOption = buildTranslatedOption(I18N, OptionType.STRING, "traditionOption", "traditionOptionDescription", false);
+		
+		subcommand.addOptions(skillOption, difficultyOption, traditionOption);
+		
+		COMMAND.addSubcommands(subcommand);
+	}
+	
+	private final HashMap<String, Emoji> emoteMap = new HashMap<>();
 	
 	/**
 	 * Creates a new GroupSkillCallable.
@@ -29,7 +46,7 @@ public class GroupSkillCallable extends GroupCallable implements RoleplayCharact
 	 */
 	public GroupSkillCallable(SlashCommandInteractionEvent event) {
 		super(event);
-		guild.getEmotes().stream().forEach(emote -> emoteMap.put(emote.getName(), emote));
+		guild.getEmojis().stream().forEach(emote -> emoteMap.put(emote.getName(), emote));
 	}
 	
 	@Override
@@ -49,12 +66,12 @@ public class GroupSkillCallable extends GroupCallable implements RoleplayCharact
 			difficulty = (byte)this.commandPars.get("difficulty").getAsLong();
 		
 		if(group.isEmpty()) {
-			return I18n.getInstance().getString(settings.locale(), "errorNoActiveGroup");
+			return I18N.getTranslation(settings.locale(), "errorNoActiveGroup");
 		} else {
 			RoleplayCharacter[] charas = Avesbot.getStatementManager().getGroupMemberList(group.get());
 			
 			if(charas.length == 0)
-				return I18n.getInstance().getString(settings.locale(), "errorNoGroupMember");
+				return I18N.getTranslation(settings.locale(), "errorNoGroupMember");
 			
 			// get the best matching skill
 			String[] skillbook = Avesbot.getStatementManager().getGroupAbilityList(group.get());

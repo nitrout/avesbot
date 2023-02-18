@@ -2,9 +2,9 @@ package de.avesbot;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -19,9 +19,9 @@ public class BroadcastListener extends ListenerAdapter {
 	private final Consumer<Guild> BROADCAST_ACTION = new Consumer<Guild>() {
 		@Override
 		public void accept(Guild t) {
-			Optional<BaseGuildMessageChannel> defaultChannel = Optional.ofNullable(t.getDefaultChannel());
-			if(defaultChannel.isPresent() && defaultChannel.get().canTalk()) {
-				defaultChannel.get().sendMessage(broadcastMessage).queue();
+			Optional<DefaultGuildChannelUnion> defaultChannel = Optional.ofNullable(t.getDefaultChannel());
+			if(defaultChannel.isPresent() && defaultChannel.get().asStandardGuildMessageChannel().canTalk()) {
+				defaultChannel.get().asStandardGuildMessageChannel().sendMessage(broadcastMessage).queue();
 			} else {
 				t.getTextChannels().stream().filter(g -> g.canTalk()).findAny().ifPresent(channel -> channel.sendMessage(broadcastMessage).queue());
 			}

@@ -24,15 +24,9 @@ public enum Tradition {
 	OTHER;
 	
 	private static final I18n I18N = new I18n("de.avesbot.i18n.general");
-	public static final Choice[] OPTION_CHOICES;
-	
-	static {
-		OPTION_CHOICES = new Choice[values().length];
-		for(Tradition t : values()) {
-			OPTION_CHOICES[t.ordinal()] = new Choice(I18N.getTranslation(t.name().toLowerCase()), t.name().toLowerCase());
-			OPTION_CHOICES[t.ordinal()].setNameLocalizations(I18N.getLocalizations(t.name().toLowerCase()));
-		}
-	}
+	public static final Choice[] OPTION_CHOICES = Stream.of(values())
+																.map(Tradition::getTranslatedChoice)
+																.toArray(Choice[]::new);;
 	
 	HashSet<String> mappings;
 	
@@ -58,5 +52,12 @@ public enum Tradition {
 		}
 		
 		return result;
+	}
+	
+	private static Choice getTranslatedChoice(Tradition t) {
+		Choice choice = new Choice(I18N.getTranslation(t.name().toLowerCase()), t.name().toLowerCase());
+		choice.setNameLocalizations(I18N.getLocalizations(t.name().toLowerCase()));
+		
+		return choice;
 	}
 }
