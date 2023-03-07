@@ -109,7 +109,7 @@ public class CommandBook {
 			List<Command.Subcommand> subs = com.getSubcommands();
 			if(subs.isEmpty()) {
 				try {
-					Class c = Avesbot.class.getClassLoader().loadClass(getCommandCallableClassName(com.getName()));
+					Class c = Class.forName(getCommandCallableClassName(com.getName()));
 					commandMap.put(com.getName(), c);
 				} catch (ClassNotFoundException ex) {
 					System.err.println(ex.getMessage());
@@ -117,8 +117,8 @@ public class CommandBook {
 			} else {
 				subs.forEach(sub -> {
 					try {
-						Class c = Avesbot.class.getClassLoader().loadClass(getCommandCallableClassName(com.getName(), sub.getName()));
-						commandMap.put(com.getName()+"/"+sub.getName(), c);
+						Class c = Class.forName(getCommandCallableClassName(com.getName(), sub.getName()));
+						commandMap.put(com.getName()+" "+sub.getName(), c);
 					} catch (ClassNotFoundException ex) {
 						System.err.println(ex.getMessage());
 					}
@@ -159,8 +159,13 @@ public class CommandBook {
 	
 	private String getCommandCallableClassName(String...commands) {
 		StringBuilder sb = new StringBuilder();
+		sb.append("de.avesbot.callable.");
+		if(commands.length > 1) {
+			sb.append(commands[0]);
+			sb.append(".");
+		}
 		for(String comPart : commands) {
-			sb.append(comPart.charAt(0));
+			sb.append(Character.toUpperCase(comPart.charAt(0)));
 			sb.append(comPart.substring(1));
 		}
 		sb.append("Callable");
