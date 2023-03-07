@@ -19,8 +19,8 @@ public class DiceCallable extends CommandCallable {
 	
 	static {
 		
-		OptionData nameOption = new OptionData(OptionType.STRING, "nameOption", "nameOptionDescription", true);
-		OptionData areaOption = new OptionData(OptionType.STRING, "areasOption", "areasOptionDescription", true);
+		OptionData nameOption = buildTranslatedOption(I18N, OptionType.STRING, "nameOption", "nameOptionDescription", true);
+		OptionData areaOption = buildTranslatedOption(I18N, OptionType.STRING, "areasOption", "areasOptionDescription", true);
 		
 		COMMAND.addOptions(nameOption, areaOption);
 	}

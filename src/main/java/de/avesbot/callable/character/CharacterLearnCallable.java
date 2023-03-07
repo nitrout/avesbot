@@ -18,11 +18,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class CharacterLearnCallable extends CharacterCallable {
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
 		
-		SubcommandData learnCommand = new SubcommandData(I18N.getTranslation("characterLearn"), I18N.getTranslation("characterLearnAbilityOptionDescription"));
-		learnCommand.setNameLocalizations(I18N.getLocalizations("characterLearn"));
-		learnCommand.setDescriptionLocalizations(I18N.getLocalizations("characterLearnAbilityOptionDescription"));
+		SUBCOMMAND = new SubcommandData(I18N.getTranslation("characterLearn"), I18N.getTranslation("characterLearnAbilityOptionDescription"));
+		SUBCOMMAND.setNameLocalizations(I18N.getLocalizations("characterLearn"));
+		SUBCOMMAND.setDescriptionLocalizations(I18N.getLocalizations("characterLearnAbilityOptionDescription"));
 		
 		OptionData abilityOption = new OptionData(OptionType.STRING, I18N.getTranslation("characterAbilityOption"), I18N.getTranslation("characterLearnAbilityOptionDescription"), true);
 		abilityOption.setNameLocalizations(I18N.getLocalizations("characterAbilityOption"));
@@ -57,7 +59,7 @@ public class CharacterLearnCallable extends CharacterCallable {
 		traditionOption.setDescriptionLocalizations(I18N.getLocalizations("characterLearnTraditionOptionDescription"));
 		traditionOption.addChoices(Tradition.OPTION_CHOICES);
 		
-		learnCommand.addOptions(
+		SUBCOMMAND.addOptions(
 			abilityOption,
 			attribute1Option,
 			attribute2Option,
@@ -66,8 +68,6 @@ public class CharacterLearnCallable extends CharacterCallable {
 			typeOption,
 			traditionOption
 		);
-		
-		COMMAND.addSubcommands(learnCommand);
 	}
 	
 	/**

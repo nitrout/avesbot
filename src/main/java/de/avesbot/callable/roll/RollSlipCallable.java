@@ -12,10 +12,10 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class RollSlipCallable extends RollCallable {
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "rollSlip", "rollSlipDescription");
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "rollSlip", "rollSlipDescription");
 	}
 	
 	/**

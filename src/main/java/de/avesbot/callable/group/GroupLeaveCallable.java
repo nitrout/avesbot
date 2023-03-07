@@ -15,13 +15,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class GroupLeaveCallable extends GroupCallable {
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "groupLeave", "groupLeaveDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "groupLeave", "groupLeaveDescription");
 		
 		OptionData groupnameOption = buildTranslatedOption(I18N, OptionType.STRING, "groupnameOption", "groupnameOptionDescription", true);
-		subcommand.addOptions(groupnameOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND.addOptions(groupnameOption);
 	}
 	
 	/**

@@ -77,7 +77,7 @@ public class Avesbot {
 			
 			if(Stream.of(args).anyMatch(arg -> arg.equals("--resetCommands"))) {
 				jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue((v) -> System.out.println("Deleted Command "+c.getFullCommandName()))));
-				CommandBook.getAvailableSlashCommands().stream()
+				CommandBook.getInstance().getAvailableSlashCommands().stream()
 						.forEach(command -> {
 							jda.upsertCommand(command).queue(
 								cmd -> {

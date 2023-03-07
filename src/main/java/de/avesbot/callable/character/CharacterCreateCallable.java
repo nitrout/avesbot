@@ -18,9 +18,11 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class CharacterCreateCallable extends CharacterCallable {
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
 		
-		SubcommandData createCommand = new SubcommandData(I18N.getTranslation("characterCreate"), I18N.getTranslation("characterCreateDescription"));
+		SUBCOMMAND = new SubcommandData(I18N.getTranslation("characterCreate"), I18N.getTranslation("characterCreateDescription"));
 				
 		OptionData nameOption = new OptionData(OptionType.STRING, I18N.getTranslation("characterNameOption"), I18N.getTranslation("characterCreateNameOptionDescription"), true);
 		nameOption.setNameLocalizations(I18N.getLocalizations("characterNameOption"));
@@ -67,12 +69,11 @@ public class CharacterCreateCallable extends CharacterCallable {
 		strOption.setNameLocalizations(I18N.getLocalizations("characterStrOption"));
 		strOption.setDescriptionLocalizations(I18N.getLocalizations("characterCreateStrOptionDescription"));
 				
-		createCommand.addOptions(
+		SUBCOMMAND.addOptions(
 			nameOption, rulesetOption,
 			couOption, sgcOption, intOption, chaOption,
 			dexOption, agiOption, conOption, strOption
 		);
-		COMMAND.addSubcommands(createCommand);
 	}
 	
 	/**

@@ -25,17 +25,17 @@ public class GroupAttributeCallable extends GroupCallable implements RoleplayCha
 	private final HashMap<String, Emoji> emoteMap = new HashMap<>();
 	protected static final I18n I18N = GroupCallable.I18N;
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
-		SubcommandData attributeCommand = buildTranslatedSubcommand(I18N, "groupAttribute", "groupAttributeDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "groupAttribute", "groupAttributeDescription");
 		
 		OptionData attributeOpption = buildTranslatedOption(I18N, OptionType.STRING, "attributeOption", "attributeOptionDescription", true);
 		attributeOpption.addChoices(Attribute.OPTION_CHOICES);
 		
 		OptionData difficultyOption = buildTranslatedOption(I18N, OptionType.INTEGER, "difficultyOption", "difficultyOptionDescription", false);
 		
-		attributeCommand.addOptions(attributeOpption, difficultyOption);
-		
-		COMMAND.addSubcommands(attributeCommand);
+		SUBCOMMAND.addOptions(attributeOpption, difficultyOption);
 	}
 
 	

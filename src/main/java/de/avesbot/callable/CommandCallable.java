@@ -97,8 +97,8 @@ public abstract class CommandCallable implements Callable<String> {
 	
 	protected static Choice buildTranslatedChoice(I18n i18n, String name, String value) {
 		
-		Choice choice = new Choice(name, value);
-		choice.setNameLocalizations(i18n.getLocalizations("characterNameOption"));
+		Choice choice = new Choice(i18n.getTranslation(name), value);
+		choice.setNameLocalizations(i18n.getLocalizations(name));
 		
 		return choice;
 	}

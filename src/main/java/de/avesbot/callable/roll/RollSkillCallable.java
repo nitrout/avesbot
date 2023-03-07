@@ -19,11 +19,12 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class RollSkillCallable extends RollCallable implements RoleplayCharacterRoll {
 	
-	protected static final I18n I18N = new I18n("de.avesbot.i18n.roll");
+	protected static final I18n I18N = RollCallable.I18N;
+	public static final SubcommandData SUBCOMMAND;
 	
 	static {
 		
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "rollSkill", "rollSkillDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "rollSkill", "rollSkillDescription");
 		
 		OptionData skillOption = buildTranslatedOption(I18N, OptionType.STRING, "skillOption", "skillOptionDescription", true);
 		OptionData difficultyOption = buildTranslatedOption(I18N, OptionType.INTEGER, "difficultyOption", "difficultyOptionDescription", false);
@@ -31,9 +32,7 @@ public class RollSkillCallable extends RollCallable implements RoleplayCharacter
 		OptionData traditionOption = buildTranslatedOption(I18N, OptionType.STRING, "traditionOption", "traditionOptionDescription", false);
 		traditionOption.addChoices(Tradition.OPTION_CHOICES);
 		
-		subcommand.addOptions(skillOption, difficultyOption, coverageOption, traditionOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND.addOptions(skillOption, difficultyOption, coverageOption, traditionOption);
 	}
 	
 	/**

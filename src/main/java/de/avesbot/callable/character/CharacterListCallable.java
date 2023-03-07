@@ -13,13 +13,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class CharacterListCallable extends CharacterCallable {
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
 		
-		SubcommandData listCommand = new SubcommandData(I18N.getTranslation("characterList"), I18N.getTranslation("characterListDescription"));
-		listCommand.setNameLocalizations(I18N.getLocalizations("characterList"));
-		listCommand.setDescriptionLocalizations(I18N.getLocalizations("characterListDescription"));
-		
-		COMMAND.addSubcommands(listCommand);
+		SUBCOMMAND = new SubcommandData(I18N.getTranslation("characterList"), I18N.getTranslation("characterListDescription"));
+		SUBCOMMAND.setNameLocalizations(I18N.getLocalizations("characterList"));
+		SUBCOMMAND.setDescriptionLocalizations(I18N.getLocalizations("characterListDescription"));
 	}
 	
 	/**

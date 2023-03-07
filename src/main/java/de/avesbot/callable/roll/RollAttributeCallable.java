@@ -17,19 +17,18 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class RollAttributeCallable extends RollCallable implements RoleplayCharacterRoll {
 	
-	protected static final I18n I18N = new I18n("de.avesbot.i18n.roll");
+	protected static final I18n I18N = RollCallable.I18N;
+	public static final SubcommandData SUBCOMMAND;
 	
 	static {
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "rollAttribute", "rollAttributeDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "rollAttribute", "rollAttributeDescription");
 
 		OptionData attributeOption = buildTranslatedOption(I18N, OptionType.STRING, "attributeOption", "attributeOptionDescription", true);
 		attributeOption.addChoices(Attribute.OPTION_CHOICES);
 		
 		OptionData difficultyOption = buildTranslatedOption(I18N, OptionType.INTEGER, "difficultyOption", "difficultyOptionDescription", false);
 
-		subcommand.addOptions(attributeOption, difficultyOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND.addOptions(attributeOption, difficultyOption);
 	}
 	
 	/**

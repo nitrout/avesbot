@@ -26,12 +26,14 @@ import de.avesbot.callable.roll.RollSumCallable;
 import de.avesbot.callable.roll.RollTrialCallable;
 import de.avesbot.callable.settings.SettingsLanguageCallable;
 import de.avesbot.callable.settings.SettingsStatsCallable;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 /**
  * Class for managing the available commands.
@@ -47,38 +49,55 @@ public class CommandBook {
 		return INSTANCE;
 	}
 	
-	public static Set<CommandData> getAvailableSlashCommands() {
+	public List<CommandData> getAvailableSlashCommands() {
 		
-		HashSet<CommandData> commandSet = new HashSet<>();
+		return getCommandList().stream()
+				//.map(c -> c.getSuperclass())
+				.map(c -> {
+					try {
+						return (CommandData)(c.getField("COMMAND").get(null));
+					} catch (NoSuchFieldException ex) {
+						Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
+					} catch (SecurityException ex) {
+						Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
+					} catch (IllegalArgumentException ex) {
+						Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
+					} catch (IllegalAccessException ex) {
+						Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
+					}
+					return null;
+				})
+				.distinct()
+				.toList();
+	}
+	
+	private void registerSubcommands() {
 		
-		commandSet.add(CharacterChooseCallable.COMMAND);
-		commandSet.add(CharacterCreateCallable.COMMAND);
-		commandSet.add(CharacterDeleteCallable.COMMAND);
-		commandSet.add(CharacterInfoCallable.COMMAND);
-		commandSet.add(CharacterLearnCallable.COMMAND);
-		commandSet.add(CharacterListCallable.COMMAND);
-		
-		commandSet.add(GroupAttributeCallable.COMMAND);
-		commandSet.add(GroupChooseCallable.COMMAND);
-		commandSet.add(GroupCreateCallable.COMMAND);
-		commandSet.add(GroupJoinCallable.COMMAND);
-		commandSet.add(GroupLeaveCallable.COMMAND);
-		commandSet.add(GroupSkillCallable.COMMAND);
-		
-		commandSet.add(RollAttributeCallable.COMMAND);
-		commandSet.add(RollDiceCallable.COMMAND);
-		commandSet.add(RollSkillCallable.COMMAND);
-		commandSet.add(RollSlipCallable.COMMAND);
-		commandSet.add(RollSumCallable.COMMAND);
-		commandSet.add(RollTrialCallable.COMMAND);
-		
-		commandSet.add(SettingsLanguageCallable.COMMAND);
-		commandSet.add(SettingsStatsCallable.COMMAND);
-		
-		commandSet.add(DiceCallable.COMMAND);
-		
-		return commandSet;
-		
+			getCommandList().forEach(c -> {
+			try {
+				SlashCommandData cmd = (SlashCommandData)c.getField("COMMAND").get(null);
+				SubcommandData subCmd = (SubcommandData)c.getField("SUBCOMMAND").get(null);
+				cmd.addSubcommands(subCmd);
+			} catch (NoSuchFieldException ex) {
+				Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (SecurityException ex) {
+				Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IllegalArgumentException ex) {
+				Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IllegalAccessException ex) {
+				Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		} );
+	}
+	
+	List<Class<? extends CommandCallable>> getCommandList() {
+		return List.of(
+			CharacterChooseCallable.class, CharacterCreateCallable.class, CharacterDeleteCallable.class, CharacterInfoCallable.class, CharacterLearnCallable.class, CharacterListCallable.class,
+			GroupAttributeCallable.class, GroupChooseCallable.class, GroupCreateCallable.class, GroupJoinCallable.class, GroupLeaveCallable.class, GroupSkillCallable.class,
+			RollAttributeCallable.class, RollDiceCallable.class, RollSkillCallable.class, RollSlipCallable.class, RollSumCallable.class, RollTrialCallable.class,
+			SettingsLanguageCallable.class, SettingsStatsCallable.class,
+			DiceCallable.class
+		);
 	}
 	
 	private CommandBook() {
@@ -106,6 +125,8 @@ public class CommandBook {
 				});
 			}
 		});
+		
+		registerSubcommands();
 	}
 	
 	/**

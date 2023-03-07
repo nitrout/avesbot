@@ -2,8 +2,6 @@ package de.avesbot.callable.settings;
 
 import net.dv8tion.jda.api.Permission;
 import de.avesbot.Avesbot;
-import static de.avesbot.callable.settings.SettingsCallable.COMMAND;
-import de.avesbot.i18n.I18n;
 import de.avesbot.model.GuildSetting;
 import java.util.regex.Pattern;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -18,14 +16,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class SettingsLanguageCallable extends SettingsCallable {
 	
 	private final static Pattern LOCALE_PATTERN = Pattern.compile("^[a-z]{2}(_[A-Z]{2})?$");
+	public static final SubcommandData SUBCOMMAND;
 	
 	static {
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "settingsLanguage", "settingsLanguageDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "settingsLanguage", "settingsLanguageDescription");
 		
 		OptionData localeOption = buildTranslatedOption(I18N, OptionType.STRING, "localeOption", "localeOptionDescription", true);
-		subcommand.addOptions(localeOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND.addOptions(localeOption);
 	}
 	
 	public SettingsLanguageCallable(SlashCommandInteractionEvent event) {

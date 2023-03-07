@@ -2,7 +2,6 @@ package de.avesbot.callable.group;
 
 import java.util.Optional;
 import de.avesbot.Avesbot;
-import de.avesbot.i18n.I18n;
 import de.avesbot.model.Group;
 import de.avesbot.model.RoleplayCharacter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -16,13 +15,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class GroupJoinCallable extends GroupCallable {
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
-		SubcommandData subcommand =  buildTranslatedSubcommand(I18N, "groupJoin", "groupJoinDescription");
+		SUBCOMMAND =  buildTranslatedSubcommand(I18N, "groupJoin", "groupJoinDescription");
 		
 		OptionData groupnameOption = buildTranslatedOption(I18N, OptionType.STRING, "groupnameOption", "groupnameOptionDescription", true);
-		subcommand.addOptions(groupnameOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND.addOptions(groupnameOption);
 	}
 	
 	/**

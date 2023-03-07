@@ -12,13 +12,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class GroupCreateCallable extends GroupCallable {
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "create", "groupCreateDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "groupCreate", "groupCreateDescription");
 		
-		OptionData groupnameOption = buildTranslatedOption(I18N, OptionType.STRING, "groupname", "The name of the new group.", true);
-		subcommand.addOptions(groupnameOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		OptionData groupnameOption = buildTranslatedOption(I18N, OptionType.STRING, "groupnameOption", "groupnameOptionDescription", true);
+		SUBCOMMAND.addOptions(groupnameOption);
 	}
 	
 	/**

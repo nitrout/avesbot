@@ -20,14 +20,13 @@ public class RollDiceCallable extends RollCallable {
 
 	private static final Pattern DICE_PATTERN = Pattern.compile("^([1-9]\\d{0,2})?[dw]([1-9]\\d{0,2})?$", Pattern.CASE_INSENSITIVE);
 	public static final int MAX_DICE = Integer.parseInt(Avesbot.getProperties().getProperty("max_dice", "70"));
+	public static final SubcommandData SUBCOMMAND;
 	
 	static {
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "rollDice", "rollDiceDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "rollDice", "rollDiceDescription");
 		
 		OptionData diceOption = buildTranslatedOption(I18N, OptionType.STRING, "diceOption", "diceOptionDescription", true);
-		subcommand.addOptions(diceOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND.addOptions(diceOption);
 	}
 	
 	/**

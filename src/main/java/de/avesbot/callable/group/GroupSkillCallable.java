@@ -25,17 +25,16 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class GroupSkillCallable extends GroupCallable implements RoleplayCharacterRoll {
 	
 	protected static final I18n I18N = GroupCallable.I18N;
+	public static final SubcommandData SUBCOMMAND;
 	
 	static {
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "groupSkill", "groupSkillDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "groupSkill", "groupSkillDescription");
 		
 		OptionData skillOption = buildTranslatedOption(I18N, OptionType.STRING, "skillOption", "skillOptionDescription", true);
 		OptionData difficultyOption = buildTranslatedOption(I18N, OptionType.INTEGER, "difficultyOption", "difficultyOptionDescription", false);
 		OptionData traditionOption = buildTranslatedOption(I18N, OptionType.STRING, "traditionOption", "traditionOptionDescription", false);
 		
-		subcommand.addOptions(skillOption, difficultyOption, traditionOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND.addOptions(skillOption, difficultyOption, traditionOption);
 	}
 	
 	private final HashMap<String, Emoji> emoteMap = new HashMap<>();

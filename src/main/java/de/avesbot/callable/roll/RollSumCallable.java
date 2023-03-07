@@ -4,7 +4,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import de.avesbot.Avesbot;
-import de.avesbot.i18n.I18n;
 import de.avesbot.util.Formatter;
 import de.avesbot.util.Pair;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -19,14 +18,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class RollSumCallable extends RollCallable {
 
 	private static final Pattern SUM_DICE_PATTERN = Pattern.compile("^([1-9]\\d{0,2})?[dw]([1-9]\\d{0,2})?([+-]\\d{1,3})?$", Pattern.CASE_INSENSITIVE);
+	public static final SubcommandData SUBCOMMAND;
 	
 	static {
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "rollSum", "rollSumDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "rollSum", "rollSumDescription");
 		
 		OptionData sumDiceOption = buildTranslatedOption(I18N, OptionType.STRING, "sumDiceOption", "sumDiceOptionDescription", true);
-		subcommand.addOptions(sumDiceOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND.addOptions(sumDiceOption);
 	}
 	
 	/**

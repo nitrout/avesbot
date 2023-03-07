@@ -16,11 +16,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class CharacterInfoCallable extends CharacterCallable {
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
 		
-		SubcommandData infoCommand = new SubcommandData(I18N.getTranslation("characterInfo"), I18N.getTranslation("characterInfoDescription"));
-		infoCommand.setNameLocalizations(I18N.getLocalizations("characterInfo"));
-		infoCommand.setDescriptionLocalizations(I18N.getLocalizations("characterInfoDescription"));
+		SUBCOMMAND = new SubcommandData(I18N.getTranslation("characterInfo"), I18N.getTranslation("characterInfoDescription"));
+		SUBCOMMAND.setNameLocalizations(I18N.getLocalizations("characterInfo"));
+		SUBCOMMAND.setDescriptionLocalizations(I18N.getLocalizations("characterInfoDescription"));
 		
 		OptionData abilityOption = new OptionData(OptionType.STRING, I18N.getTranslation("characterAbilityOption"), I18N.getTranslation("characterInfoAbilityOptionDescription"));
 		abilityOption.setNameLocalizations(I18N.getLocalizations("characterAbilityOption"));
@@ -31,9 +33,7 @@ public class CharacterInfoCallable extends CharacterCallable {
 		traditionOption.setDescriptionLocalizations(I18N.getLocalizations("characterInfoTraditionOptionDescription"));
 		traditionOption.addChoices(Tradition.OPTION_CHOICES);
 		
-		infoCommand.addOptions(abilityOption, traditionOption);
-		
-		COMMAND.addSubcommands(infoCommand);
+		SUBCOMMAND.addOptions(abilityOption, traditionOption);
 	}
 	
 	/**

@@ -19,15 +19,16 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class RollTrialCallable extends RollCallable implements RoleplayCharacterRoll {
 	
-	protected static final I18n I18N = new I18n("de.avesbot.i18n.roll");
+	protected static final I18n I18N = RollCallable.I18N;
+	public static final SubcommandData SUBCOMMAND;
 	
 	static {
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "rollTrial", "rollTrialDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "rollTrial", "rollTrialDescription");
 		
 		OptionData attribute1Option = buildTranslatedOption(I18N, OptionType.STRING, "attribute1Option", "attribute1OptionDescription", true);
 		attribute1Option.addChoices(Attribute.OPTION_CHOICES);
 		
-		OptionData attribute2Option = buildTranslatedOption(I18N, OptionType.STRING, "attribute2Option", "attribute2ptionDescription", true);
+		OptionData attribute2Option = buildTranslatedOption(I18N, OptionType.STRING, "attribute2Option", "attribute2OptionDescription", true);
 		attribute2Option.addChoices(Attribute.OPTION_CHOICES);
 		
 		OptionData attribute3Option = buildTranslatedOption(I18N, OptionType.STRING, "attribute3Option", "attribute3OptionDescription", true);
@@ -40,9 +41,7 @@ public class RollTrialCallable extends RollCallable implements RoleplayCharacter
 		
 		OptionData difficultyOption = buildTranslatedOption(I18N, OptionType.INTEGER, "difficultyOption", "difficultyOptionDescription", false);
 		
-		subcommand.addOptions(attribute1Option, attribute2Option, attribute3Option, skillRatingOption, spellOption, difficultyOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND.addOptions(attribute1Option, attribute2Option, attribute3Option, skillRatingOption, spellOption, difficultyOption);
 	}
 	
 	/**

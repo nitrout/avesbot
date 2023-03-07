@@ -14,14 +14,14 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class SettingsStatsCallable extends SettingsCallable {
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
-		SubcommandData subcommand = buildTranslatedSubcommand(I18N, "stats", "settingsStatsDescription");
+		SUBCOMMAND = buildTranslatedSubcommand(I18N, "settingsStats", "settingsStatsDescription");
 		
 		OptionData valueOption =buildTranslatedOption(I18N, OptionType.STRING, "valueOption", "valueOptionDescription", true);
 		valueOption.addChoices(buildTranslatedChoice(I18N, "hideChoice", "true"), buildTranslatedChoice(I18N, "showChoice", "false"));
-		subcommand.addOptions(valueOption);
-		
-		COMMAND.addSubcommands(subcommand);
+		SUBCOMMAND.addOptions(valueOption);
 	}
 	
 	public SettingsStatsCallable(SlashCommandInteractionEvent event) {

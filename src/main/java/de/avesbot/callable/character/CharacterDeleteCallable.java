@@ -14,18 +14,18 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  */
 public class CharacterDeleteCallable extends CharacterCallable {
 	
+	public static final SubcommandData SUBCOMMAND;
+	
 	static {
 		
-		SubcommandData deleteCommand = new SubcommandData(I18N.getTranslation("characterDelete"), I18N.getTranslation("characterDeleteDescription"));
-		deleteCommand.setNameLocalizations(I18N.getLocalizations("characterDelete"));
-		deleteCommand.setDescriptionLocalizations(I18N.getLocalizations("characterDeleteDescription"));
+		SUBCOMMAND = new SubcommandData(I18N.getTranslation("characterDelete"), I18N.getTranslation("characterDeleteDescription"));
+		SUBCOMMAND.setNameLocalizations(I18N.getLocalizations("characterDelete"));
+		SUBCOMMAND.setDescriptionLocalizations(I18N.getLocalizations("characterDeleteDescription"));
 		
 		OptionData nameOption = new OptionData(OptionType.STRING, I18N.getTranslation("characterNameOption"), I18N.getTranslation("characterDeleteNameOptionDescription"), true);
 		nameOption.setNameLocalizations(I18N.getLocalizations("characterNameOption"));
 		nameOption.setDescriptionLocalizations(I18N.getLocalizations("characterDeleteNameOptionDescription"));
-		deleteCommand.addOptions(nameOption);
-		
-		COMMAND.addSubcommands(deleteCommand);
+		SUBCOMMAND.addOptions(nameOption);
 	}
 	
 	/**
