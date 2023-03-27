@@ -19,8 +19,7 @@ public class SettingsStatsCallable extends SettingsCallable {
 	static {
 		SUBCOMMAND = buildTranslatedSubcommand(I18N, "settingsStats", "settingsStatsDescription");
 		
-		OptionData valueOption =buildTranslatedOption(I18N, OptionType.STRING, "valueOption", "valueOptionDescription", true);
-		valueOption.addChoices(buildTranslatedChoice(I18N, "hideChoice", "true"), buildTranslatedChoice(I18N, "showChoice", "false"));
+		OptionData valueOption = buildTranslatedOption(I18N, OptionType.BOOLEAN, "hideOption", "hideOptionDescription", true);
 		SUBCOMMAND.addOptions(valueOption);
 	}
 	

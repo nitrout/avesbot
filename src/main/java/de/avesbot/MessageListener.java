@@ -22,6 +22,8 @@ public class MessageListener extends ListenerAdapter {
 	@Override
 	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
 		
+		event.deferReply().queue();
+		
 		GuildSetting settings = Avesbot.getStatementManager().getGuildSetting(event.getGuild()).orElse(GuildSetting.DEFAULT);
 		StringBuilder answer = new StringBuilder();
 		
@@ -43,8 +45,6 @@ public class MessageListener extends ListenerAdapter {
 		},
 		() -> answer.append(I18N.getTranslation(settings.locale(), "errorCommandNotImplemented")));
 		
-		event
-			.reply(answer.toString())
-			.queue();
+		event.getHook().sendMessage(answer.toString()).queue();
 	}
 }
