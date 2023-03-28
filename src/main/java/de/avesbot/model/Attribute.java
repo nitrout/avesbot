@@ -31,7 +31,7 @@ public enum Attribute {
 				return a;
 		}
 		
-		throw new IllegalArgumentException(abbrevation+" is not a valid abbreavation.");
+		throw new IllegalArgumentException(String.format("\"%s\" is not a valid abbrevation.", abbrevation));
 	}
 
 	/**

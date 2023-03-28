@@ -90,9 +90,9 @@ public class CharacterLearnCallable extends CharacterCallable {
 		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
 		
 		String abilityName = this.commandPars.get("ability").getAsString();
-		Attribute attribute1 = Attribute.abbrevationValueOf(this.commandPars.get("attribute1").getAsString());
-		Attribute attribute2 = Attribute.abbrevationValueOf(this.commandPars.get("attribute2").getAsString());
-		Attribute attribute3 = Attribute.abbrevationValueOf(this.commandPars.get("attribute3").getAsString());
+		Attribute attribute1 = Attribute.valueOf(this.commandPars.get("attribute1").getAsString());
+		Attribute attribute2 = Attribute.valueOf(this.commandPars.get("attribute2").getAsString());
+		Attribute attribute3 = Attribute.valueOf(this.commandPars.get("attribute3").getAsString());
 		Trial trial = new Trial(attribute1, attribute2, attribute3);
 		sr = (byte)this.commandPars.get("ar").getAsLong();
 		if(this.commandPars.containsKey("type"))
