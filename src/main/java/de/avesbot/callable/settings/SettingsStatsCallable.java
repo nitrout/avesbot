@@ -30,7 +30,7 @@ public class SettingsStatsCallable extends SettingsCallable {
 	@Override
 	public String call() throws Exception {
 		
-		boolean stats = this.commandPars.get("value").getAsBoolean();
+		boolean stats = this.commandPars.get("hide").getAsBoolean();
 		
 		if(member.hasPermission(Permission.ADMINISTRATOR)) {
 			
