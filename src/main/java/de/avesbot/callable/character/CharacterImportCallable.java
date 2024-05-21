@@ -1,4 +1,4 @@
-package de.avesbot.callable;
+package de.avesbot.callable.character;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,9 +25,8 @@ import de.avesbot.util.XmlUtil;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -36,21 +35,20 @@ import org.xml.sax.SAXException;
 /**
  * Imports a character from an xml file.
  * Works currently only for DSA4 ruleset.
- * @deprecated not compatible with the new slash command api
  * @author Nitrout
  */
-@Deprecated
-public class ImportCallable extends CommandCallable {
+public class CharacterImportCallable extends CharacterCallable {
 	
 	public static final int TIMEOUT = 15;
 	public static final String MANUAL = "**!import**\t- Als Kommentar zu einem Dateiupload startet dies einen Charakterimport aus einer XML-Datei der Heldensoftware";
 	private static final Pattern TRIAL_PATTERN = Pattern.compile("\\((MU|KL|IN|CH|FF|GE|KO|KK)/(MU|KL|IN|CH|FF|GE|KO|KK)/(MU|KL|IN|CH|FF|GE|KO|KK)\\)", Pattern.CASE_INSENSITIVE);
 	private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("Mut|Klugheit|Intuition|Charisma|Fingerfertigkeit|Gewandtheit|Konstitution|Körperkraft", Pattern.CASE_INSENSITIVE);
 	
-	public static final SlashCommandData COMMAND = Commands.slash("import", "Import a character from file");
+	public static final SubcommandData SUBCOMMAND = buildTranslatedSubcommand(I18N, "characterImport", "characterImportDescription");
 	
 	static {
-		COMMAND.addOptions(new OptionData(OptionType.ATTACHMENT, "file", "A character file from Heldensoftware or Optolith", true));
+		OptionData fileOption = buildTranslatedOption(I18N, OptionType.ATTACHMENT, "characterFileOption", "characterFileOptionDescription", true);
+		COMMAND.addOptions(fileOption);
 	}
 	
 	private DocumentBuilder db;
@@ -59,7 +57,7 @@ public class ImportCallable extends CommandCallable {
 	 * Creates a new ImportCallable.
 	 * @param event 
 	 */
-	public ImportCallable(SlashCommandInteractionEvent event) {
+	public CharacterImportCallable(SlashCommandInteractionEvent event) {
 		
 		super(event);
 		
@@ -78,79 +76,76 @@ public class ImportCallable extends CommandCallable {
 		
 		StringBuilder result = new StringBuilder();
 		
-		if(this.commandPars.containsKey("file")) {
-			
-			Attachment attachment = this.commandPars.get("file").getAsAttachment();
-			
-			if("XML".equalsIgnoreCase(attachment.getFileExtension())) {
-				
-				try(InputStream is = attachment.retrieveInputStream().get()) {
-					
-					Document doc = db.parse(is);
-					
-					Node heroNode = XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("held"))[0];
-					String name = heroNode.getAttributes().getNamedItem("name").getNodeValue();
-					
-					NodeList attributeBlocks = doc.getElementsByTagName("eigenschaften");
-					Node[] attributeNodes = new Node[0];
-					for(int i = 0; i < attributeBlocks.getLength(); i++) {
-						
-						if(attributeBlocks.item(i).getParentNode().getNodeName().equals("held")) {
-							attributeNodes = XmlUtil.nodeList2NodeArray(attributeBlocks.item(i).getChildNodes());
-						}
-					}
-					Byte[] attributes = Stream.of(attributeNodes)
-						.filter(node -> ATTRIBUTE_PATTERN.asMatchPredicate().test(node.getAttributes().getNamedItem("name").getNodeValue()))
-						.limit(8)
-						.map(node -> (byte)(Byte.valueOf(node.getAttributes().getNamedItem("value").getNodeValue()) + Byte.valueOf(node.getAttributes().getNamedItem("mod").getNodeValue())))
-						.toArray(Byte[]::new);
-					
-					
-					RoleplayCharacter chara = new RoleplayCharacter(name, Ruleset.TDE4, new Vantage[]{}, new Special[]{}, attributes);
-					Optional<String> insertedId = Avesbot.getStatementManager().insertRoleplayCharacter(member.getId(), chara);
-					
-					if(insertedId.isPresent()) {
-						
-						chara = new RoleplayCharacter(insertedId.get(), chara);
-						
-						// Get all character's abilities and spells
-						LinkedList<Node> abilityNodeList = new LinkedList<>();
-						abilityNodeList.addAll(Arrays.asList(XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("talentliste").item(0).getChildNodes())));
-						abilityNodeList.addAll(Arrays.asList(XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("zauberliste").item(0).getChildNodes())));
-						
-						Node[] abilityNodes = abilityNodeList.stream()
-							.filter(node -> TRIAL_PATTERN.asPredicate().test(node.getAttributes().getNamedItem("probe").getNodeValue()))
-							.toArray(Node[]::new);
-						
-						Ability[] abilities = this.parseAbilities(abilityNodes);
-						for(Ability a : abilities)
-							Avesbot.getStatementManager().insertAbility(chara, a);
-						
-						// Get all character's (dis)advantages
-						Node[] advantageNodes = XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("vorteil"));
-						Vantage[] vantages = this.parseVantages(advantageNodes);
-						for(Vantage v : vantages)
-							Avesbot.getStatementManager().insertVantage(chara, v);
-						
-						// Get all character's special abilities
-						Node[] specialNode = XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("sonderfertigkeit"));
-						Special[] specials = this.parseSpecials(specialNode);
-						for(Special sp : specials)
-							Avesbot.getStatementManager().insertSpecial(chara, sp);
-						
-						result.append(String.format("Charakter importiert!"));
-					} else {
-						result.append(String.format("Charakter konnte nicht erstellt werden!"));
-					}
-					
-				} catch (InterruptedException | ExecutionException | IOException | SAXException ex) {
-					System.err.println(ex.getMessage());
+		if(!this.commandPars.containsKey("file")) {
+			return String.format("Datei fehlt! Bitte lade eine XML-Datei hoch mit diesem Befehl als Kommentar!");
+		}
+		
+		Attachment attachment = this.commandPars.get("file").getAsAttachment();
+		if(!"XML".equalsIgnoreCase(attachment.getFileExtension())) {
+			return String.format("Keine XML-Datei! Bitte lade eine XML-Datei hoch!");
+		}
+		
+
+		try(InputStream is = attachment.getProxy().download().get()) {
+
+			Document doc = db.parse(is);
+
+			Node heroNode = XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("held"))[0];
+			String name = heroNode.getAttributes().getNamedItem("name").getNodeValue();
+
+			NodeList attributeBlocks = doc.getElementsByTagName("eigenschaften");
+			Node[] attributeNodes = new Node[0];
+			for(int i = 0; i < attributeBlocks.getLength(); i++) {
+
+				if(attributeBlocks.item(i).getParentNode().getNodeName().equals("held")) {
+					attributeNodes = XmlUtil.nodeList2NodeArray(attributeBlocks.item(i).getChildNodes());
 				}
-			} else {
-				result.append(String.format("Keine XML-Datei! Bitte lade eine XML-Datei hoch!"));
 			}
-		} else {
-			result.append(String.format("Datei fehlt! Bitte lade eine XML-Datei hoch mit diesem Befehl als Kommentar!"));
+			Byte[] attributes = Stream.of(attributeNodes)
+				.filter(node -> ATTRIBUTE_PATTERN.asMatchPredicate().test(node.getAttributes().getNamedItem("name").getNodeValue()))
+				.limit(8)
+				.map(node -> (byte)(Byte.valueOf(node.getAttributes().getNamedItem("value").getNodeValue()) + Byte.valueOf(node.getAttributes().getNamedItem("mod").getNodeValue())))
+				.toArray(Byte[]::new);
+
+
+			RoleplayCharacter chara = new RoleplayCharacter(name, Ruleset.TDE4, new Vantage[]{}, new Special[]{}, attributes);
+			Optional<String> insertedId = Avesbot.getStatementManager().insertRoleplayCharacter(member.getId(), chara);
+			
+			if(insertedId.isEmpty()) {
+				return String.format("Charakter konnte nicht erstellt werden!");
+			}
+
+			chara = new RoleplayCharacter(insertedId.get(), chara);
+
+			// Get all character's abilities and spells
+			LinkedList<Node> abilityNodeList = new LinkedList<>();
+			abilityNodeList.addAll(Arrays.asList(XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("talentliste").item(0).getChildNodes())));
+			abilityNodeList.addAll(Arrays.asList(XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("zauberliste").item(0).getChildNodes())));
+
+			Node[] abilityNodes = abilityNodeList.stream()
+				.filter(node -> TRIAL_PATTERN.asPredicate().test(node.getAttributes().getNamedItem("probe").getNodeValue()))
+				.toArray(Node[]::new);
+
+			Ability[] abilities = this.parseAbilities(abilityNodes);
+			for(Ability a : abilities)
+				Avesbot.getStatementManager().insertAbility(chara, a);
+
+			// Get all character's (dis)advantages
+			Node[] advantageNodes = XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("vorteil"));
+			Vantage[] vantages = this.parseVantages(advantageNodes);
+			for(Vantage v : vantages)
+				Avesbot.getStatementManager().insertVantage(chara, v);
+
+			// Get all character's special abilities
+			Node[] specialNode = XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("sonderfertigkeit"));
+			Special[] specials = this.parseSpecials(specialNode);
+			for(Special sp : specials)
+				Avesbot.getStatementManager().insertSpecial(chara, sp);
+
+			result.append(String.format("Charakter importiert!"));
+			
+		} catch (InterruptedException | ExecutionException | IOException | SAXException ex) {
+			System.err.println(ex.getMessage());
 		}
 		
 		return result.toString();

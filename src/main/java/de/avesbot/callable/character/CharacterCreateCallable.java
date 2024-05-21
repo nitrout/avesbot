@@ -94,14 +94,14 @@ public class CharacterCreateCallable extends CharacterCallable {
 		
 		String name = this.commandPars.get("name").getAsString();
 		Ruleset ruleset = Ruleset.valueOf(this.commandPars.get("ruleset").getAsString());
-		byte courage = (byte)this.commandPars.get("COU").getAsLong();
-		byte sagacity = (byte)this.commandPars.get("SGC").getAsLong();
-		byte intuition = (byte)this.commandPars.get("INT").getAsLong();
-		byte charisma = (byte)this.commandPars.get("CHA").getAsLong();
-		byte dexterity = (byte)this.commandPars.get("DEX").getAsLong();
-		byte agility = (byte)this.commandPars.get("AGI").getAsLong();
-		byte constitution = (byte)this.commandPars.get("CON").getAsLong();
-		byte strength = (byte)this.commandPars.get("STR").getAsLong();
+		byte courage = (byte)this.commandPars.get("cou").getAsLong();
+		byte sagacity = (byte)this.commandPars.get("sgc").getAsLong();
+		byte intuition = (byte)this.commandPars.get("int").getAsLong();
+		byte charisma = (byte)this.commandPars.get("cha").getAsLong();
+		byte dexterity = (byte)this.commandPars.get("dex").getAsLong();
+		byte agility = (byte)this.commandPars.get("agi").getAsLong();
+		byte constitution = (byte)this.commandPars.get("con").getAsLong();
+		byte strength = (byte)this.commandPars.get("str").getAsLong();
 		
 		RoleplayCharacter chara = new RoleplayCharacter(name, ruleset, courage, sagacity, intuition, charisma, dexterity, agility, constitution, strength, new Vantage[]{}, new Special[]{});
 		Optional<String> charaId = Avesbot.getStatementManager().insertRoleplayCharacter(member.getId(), chara);
