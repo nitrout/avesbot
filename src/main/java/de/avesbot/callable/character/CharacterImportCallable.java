@@ -42,7 +42,7 @@ public class CharacterImportCallable extends CharacterCallable {
 	public static final int TIMEOUT = 15;
 	public static final String MANUAL = "**!import**\t- Als Kommentar zu einem Dateiupload startet dies einen Charakterimport aus einer XML-Datei der Heldensoftware";
 	private static final Pattern TRIAL_PATTERN = Pattern.compile("\\((MU|KL|IN|CH|FF|GE|KO|KK)/(MU|KL|IN|CH|FF|GE|KO|KK)/(MU|KL|IN|CH|FF|GE|KO|KK)\\)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("Mut|Klugheit|Intuition|Charisma|Fingerfertigkeit|Gewandtheit|Konstitution|Körperkraft", Pattern.CASE_INSENSITIVE);
+	private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("Mut|Klugheit|Intuition|Charisma|Fingerfertigkeit|Gewandtheit|Konstitution|KÃ¶rperkraft", Pattern.CASE_INSENSITIVE);
 	
 	public static final SubcommandData SUBCOMMAND = buildTranslatedSubcommand(I18N, "characterImport", "characterImportDescription");
 	
