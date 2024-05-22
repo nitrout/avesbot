@@ -12,13 +12,17 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.GuildSetting;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 /**
  *
@@ -101,5 +105,14 @@ public abstract class CommandCallable implements Callable<String> {
 		choice.setNameLocalizations(i18n.getLocalizations(name));
 		
 		return choice;
+	}
+	
+	public static CommandData toCommandData(Class<? extends CommandCallable> callableClass) {
+		try {
+			return (CommandData)FieldUtils.readStaticField(callableClass, "COMMAND");
+		} catch(IllegalAccessException ex) {
+			Logger.getLogger(CommandCallable.class.getName()).log(Level.SEVERE, callableClass.getName()+" has no accesible static field COMMAND", ex);
+			return null;
+		}
 	}
 }

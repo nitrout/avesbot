@@ -1,5 +1,6 @@
 package de.avesbot;
 
+import de.avesbot.callable.CommandCallable;
 import de.avesbot.db.Database;
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import de.avesbot.runnable.ExitRunnable;
 import de.avesbot.db.StatementManager;
 import de.avesbot.runnable.ActiveGuildsRunnable;
@@ -72,41 +71,14 @@ public class Avesbot {
 			builder.addEventListeners(new MessageListener());
 			builder.addEventListeners(new BroadcastListener());
 			builder.addEventListeners(new JoinListener());
-			builder.setActivity(Activity.of(Activity.ActivityType.WATCHING, "adventures"));
+			builder.setActivity(Activity.customStatus("observing adventurers"));
 			jda = builder.build();
 			
 			if(Stream.of(args).anyMatch(arg -> arg.equals("--resetCommands"))) {
-				jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue((v) -> System.out.println("Deleted Command "+c.getFullCommandName()))));
-				CommandBook.getInstance().getAvailableSlashCommands().stream()
-						.forEach(command -> {
-							jda.upsertCommand(command).queue(
-								cmd -> {
-									System.out.println("Command "+cmd.getName()+" registered");
-								}, err -> {
-									System.err.println(err.getMessage());
-								});
-						});
+				resetCommands();
 			}
 			if(Stream.of(args).anyMatch(arg -> arg.equals("--updateCommands"))) {
-				HashSet<CommandData> commands = new HashSet<>();
-				CommandBook.getInstance().getRegisteredCommands().forEach((Class c) -> {
-					try {
-						CommandData command = (CommandData)c.getField("COMMAND").get(null);
-						if(command != null) {
-							commands.add(command);
-						}
-					} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
-						System.err.println(ex.getMessage());
-					}
-				});
-				commands.forEach(command -> {
-					jda.upsertCommand(command).queue(
-						cmd -> {
-							System.out.println("Command "+cmd.getName()+" registered");
-						}, err -> {
-							System.err.println(err.getMessage());
-						});
-				});
+				updateCommands();
 			}
 			
 			// execute a database keep alive request at a fixed rate to keep db connection alive
@@ -117,7 +89,7 @@ public class Avesbot {
 				});
 			}, 1000, TimeUnit.MILLISECONDS);
 			
-			// prompt for shell inputs as long as thread pool is not shut down and is not orderes to exit
+			// prompt for shell inputs as long as thread pool is not shut down and is not ordered to exit
 			String input;
 			String[] messageParts = {};
 			String[] pars = {};
@@ -131,9 +103,9 @@ public class Avesbot {
 					order = messageParts.length > 0 ? messageParts[0] : "";
 					
 					switch(order) {
-						case "active" : stpe.submit(new ActiveGuildsRunnable()); break;
-						case "exit" : stpe.submit(new ExitRunnable()); break;
-						case "leave" : stpe.submit(new LeaveGuildRunnable(pars)); break;
+						case "active" -> stpe.submit(new ActiveGuildsRunnable());
+						case "exit" -> stpe.submit(new ExitRunnable());
+						case "leave" -> stpe.submit(new LeaveGuildRunnable(pars));
 					}
 				}
 				
@@ -222,5 +194,32 @@ public class Avesbot {
 	 */
 	public static JDA getJda() {
 		return jda;
+	}
+	
+	private static void resetCommands() {
+		jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue((v) -> System.out.println("Deleted Command "+c.getFullCommandName()))));
+		CommandBook.getInstance().getAvailableSlashCommands().stream()
+				.forEach(command -> {
+					jda.upsertCommand(command).queue(
+						cmd -> {
+							System.out.println("Command "+cmd.getName()+" registered");
+						}, err -> {
+							System.err.println(err.getMessage());
+						});
+				});
+	}
+	
+	private static void updateCommands() {
+		CommandBook.getInstance().getRegisteredCommands().stream()
+				.map(CommandCallable::toCommandData)
+				.filter(cmd -> cmd != null)
+				.forEach(cmd -> {
+					jda.upsertCommand(cmd).queue(
+						command -> {
+							System.out.println("Command "+command.getName()+" registered");
+						}, err -> {
+							System.err.println(err.getMessage());
+						});
+				});
 	}
 }
