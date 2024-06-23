@@ -1,6 +1,6 @@
 package de.avesbot.model;
 
-import de.avesbot.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  *

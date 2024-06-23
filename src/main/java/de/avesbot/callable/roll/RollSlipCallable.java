@@ -2,9 +2,9 @@ package de.avesbot.callable.roll;
 
 import de.avesbot.Avesbot;
 import de.avesbot.util.Formatter;
-import de.avesbot.util.Pair;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * A callable to execute a battle slip roll.

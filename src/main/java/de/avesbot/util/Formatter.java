@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  *

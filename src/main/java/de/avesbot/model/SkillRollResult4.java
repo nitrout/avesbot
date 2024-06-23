@@ -1,6 +1,6 @@
 package de.avesbot.model;
 
-import de.avesbot.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Representation of a dice roll result for a skill in DSA4 ruleset.

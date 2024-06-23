@@ -12,7 +12,7 @@ import de.avesbot.model.SkillRollResult4;
 import de.avesbot.model.SkillRollResult5;
 import de.avesbot.model.SymbolDice;
 import de.avesbot.model.Trial;
-import de.avesbot.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Simulator for dice rolls.
@@ -36,7 +36,7 @@ public class DiceSimulator {
 		Pair<Integer, Integer>[] result = new Pair[num];
 		
 		for(int i = 0; i < num; i++)
-			result[i] = new Pair<>(rand.nextInt(dice)+1, dice);
+			result[i] = Pair.of(rand.nextInt(dice) + 1, dice);
 		
 		return result;
 	}
@@ -52,7 +52,7 @@ public class DiceSimulator {
 		
 		Pair<Integer, Integer>[] dices = rollDice(num, dice);
 		
-		return new Pair(dices, Stream.of(dices).mapToInt(result -> result.getLeft()).sum() + mod);
+		return Pair.of(dices, Stream.of(dices).mapToInt(result -> result.getLeft()).sum() + mod);
 	}
 	
 	/**
