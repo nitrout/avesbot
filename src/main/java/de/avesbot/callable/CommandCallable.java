@@ -40,7 +40,7 @@ public abstract class CommandCallable implements Callable<String> {
 	protected final List<Message.Attachment> attachments;
 	protected final GuildSetting settings;
 	
-	public CommandCallable(MessageReceivedEvent event) {
+	protected CommandCallable(MessageReceivedEvent event) {
 		this.guild = event.getGuild();
 		this.member = event.getMember();
 		
@@ -52,7 +52,7 @@ public abstract class CommandCallable implements Callable<String> {
 		this.settings = Avesbot.getStatementManager().getGuildSetting(guild).orElse(GuildSetting.DEFAULT);
 	}
 	
-	public CommandCallable(SlashCommandInteractionEvent event) {
+	protected CommandCallable(SlashCommandInteractionEvent event) {
 		this.guild = event.getGuild();
 		this.member = event.getMember();
 		this.pars = new String[] {};
@@ -66,10 +66,6 @@ public abstract class CommandCallable implements Callable<String> {
 	public int getTimeout() {
 		
 		return TIMEOUT;
-	}
-	
-	protected static void registerCommand(Class c) {
-		
 	}
 	
 	protected static SlashCommandData buildTranslatedSlashCommand(I18n i18n, String name, String description) {
