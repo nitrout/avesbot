@@ -11,6 +11,10 @@ import org.apache.commons.lang3.NotImplementedException;
 public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte cou, byte sgc, byte intu, byte cha, byte dex, byte agi, byte con, byte str,
 		List<Vantage> vantages, List<Special> specials) {
 
+	public RoleplayCharacter(String name, Ruleset ruleset, byte[] attributes, List<Vantage> vantages, List<Special> specials) {
+		this("0", name, ruleset, attributes[0], attributes[1], attributes[2], attributes[3], attributes[4], attributes[5], attributes[6], attributes[7], vantages, specials);
+	}
+
 	/**
 	 * represents one of the spellcaster (dis)advantages.
 	 *
