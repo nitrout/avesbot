@@ -86,8 +86,8 @@ public interface RoleplayCharacterRoll {
 		StringBuilder result = new StringBuilder();
 		
 		// is there a specialization of the character for that roll, then add 2 to the taw
-		if(	(spell && chara.getSpecials().stream().anyMatch(sp -> sp.name().equals("Zauberspezialisierung") && sp.attribute1().orElse("").equals(abilityName) && sp.attribute2().orElse("").equalsIgnoreCase(rep.name()) && List.of(coverage).contains(sp.attribute3().orElse(""))))
-			|| (!spell && chara.getSpecials().stream().anyMatch(sp -> sp.name().equals("Talentspezialisierung") && sp.attribute1().orElse("").equals(abilityName) && List.of(coverage).contains(sp.attribute2().orElse(""))))) {
+		if(	(spell && chara.getSpecials().stream().anyMatch(sp -> sp.name().equals("Zauberspezialisierung") && sp.attribute1().equals(abilityName) && sp.attribute2().equalsIgnoreCase(rep.name()) && List.of(coverage).contains(sp.attribute3())))
+			|| (!spell && chara.getSpecials().stream().anyMatch(sp -> sp.name().equals("Talentspezialisierung") && sp.attribute1().equals(abilityName) && List.of(coverage).contains(sp.attribute2())))) {
 			taw+=2;
 		}
 		

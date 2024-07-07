@@ -24,7 +24,8 @@ import de.avesbot.model.Vantage;
 
 /**
  * This class manages alle statements being exceuted by Aves.
- * You should only use the prepared statements of this class wo work with the db.
+ * You should only use the prepared statements of this class to work with the db.
+ *
  * @author Nitrout
  */
 public class StatementManager {
@@ -167,10 +168,10 @@ public class StatementManager {
 		try(PreparedStatement vantageInsStmnt = Database.prepareStatement(VANTAGE_INSERT);) {
 			vantageInsStmnt.setString(1, chara.id());
 			vantageInsStmnt.setString(2, vantage.name());
-			vantageInsStmnt.setString(3, vantage.attribute1().orElse(""));
-			vantageInsStmnt.setString(4, vantage.attribute2().orElse(""));
-			vantageInsStmnt.setString(5, vantage.attribute1().orElse(""));
-			vantageInsStmnt.setString(6, vantage.attribute2().orElse(""));
+			vantageInsStmnt.setString(3, vantage.attribute1());
+			vantageInsStmnt.setString(4, vantage.attribute2());
+			vantageInsStmnt.setString(5, vantage.attribute1());
+			vantageInsStmnt.setString(6, vantage.attribute2());
 			vantageInsStmnt.execute();
 		} catch(SQLException ex) {
 			System.err.println(ex.getMessage());
@@ -188,12 +189,12 @@ public class StatementManager {
 		try(PreparedStatement specialInsStmnt = Database.prepareStatement(SPECIAL_INSERT);) {
 			specialInsStmnt.setString(1, chara.id());
 			specialInsStmnt.setString(2, special.name());
-			specialInsStmnt.setString(3, special.attribute1().orElse(""));
-			specialInsStmnt.setString(4, special.attribute2().orElse(""));
-			specialInsStmnt.setString(5, special.attribute3().orElse(""));
-			specialInsStmnt.setString(6, special.attribute1().orElse(""));
-			specialInsStmnt.setString(7, special.attribute2().orElse(""));
-			specialInsStmnt.setString(8, special.attribute3().orElse(""));
+			specialInsStmnt.setString(3, special.attribute1());
+			specialInsStmnt.setString(4, special.attribute2());
+			specialInsStmnt.setString(5, special.attribute3());
+			specialInsStmnt.setString(6, special.attribute1());
+			specialInsStmnt.setString(7, special.attribute2());
+			specialInsStmnt.setString(8, special.attribute3());
 			specialInsStmnt.execute();
 		} catch(SQLException ex) {
 			System.err.println(ex.getMessage());
