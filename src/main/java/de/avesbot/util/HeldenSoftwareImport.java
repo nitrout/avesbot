@@ -9,56 +9,95 @@ import de.avesbot.model.Special;
 import de.avesbot.model.Tradition;
 import de.avesbot.model.Trial;
 import de.avesbot.model.Vantage;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.function.BiFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author Nitrout
  */
-public class HeldenSoftwareImport implements Runnable {
+public class HeldenSoftwareImport implements BiFunction<Attachment, String, Boolean> {
 	
 	private static final Pattern TRIAL_PATTERN = Pattern.compile("\\((MU|KL|IN|CH|FF|GE|KO|KK)/(MU|KL|IN|CH|FF|GE|KO|KK)/(MU|KL|IN|CH|FF|GE|KO|KK)\\)", Pattern.CASE_INSENSITIVE);
 	private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("Mut|Klugheit|Intuition|Charisma|Fingerfertigkeit|Gewandtheit|Konstitution|Körperkraft", Pattern.CASE_INSENSITIVE);
-	
-	private final Document doc;
-	private final String memberId;
-	
-	public HeldenSoftwareImport(Document doc, String memberId) {
-		this.doc = doc;
-		this.memberId = memberId;
+
+	private static final DocumentBuilder DOCUMENT_BUILDER = getDocumentBuilder();
+
+	private static DocumentBuilder getDocumentBuilder() {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setIgnoringComments(true);
+		dbf.setIgnoringElementContentWhitespace(true);
+		dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+		try {
+			return dbf.newDocumentBuilder();
+		} catch (ParserConfigurationException ex) {
+			Logger.getLogger(HeldenSoftwareImport.class.getName()).log(Level.SEVERE, null, ex);
+			return null;
+		}
 	}
 
 	@Override
-	public void run() {
-		
+	public Boolean apply(Attachment attachment, String memberId) {
+		return getXmlFile(attachment).map(doc -> importCharacter(doc, memberId)).orElse(Boolean.FALSE);
+	}
+
+	private static Optional<Document> getXmlFile(Attachment attachment) {
+		try (var is = attachment.getProxy().download().get()) {
+			return Optional.of(DOCUMENT_BUILDER.parse(is));
+		} catch (ExecutionException | IOException | SAXException ex) {
+			Logger.getLogger(HeldenSoftwareImport.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (InterruptedException ex) {
+			Logger.getLogger(HeldenSoftwareImport.class.getName()).log(Level.SEVERE, null, ex);
+			Thread.currentThread().interrupt();
+		}
+		return Optional.empty();
+	}
+
+	private static Boolean importCharacter(Document doc, String memberId) {
 		var chara = toRoleplayCharacter(doc);
 		Optional<String> insertedId = Avesbot.getStatementManager().insertRoleplayCharacter(memberId, chara);
-		if(insertedId.isEmpty()) {
-			return;
+		if (insertedId.isEmpty()) {
+			return false;
 		}
 		chara = new RoleplayCharacter(insertedId.get(), chara);
 
 		var abilities = toAbilities(doc);
-		for(Ability a : abilities)
+		for (Ability a : abilities) {
 			Avesbot.getStatementManager().insertAbility(chara, a);
+		}
 
 		// Get all character's (dis)advantages
 		var vantages = toVantages(doc);
-		for(Vantage v : vantages)
+		for (Vantage v : vantages) {
 			Avesbot.getStatementManager().insertVantage(chara, v);
+		}
 
 		// Get all character's special abilities
 		var specials = toSpecials(doc);
-		for(Special sp : specials)
+		for (Special sp : specials) {
 			Avesbot.getStatementManager().insertSpecial(chara, sp);
+		}
+
+		return true;
 	}
 	
 	private static RoleplayCharacter toRoleplayCharacter(Document doc) {
