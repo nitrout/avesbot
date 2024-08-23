@@ -5,7 +5,7 @@ apply plugin: 'application'
 
 mainClassName = 'de.avesbot.Avesbot'
 ext {
-	jdaVersion = '5.0.0'
+	jdaVersion = '5.1.0'
 	mariadbVersion = '3.4.0'
 	commonsVersion = '1.12.0'
 	jacksonVersion = '2.17.1'
