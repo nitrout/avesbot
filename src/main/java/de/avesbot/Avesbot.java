@@ -116,7 +116,7 @@ public class Avesbot {
 			// close DB connection after shutdown
 			Database.close();
 		} catch (SQLException | IOException ex) {
-			Logger.getLogger(CharacterImportCallable.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Avesbot.class.getName()).log(Level.SEVERE, null, ex);
 		} finally {
 			// ensure to close api connection and thread pool executor
 			if(getJda() != null)
