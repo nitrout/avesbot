@@ -33,12 +33,9 @@ public class DiceSimulator {
 	 * @return the dice rolls
 	 */
 	public Pair<Integer, Integer>[] rollDice(int num, int dice) {
-		Pair<Integer, Integer>[] result = new Pair[num];
-		
-		for(int i = 0; i < num; i++)
-			result[i] = Pair.of(rand.nextInt(dice) + 1, dice);
-		
-		return result;
+		return rand.ints(num, 1, dice + 1)
+				.mapToObj(i -> Pair.of(i, dice))
+				.toArray(Pair[]::new);
 	}
 	
 	/**
@@ -87,9 +84,7 @@ public class DiceSimulator {
 			outcome = Outcome.SUCCESS;
 		}
 		
-		RollResult result = new SimpleRollResult(outcome, roll);
-		
-		return result;
+		return new SimpleRollResult(outcome, roll);
 	}
 	
 	/**
