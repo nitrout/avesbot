@@ -45,7 +45,7 @@ public class CharacterImportCallable extends CharacterCallable {
 		return this.getHeroImporter(attachment)
 				.map(func -> func.apply(attachment, memberId))
 				.map(result -> result ? "SUCCESS" : "FAILED")
-				.orElse(String.format("Keine XML-Datei! Bitte lade eine XML-Datei hoch!"));
+				.orElse(I18N.getTranslation(settings.locale(), "characterImportFileError"));
 	}
 	
 	private Optional<? extends BiFunction<Attachment, String, Boolean>> getHeroImporter(Attachment attachment) {
