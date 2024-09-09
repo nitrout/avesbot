@@ -1,7 +1,6 @@
 package de.avesbot.model;
 
 import java.util.List;
-import org.apache.commons.lang3.NotImplementedException;
 
 /**
  * This class represents a hero player character.
@@ -110,10 +109,10 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	 */
 	public RoleplayCharacter(String id, String name, Ruleset rule, Vantage[] vantages, Special[] specials, Byte... attributes) {
 		this(id, name, rule,
-				attributes[Attribute.COURAGE.ordinal()].byteValue(), attributes[Attribute.SAGACITY.ordinal()].byteValue(),
-				attributes[Attribute.INTUITION.ordinal()].byteValue(), attributes[Attribute.CHARISMA.ordinal()].byteValue(),
-				attributes[Attribute.DEXTERITY.ordinal()].byteValue(), attributes[Attribute.AGILITY.ordinal()].byteValue(),
-				attributes[Attribute.CONSTITUTION.ordinal()].byteValue(), attributes[Attribute.STRENGTH.ordinal()].byteValue(),
+				attributes[Attribute.COURAGE.ordinal()], attributes[Attribute.SAGACITY.ordinal()],
+				attributes[Attribute.INTUITION.ordinal()], attributes[Attribute.CHARISMA.ordinal()],
+				attributes[Attribute.DEXTERITY.ordinal()], attributes[Attribute.AGILITY.ordinal()],
+				attributes[Attribute.CONSTITUTION.ordinal()], attributes[Attribute.STRENGTH.ordinal()],
 				vantages, specials);
 	}
 
@@ -146,8 +145,7 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	 * @return the attribute
 	 */
 	public byte getAttribute(Attribute att) {
-		byte result = 0;
-		result = switch (att) {
+		return switch (att) {
 			case COURAGE ->
 				this.cou;
 			case SAGACITY ->
@@ -165,7 +163,6 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 			case STRENGTH ->
 				this.str;
 		};
-		return result;
 	}
 
 	/**
@@ -175,15 +172,6 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	@Deprecated
 	public boolean isClumsy() {
 		return this.hasVantage("Tollpatsch");
-	}
-
-	/**
-	 * @deprecated use vantage instead
-	 * @param clumsy the clumsy to set
-	 */
-	@Deprecated
-	public void setClumsy(boolean clumsy) {
-		throw new NotImplementedException();
 	}
 
 	/**
@@ -202,15 +190,6 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	}
 
 	/**
-	 * @deprecated use vantage instead
-	 * @param spellcasterMod the spellcasterMod to set
-	 */
-	@Deprecated
-	public void setSpellcasterMod(SpellcasterMod spellcasterMod) {
-		throw new NotImplementedException();
-	}
-
-	/**
 	 * Modifies all attributes.
 	 *
 	 * @param mod the amount to modify
@@ -221,24 +200,6 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	}
 
 	/**
-	 * Get the complete list of character's (dis)advantages.
-	 *
-	 * @return the vantages
-	 */
-	public List<Vantage> getVantages() {
-		return vantages;
-	}
-
-	/**
-	 * Adds all the given (dis)advantages to the character.
-	 *
-	 * @param vantages the vantages to add
-	 */
-	public void addVantages(List<Vantage> vantages) {
-		this.vantages.addAll(vantages);
-	}
-
-	/**
 	 * Checks if the character has the given dis)advantage.
 	 *
 	 * @param vantageName the name of the vantage to check
@@ -246,24 +207,6 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	 */
 	public boolean hasVantage(String vantageName) {
 		return this.vantages.stream().anyMatch(vantage -> vantage.name().equals(vantageName));
-	}
-
-	/**
-	 * Get the complete list of character's special abilities.
-	 *
-	 * @return the vantages
-	 */
-	public List<Special> getSpecials() {
-		return specials;
-	}
-
-	/**
-	 * Adds all the given special abilities to the character.
-	 *
-	 * @param specials the vantages to add
-	 */
-	public void addSpecials(List<Special> specials) {
-		this.specials.addAll(specials);
 	}
 
 	/**
