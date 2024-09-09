@@ -4,13 +4,18 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.avesbot.Avesbot;
+import de.avesbot.model.Ability;
+import de.avesbot.model.Attribute;
 import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Ruleset;
 import de.avesbot.model.Special;
+import de.avesbot.model.Tradition;
+import de.avesbot.model.Trial;
 import de.avesbot.model.Vantage;
 import de.avesbot.model.optolith.character.OptolithCharacter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -32,27 +38,39 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 	private static final ObjectMapper JSON_MAPPER = getObjectMapper();
 
 	private static final ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory());
-	private static final HashMap<Pair<Locale, String>, Map<String, Object>> YAML_FILES = new HashMap<>();
+	private static final HashMap<Pair<Locale, String>, Map<String, Object>> LOCALIZED_YAML_FILES = new HashMap<>();
+	private static final HashMap<String, Map<String, Object>> YAML_FILES = new HashMap<>();
 
 	static {
 		YAML_MAPPER.findAndRegisterModules();
 	}
 
-	private static Map<String, Object> getYaml(Locale locale, String file) {
+	private static Map<String, Object> getYaml(String file) {
+		return YAML_FILES.computeIfAbsent(file, OptolithImport::loadYaml);
+	}
 
-		var key = Pair.of(locale, file);
-		if (!YAML_FILES.containsKey(key)) {
-			try {
-				var yaml = YAML_MAPPER.readValue(Avesbot.class.getResourceAsStream("de/avesbot/optolith/" + locale.toLanguageTag() + "/" + file), Map.class);
-				YAML_FILES.put(key, yaml);
-			} catch (IOException ex) {
-				Logger.getLogger(OptolithImport.class.getName()).log(Level.SEVERE, null, ex);
-				return Map.of();
-			}
+	private static Map<String, Object> loadYaml(String file) {
+		try {
+			var stream = Avesbot.getResourceStream("de/avesbot/optolith/univ/" + file);
+			return YAML_MAPPER.readValue(stream, Map.class);
+		} catch (IOException ex) {
+			Logger.getLogger(OptolithImport.class.getName()).log(Level.SEVERE, null, ex);
+			return Map.of();
 		}
+	}
 
-		return YAML_FILES.get(key);
+	private static Map<String, Object> getLocalizedYaml(Locale locale, String file) {
+		return LOCALIZED_YAML_FILES.computeIfAbsent(Pair.of(locale, file), OptolithImport::loadLocalizedYaml);
+	}
 
+	private static Map<String, Object> loadLocalizedYaml(Pair<Locale, String> key) {
+		var stream = Avesbot.getResourceStream("de/avesbot/optolith/" + key.getLeft().toLanguageTag() + "/" + key.getRight());
+		try {
+			return YAML_MAPPER.readValue(stream, Map.class);
+		} catch (IOException ex) {
+			Logger.getLogger(OptolithImport.class.getName()).log(Level.SEVERE, null, ex);
+			return Map.of();
+		}
 	}
 
 	private static ObjectMapper getObjectMapper() {
@@ -85,6 +103,18 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 			return false;
 		}
 		chara = new RoleplayCharacter(insertedId.get(), chara);
+
+		for (Vantage vantage : chara.vantages()) {
+			Avesbot.getStatementManager().insertVantage(chara, vantage);
+		}
+
+		for (Special special : chara.specials()) {
+			Avesbot.getStatementManager().insertSpecial(chara, special);
+		}
+
+		for (Ability ability : extractAbilities(character)) {
+			Avesbot.getStatementManager().insertAbility(chara, ability);
+		}
 
 		return true;
 	}
@@ -119,12 +149,12 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 	}
 
 	private static Vantage toAdvantage(OptolithCharacter character, Entry<String, Object> vantageEntry) {
-		var advantage = (Map<String, Object>) YAML_FILES.get(Pair.of(character.locale(), "Advantages.yaml")).get(vantageEntry.getKey());
+		var advantage = (Map<String, Object>) LOCALIZED_YAML_FILES.get(Pair.of(character.locale(), "Advantages.yaml")).get(vantageEntry.getKey());
 		return new Vantage((String) advantage.get("name"), "", "");
 	}
 
 	private static Vantage toDisadvantage(OptolithCharacter character, Entry<String, Object> vantageEntry) {
-		var disadvantage = (Map<String, Object>) getYaml(character.locale(), "Disadvantages.yaml").get(vantageEntry.getKey());
+		var disadvantage = (Map<String, Object>) getLocalizedYaml(character.locale(), "Disadvantages.yaml").get(vantageEntry.getKey());
 		return new Vantage((String) disadvantage.get("name"), "", "");
 	}
 
@@ -136,7 +166,51 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 	}
 
 	private static Special toSpecial(OptolithCharacter character, Entry<String, Object> specialEntry) {
-		var special = (Map<String, Object>) getYaml(character.locale(), "SpecialAbilities.yaml").get(specialEntry.getKey());
+		var special = (Map<String, Object>) getLocalizedYaml(character.locale(), "SpecialAbilities.yaml").get(specialEntry.getKey());
 		return new Special((String) special.get("name"), "", "", "");
+	}
+
+	private static List<Ability> extractAbilities(OptolithCharacter character) {
+		var list = new LinkedList<Ability>();
+		character.talents().entrySet().stream()
+				.map(e -> toTalentAbility(character, e))
+				.forEach(list::add);
+		character.spells().entrySet().stream()
+				.map(e -> toSpellAbility(character, e))
+				.forEach(list::add);
+		character.liturgies().entrySet().stream()
+				.map(e -> toLiturgyAbility(character, e))
+				.forEach(list::add);
+		return List.copyOf(list);
+	}
+
+	private static Ability toTalentAbility(OptolithCharacter character, Entry<String, Integer> talentEntry) {
+		var talent = (Map<String, Object>) getYaml("Skills.yaml").get(talentEntry.getKey());
+		var talentLang = (Map<String, Object>) getLocalizedYaml(character.locale(), "Skills.yaml").get(talentEntry.getKey());
+		return new Ability((String) talentLang.get("name"), Tradition.NONE, toTrial(talent), talentEntry.getValue().byteValue(), Ability.Type.TALENT);
+	}
+
+	private static Ability toSpellAbility(OptolithCharacter character, Entry<String, Integer> spellEntry) {
+		var spell = (Map<String, Object>) getYaml("Spells.yaml").get(spellEntry.getKey());
+		var spellLang = (Map<String, Object>) getLocalizedYaml(character.locale(), "Spells.yaml").get(spellEntry.getKey());
+		return new Ability((String) spellLang.get("name"), Tradition.NONE, toTrial(spell), spellEntry.getValue().byteValue(), Ability.Type.SPELL);
+	}
+
+	private static Ability toLiturgyAbility(OptolithCharacter character, Entry<String, Integer> liturgyEntry) {
+		var liturgy = (Map<String, Object>) getYaml("LiturgicalChants.yaml").get(liturgyEntry.getKey());
+		var liturgyLang = (Map<String, Object>) getLocalizedYaml(character.locale(), "LiturgicalChants.yaml").get(liturgyEntry.getKey());
+		return new Ability((String) liturgyLang.get("name"), Tradition.NONE, toTrial(liturgy), liturgyEntry.getValue().byteValue(), Ability.Type.LITURGY);
+	}
+
+	private static Trial toTrial(Map<String, Object> ability) {
+		var check1 = (String) ability.get("check1");
+		var check2 = (String) ability.get("check2");
+		var check3 = (String) ability.get("check3");
+
+		var check1Pos = Integer.parseInt(check1.substring(check1.length() - 1));
+		var check2Pos = Integer.parseInt(check2.substring(check2.length() - 1));
+		var check3Pos = Integer.parseInt(check3.substring(check3.length() - 1));
+
+		return new Trial(Attribute.values()[check1Pos], Attribute.values()[check2Pos], Attribute.values()[check3Pos]);
 	}
 }
