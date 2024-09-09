@@ -9,6 +9,7 @@ import de.avesbot.callable.DiceCallable;
 import de.avesbot.callable.character.CharacterChooseCallable;
 import de.avesbot.callable.character.CharacterCreateCallable;
 import de.avesbot.callable.character.CharacterDeleteCallable;
+import de.avesbot.callable.character.CharacterImportCallable;
 import de.avesbot.callable.character.CharacterInfoCallable;
 import de.avesbot.callable.character.CharacterLearnCallable;
 import de.avesbot.callable.character.CharacterListCallable;
@@ -56,13 +57,7 @@ public class CommandBook {
 				.map(c -> {
 					try {
 						return (CommandData)(c.getField("COMMAND").get(null));
-					} catch (NoSuchFieldException ex) {
-						Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
-					} catch (SecurityException ex) {
-						Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
-					} catch (IllegalArgumentException ex) {
-						Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
-					} catch (IllegalAccessException ex) {
+					} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
 						Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
 					}
 					return null;
@@ -78,13 +73,7 @@ public class CommandBook {
 				SlashCommandData cmd = (SlashCommandData)c.getField("COMMAND").get(null);
 				SubcommandData subCmd = (SubcommandData)c.getField("SUBCOMMAND").get(null);
 				cmd.addSubcommands(subCmd);
-			} catch (NoSuchFieldException ex) {
-				Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (SecurityException ex) {
-				Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalArgumentException ex) {
-				Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalAccessException ex) {
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
 				Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		} );
@@ -92,11 +81,11 @@ public class CommandBook {
 	
 	List<Class<? extends CommandCallable>> getCommandList() {
 		return List.of(
-			CharacterChooseCallable.class, CharacterCreateCallable.class, CharacterDeleteCallable.class, CharacterInfoCallable.class, CharacterLearnCallable.class, CharacterListCallable.class,
-			GroupAttributeCallable.class, GroupChooseCallable.class, GroupCreateCallable.class, GroupJoinCallable.class, GroupLeaveCallable.class, GroupSkillCallable.class,
-			RollAttributeCallable.class, RollDiceCallable.class, RollSkillCallable.class, RollSlipCallable.class, RollSumCallable.class, RollTrialCallable.class,
-			SettingsLanguageCallable.class, SettingsStatsCallable.class,
-			DiceCallable.class
+				CharacterChooseCallable.class, CharacterCreateCallable.class, CharacterDeleteCallable.class, CharacterImportCallable.class, CharacterInfoCallable.class, CharacterLearnCallable.class, CharacterListCallable.class,
+				GroupAttributeCallable.class, GroupChooseCallable.class, GroupCreateCallable.class, GroupJoinCallable.class, GroupLeaveCallable.class, GroupSkillCallable.class,
+				RollAttributeCallable.class, RollDiceCallable.class, RollSkillCallable.class, RollSlipCallable.class, RollSumCallable.class, RollTrialCallable.class,
+				SettingsLanguageCallable.class, SettingsStatsCallable.class,
+				DiceCallable.class
 		);
 	}
 	
@@ -112,7 +101,7 @@ public class CommandBook {
 					Class c = Class.forName(getCommandCallableClassName(com.getName()));
 					commandMap.put(com.getName(), c);
 				} catch (ClassNotFoundException ex) {
-					System.err.println(ex.getMessage());
+					Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			} else {
 				subs.forEach(sub -> {
@@ -120,7 +109,7 @@ public class CommandBook {
 						Class c = Class.forName(getCommandCallableClassName(com.getName(), sub.getName()));
 						commandMap.put(com.getName()+" "+sub.getName(), c);
 					} catch (ClassNotFoundException ex) {
-						System.err.println(ex.getMessage());
+						Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
 					}
 				});
 			}
@@ -138,18 +127,15 @@ public class CommandBook {
 		
 		String commandName = event.getFullCommandName();
 		
-		Optional<CommandCallable> command = Optional.ofNullable(this.commandMap.get(commandName)).map(cc -> {
+		return Optional.ofNullable(this.commandMap.get(commandName)).map(cc -> {
 			CommandCallable cmd = null;
 			try {
 				cmd = (CommandCallable)cc.getConstructor(SlashCommandInteractionEvent.class).newInstance(event);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-				System.err.println(ex.getMessage());
+				Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			return cmd;
 		});
-		
-		
-		return command;
 	}
 	
 	public Collection<Class<? extends CommandCallable>> getRegisteredCommands() {
