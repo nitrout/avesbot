@@ -1,6 +1,7 @@
 package de.avesbot;
 
 import de.avesbot.callable.CommandCallable;
+import de.avesbot.callable.character.CharacterImportCallable;
 import de.avesbot.db.Database;
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,7 +23,12 @@ import de.avesbot.runnable.ExitRunnable;
 import de.avesbot.db.StatementManager;
 import de.avesbot.runnable.ActiveGuildsRunnable;
 import de.avesbot.runnable.LeaveGuildRunnable;
+import de.avesbot.runnable.ServerSocketRunnable;
 import de.avesbot.util.DatabaseKeepAlive;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import net.dv8tion.jda.api.entities.Activity;
 
 /**
@@ -51,14 +57,16 @@ public class Avesbot {
 		loadProperties();
 		
 		token = properties.getProperty("token", "");
-		int keepAliveInterval = Integer.parseInt(properties.getProperty("db_keep_alive_interval"));
+		var keepAliveInterval = Integer.parseInt(properties.getProperty("db_keep_alive_interval"));
+		var serverSocketAddress = getSocketAddress();
+		var serverSocketPort = Integer.parseInt(properties.getProperty("socketPort", "55555"));
 		
 		// initialize thread pool executor to handle all incoming discord events
-		stpe = new ScheduledThreadPoolExecutor(1);
+		stpe = new ScheduledThreadPoolExecutor(4);
 		stpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 		
-		try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-			
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); var socket = new ServerSocket(serverSocketPort, 4, serverSocketAddress);) {
+			stpe.execute(new ServerSocketRunnable(socket));
 			// Setup database connection
 			Database.init(properties.getProperty("db_host"), properties.getProperty("db_user"), properties.getProperty("db_pass"), properties.getProperty("db_name"));
 			stmntManager = new StatementManager();
@@ -67,12 +75,7 @@ public class Avesbot {
 			diceSimulator = new DiceSimulator();
 			
 			// Setup discord functions ans event listeners
-			JDABuilder builder = JDABuilder.createDefault(token);
-			builder.addEventListeners(new MessageListener());
-			builder.addEventListeners(new BroadcastListener());
-			builder.addEventListeners(new JoinListener());
-			builder.setActivity(Activity.customStatus("observing adventurers"));
-			jda = builder.build();
+			jda = buildJDA();
 			
 			if(Stream.of(args).anyMatch(arg -> arg.equals("--resetCommands"))) {
 				resetCommands();
@@ -83,11 +86,7 @@ public class Avesbot {
 			
 			// execute a database keep alive request at a fixed rate to keep db connection alive
 			stpe.scheduleAtFixedRate(new DatabaseKeepAlive(), 0, keepAliveInterval, TimeUnit.HOURS);
-			stpe.schedule(() -> {
-				getJda().getGuilds().forEach(guild -> {
-					stmntManager.insertGuild(guild);
-				});
-			}, 1000, TimeUnit.MILLISECONDS);
+			stpe.schedule(() -> getJda().getGuilds().forEach(guild -> stmntManager.insertGuild(guild)), 1000, TimeUnit.MILLISECONDS);
 			
 			// prompt for shell inputs as long as thread pool is not shut down and is not ordered to exit
 			String input;
@@ -105,7 +104,10 @@ public class Avesbot {
 					switch(order) {
 						case "active" -> stpe.submit(new ActiveGuildsRunnable());
 						case "exit" -> stpe.submit(new ExitRunnable());
-						case "leave" -> stpe.submit(new LeaveGuildRunnable(pars));
+						case "leave" ->
+							stpe.submit(new LeaveGuildRunnable(pars));
+						default ->
+							System.out.println("Unknown command!");
 					}
 				}
 				
@@ -113,11 +115,9 @@ public class Avesbot {
 			
 			// close DB connection after shutdown
 			Database.close();
-		}
-		catch(SQLException | IOException le) {
-			System.err.println(le.getMessage());
-		}
-		finally {
+		} catch (SQLException | IOException ex) {
+			Logger.getLogger(CharacterImportCallable.class.getName()).log(Level.SEVERE, null, ex);
+		} finally {
 			// ensure to close api connection and thread pool executor
 			if(getJda() != null)
 				getJda().shutdown();
@@ -141,19 +141,28 @@ public class Avesbot {
 				properties.load(fis);
 			}
 			catch(IOException ioe) {
-				System.err.println(ioe.getMessage());
+				Logger.getLogger(Avesbot.class.getName()).log(Level.SEVERE, null, ioe);
 			}
 		}
-		properties.computeIfAbsent("control_user", (obj) -> "000000000000000000");
-		properties.computeIfAbsent("db_host", (obj) -> "localhost");
-		properties.computeIfAbsent("db_user", (obj) -> "root");
-		properties.computeIfAbsent("db_pass", (obj) -> "root");
-		properties.computeIfAbsent("db_name", (obj) -> "aves");
-		properties.computeIfAbsent("db_keep_alive_interval", (obj) -> "6");
-		properties.computeIfAbsent("max_dice", (obj) -> "70");
-		properties.computeIfAbsent("application_id", (obj) -> "000000000000000000");
-		properties.computeIfAbsent("token", (obj) -> "");
-		properties.computeIfAbsent("website_host", (obj) -> "");
+		properties.computeIfAbsent("control_user", obj -> "000000000000000000");
+		properties.computeIfAbsent("db_host", obj -> "localhost");
+		properties.computeIfAbsent("db_user", obj -> "root");
+		properties.computeIfAbsent("db_pass", obj -> "root");
+		properties.computeIfAbsent("db_name", obj -> "aves");
+		properties.computeIfAbsent("db_keep_alive_interval", obj -> "6");
+		properties.computeIfAbsent("max_dice", obj -> "70");
+		properties.computeIfAbsent("application_id", obj -> "000000000000000000");
+		properties.computeIfAbsent("token", obj -> "");
+		properties.computeIfAbsent("website_host", obj -> "");
+	}
+
+	private static JDA buildJDA() {
+		JDABuilder builder = JDABuilder.createDefault(token);
+		builder.addEventListeners(new MessageListener());
+		builder.addEventListeners(new BroadcastListener());
+		builder.addEventListeners(new JoinListener());
+		builder.setActivity(Activity.customStatus("observing adventurers"));
+		return builder.build();
 	}
 	
 	/**
@@ -195,31 +204,34 @@ public class Avesbot {
 	public static JDA getJda() {
 		return jda;
 	}
+
+	public static InputStream getResourceStream(String path) {
+		return Avesbot.class.getResourceAsStream(path);
+	}
 	
 	private static void resetCommands() {
-		jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue((v) -> System.out.println("Deleted Command "+c.getFullCommandName()))));
+		jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue(v -> System.out.println("Deleted Command " + c.getFullCommandName()))));
 		CommandBook.getInstance().getAvailableSlashCommands().stream()
-				.forEach(command -> {
-					jda.upsertCommand(command).queue(
-						cmd -> {
-							System.out.println("Command "+cmd.getName()+" registered");
-						}, err -> {
-							System.err.println(err.getMessage());
-						});
-				});
+				.forEach(command -> jda.upsertCommand(command).queue(
+				cmd -> System.out.println("Command " + cmd.getName() + " registered"),
+				err -> System.err.println(err.getMessage())));
 	}
 	
 	private static void updateCommands() {
 		CommandBook.getInstance().getRegisteredCommands().stream()
 				.map(CommandCallable::toCommandData)
 				.filter(cmd -> cmd != null)
-				.forEach(cmd -> {
-					jda.upsertCommand(cmd).queue(
-						command -> {
-							System.out.println("Command "+command.getName()+" registered");
-						}, err -> {
-							System.err.println(err.getMessage());
-						});
-				});
+				.forEach(cmd -> jda.upsertCommand(cmd).queue(
+				command -> System.out.println("Command " + command.getName() + " registered"),
+				err -> System.err.println(err.getMessage())));
+	}
+	
+	private static InetAddress getSocketAddress() {
+		try {
+			return properties.containsKey("socket") ? InetAddress.getByName(properties.getProperty("socket", "localhost")) : InetAddress.getLoopbackAddress();
+		} catch (UnknownHostException ex) {
+			Logger.getLogger(Avesbot.class.getName()).log(Level.SEVERE, null, ex);
+			return null;
+		}
 	}
 }
