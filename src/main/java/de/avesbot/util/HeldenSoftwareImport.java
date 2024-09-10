@@ -208,7 +208,7 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 		Tradition rep = Tradition.NONE;
 
 		if(trialMatcher.find()) {
-			trial = new Trial(Attribute.valueOf(trialMatcher.group(1).toUpperCase()), Attribute.valueOf(trialMatcher.group(2).toUpperCase()), Attribute.valueOf(trialMatcher.group(3).toUpperCase()));
+			trial = new Trial(attributeFromTranslatedLiteral(trialMatcher.group(1).toUpperCase()), attributeFromTranslatedLiteral(trialMatcher.group(2).toUpperCase()), attributeFromTranslatedLiteral(trialMatcher.group(3).toUpperCase()));
 		}
 
 		try {
@@ -223,6 +223,29 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 		}
 		
 		return new Ability(abilityName, rep, trial, taw, type);
+	}
+
+	private static Attribute attributeFromTranslatedLiteral(String attribute) {
+		return switch (attribute) {
+			case "MU" ->
+				Attribute.COURAGE;
+			case "KL" ->
+				Attribute.SAGACITY;
+			case "IN" ->
+				Attribute.INTUITION;
+			case "CH" ->
+				Attribute.CHARISMA;
+			case "FF" ->
+				Attribute.DEXTERITY;
+			case "GE" ->
+				Attribute.AGILITY;
+			case "KO" ->
+				Attribute.CONSTITUTION;
+			case "KK" ->
+				Attribute.STRENGTH;
+			default ->
+				null;
+		};
 	}
 	
 }
