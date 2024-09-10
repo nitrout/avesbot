@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import de.avesbot.callable.CommandCallable;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.GuildSetting;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
@@ -33,13 +35,13 @@ public class MessageListener extends ListenerAdapter {
 				Future<String> result = Avesbot.getThreadPoolExecutor().submit(callable);
 				answer.append(result.get(callable.getTimeout(), TimeUnit.SECONDS));
 			} catch (ExecutionException ex) {
-				ex.printStackTrace(System.err);
+				Logger.getLogger(MessageListener.class.getName()).log(Level.SEVERE, null, ex);
 				answer.append(I18N.getTranslation(settings.locale(), "errorCommandExecution"));
 			} catch (TimeoutException ex) {
-				System.err.println(ex.getMessage());
+				Logger.getLogger(MessageListener.class.getName()).log(Level.SEVERE, null, ex);
 				answer.append(I18N.getTranslation(settings.locale(), "errorCommandTimeLimit"));
 			} catch (InterruptedException ex) {
-				System.err.println(ex.getMessage());
+				Logger.getLogger(MessageListener.class.getName()).log(Level.SEVERE, null, ex);
 				answer.append(I18N.getTranslation(settings.locale(), "errorCommandInterrupted"));
 			}
 		},

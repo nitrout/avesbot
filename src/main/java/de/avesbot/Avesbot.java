@@ -77,10 +77,10 @@ public class Avesbot {
 			// Setup discord functions ans event listeners
 			jda = buildJDA();
 			
-			if(Stream.of(args).anyMatch(arg -> arg.equals("--resetCommands"))) {
+			if (Stream.of(args).anyMatch(arg -> arg.equals("--resetCommands"))) {
 				resetCommands();
 			}
-			if(Stream.of(args).anyMatch(arg -> arg.equals("--updateCommands"))) {
+			if (Stream.of(args).anyMatch(arg -> arg.equals("--updateCommands"))) {
 				updateCommands();
 			}
 			
@@ -213,7 +213,7 @@ public class Avesbot {
 		jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue(v -> System.out.println("Deleted Command " + c.getFullCommandName()))));
 		CommandBook.getInstance().getAvailableSlashCommands().stream()
 				.forEach(command -> jda.upsertCommand(command).queue(
-				cmd -> System.out.println("Command " + cmd.getName() + " registered"),
+				cmd -> System.out.println("Command " + cmd.getFullCommandName() + " registered"),
 				err -> System.err.println(err.getMessage())));
 	}
 	
@@ -222,7 +222,7 @@ public class Avesbot {
 				.map(CommandCallable::toCommandData)
 				.filter(cmd -> cmd != null)
 				.forEach(cmd -> jda.upsertCommand(cmd).queue(
-				command -> System.out.println("Command " + command.getName() + " registered"),
+				command -> System.out.println("Command " + command.getFullCommandName() + " registered"),
 				err -> System.err.println(err.getMessage())));
 	}
 	
