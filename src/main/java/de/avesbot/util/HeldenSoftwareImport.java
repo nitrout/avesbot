@@ -195,15 +195,14 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 		abilityNodeList.addAll(Arrays.asList(XmlUtil.nodeList2NodeArray(doc.getElementsByTagName("zauberliste").item(0).getChildNodes())));
 
 		return abilityNodeList.stream()
-			.filter(node -> TRIAL_PATTERN.asPredicate().test(node.getAttributes().getNamedItem("probe").getNodeValue()))
-			.map(HeldenSoftwareImport::toAbility)
-			.toArray(Ability[]::new);
+				.filter(node -> TRIAL_PATTERN.matcher(node.getAttributes().getNamedItem("probe").getNodeValue()).results().count() == 3)
+				.map(HeldenSoftwareImport::toAbility)
+				.toArray(Ability[]::new);
 	}
 	
 	private static Ability toAbility(Node node) {
 		final var abilityName = node.getAttributes().getNamedItem("name").getNodeValue();
 		Matcher trialMatcher = TRIAL_PATTERN.matcher(node.getAttributes().getNamedItem("probe").getNodeValue());
-		Trial trial = null;
 		byte taw;
 
 		var triialAttributes = trialMatcher.results()
@@ -211,9 +210,11 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 				.map(String::toUpperCase)
 				.map(HeldenSoftwareImport::attributeFromTranslatedLiteral)
 				.toArray(Attribute[]::new);
-		if (triialAttributes.length == 3) {
-			trial = new Trial(triialAttributes[0], triialAttributes[1], triialAttributes[2]);
+
+		if (triialAttributes.length != 3) {
+			return null;
 		}
+		var trial = new Trial(triialAttributes[0], triialAttributes[1], triialAttributes[2]);
 
 		try {
 			taw = Byte.parseByte(node.getAttributes().getNamedItem("value").getNodeValue());
