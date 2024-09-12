@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -36,8 +37,8 @@ import org.xml.sax.SAXException;
  */
 public class HeldenSoftwareImport implements BiFunction<Attachment, String, Boolean> {
 	
-	private static final Pattern TRIAL_PATTERN = Pattern.compile("\\((MU|KL|IN|CH|FF|GE|KO|KK)/(MU|KL|IN|CH|FF|GE|KO|KK)/(MU|KL|IN|CH|FF|GE|KO|KK)\\)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("Mut|Klugheit|Intuition|Charisma|Fingerfertigkeit|Gewandtheit|Konstitution|Körperkraft", Pattern.CASE_INSENSITIVE);
+	private static final Pattern TRIAL_PATTERN = Pattern.compile("MU|KL|IN|CH|FF|GE|KO|KK", Pattern.CASE_INSENSITIVE);
+	private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("Mut|Klugheit|Intuition|Charisma|Fingerfertigkeit|Gewandtheit|Konstitution|Körperkraft", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.CANON_EQ);
 
 	private static final DocumentBuilder DOCUMENT_BUILDER = getDocumentBuilder();
 
@@ -132,7 +133,7 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 	
 	private static Vantage toVantage(Node node) {
 		var name = node.getAttributes().getNamedItem("name").getNodeValue();
-		var attribute1 = Optional.ofNullable(node.getAttributes().getNamedItem("value")).map(valueNode -> valueNode.getNodeValue()).orElse("");
+		var attribute1 = Optional.ofNullable(node.getAttributes().getNamedItem("value")).map(Node::getNodeValue).orElse("");
 		var attribute2 = "";
 
 		if(node.hasChildNodes()) {
@@ -200,15 +201,18 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 	}
 	
 	private static Ability toAbility(Node node) {
-		String abilityName = node.getAttributes().getNamedItem("name").getNodeValue();
+		final var abilityName = node.getAttributes().getNamedItem("name").getNodeValue();
 		Matcher trialMatcher = TRIAL_PATTERN.matcher(node.getAttributes().getNamedItem("probe").getNodeValue());
 		Trial trial = null;
 		byte taw;
-		Ability.Type type = node.getNodeName().equals("zauber") ? Ability.Type.SPELL : Ability.Type.TALENT;
-		Tradition rep = Tradition.NONE;
 
-		if(trialMatcher.find()) {
-			trial = new Trial(attributeFromTranslatedLiteral(trialMatcher.group(1).toUpperCase()), attributeFromTranslatedLiteral(trialMatcher.group(2).toUpperCase()), attributeFromTranslatedLiteral(trialMatcher.group(3).toUpperCase()));
+		var triialAttributes = trialMatcher.results()
+				.map(MatchResult::group)
+				.map(String::toUpperCase)
+				.map(HeldenSoftwareImport::attributeFromTranslatedLiteral)
+				.toArray(Attribute[]::new);
+		if (triialAttributes.length == 3) {
+			trial = new Trial(triialAttributes[0], triialAttributes[1], triialAttributes[2]);
 		}
 
 		try {
@@ -218,11 +222,21 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 			taw = 0;
 		}
 
-		if(node.getNodeName().equals("zauber") && Optional.ofNullable(node.getAttributes().getNamedItem("repraesentation")).isPresent()) {
-			rep = Optional.of(Tradition.mappedValueOf(node.getAttributes().getNamedItem("repraesentation").getNodeValue())).get();
+		if (node.getNodeName().equals("zauber")) {
+			var rep = Optional.ofNullable(node.getAttributes().getNamedItem("repraesentation"))
+					.map(Node::getNodeValue)
+					.map(Tradition::mappedValueOf)
+					.orElse(Tradition.NONE);
+			var spellName = Optional.ofNullable(node.getAttributes().getNamedItem("variante"))
+					.map(Node::getNodeValue)
+					.filter(value -> !value.isEmpty())
+					.map(value -> "%s [%s]".formatted(abilityName, value))
+					.orElse(abilityName);
+
+			return new Ability(spellName, rep, trial, taw, Ability.Type.SPELL);
 		}
-		
-		return new Ability(abilityName, rep, trial, taw, type);
+
+		return new Ability(abilityName, Tradition.NONE, trial, taw, Ability.Type.TALENT);
 	}
 
 	private static Attribute attributeFromTranslatedLiteral(String attribute) {
