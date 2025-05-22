@@ -2,3 +2,5 @@
 /build/
 /aves.conf
 /src/main/resources/de/avesbot/optolith/*
+/.idea/
+/gradle/
