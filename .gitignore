@@ -4,3 +4,5 @@
 /src/main/resources/de/avesbot/optolith/*
 /.idea/
 /gradle/
+/gradlew
+/gradlew.bat
