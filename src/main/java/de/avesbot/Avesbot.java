@@ -1,7 +1,6 @@
 package de.avesbot;
 
 import de.avesbot.callable.CommandCallable;
-import de.avesbot.callable.character.CharacterImportCallable;
 import de.avesbot.db.Database;
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,12 +10,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import de.avesbot.runnable.ExitRunnable;
@@ -32,8 +31,6 @@ import java.net.UnknownHostException;
 import net.dv8tion.jda.api.entities.Activity;
 
 /**
- * Bot invite Link
- * https://discord.com/api/oauth2/authorize?client_id=693247128482480178&permissions=1073743872&redirect_uri=https%3A%2F%2Favesbot.de%2Fhowto&scope=identify%20guilds%20applications.commands%20bot
  * @author nitrout
  */
 public class Avesbot {
@@ -65,7 +62,7 @@ public class Avesbot {
 		stpe = new ScheduledThreadPoolExecutor(4);
 		stpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 		
-		try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); var socket = new ServerSocket(serverSocketPort, 4, serverSocketAddress);) {
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); var socket = new ServerSocket(serverSocketPort, 4, serverSocketAddress)) {
 			stpe.execute(new ServerSocketRunnable(socket));
 			// Setup database connection
 			Database.init(properties.getProperty("db_host"), properties.getProperty("db_user"), properties.getProperty("db_pass"), properties.getProperty("db_name"));
@@ -77,10 +74,10 @@ public class Avesbot {
 			// Setup discord functions ans event listeners
 			jda = buildJDA();
 			
-			if (Stream.of(args).anyMatch(arg -> arg.equals("--resetCommands"))) {
+			if (Arrays.asList(args).contains("--resetCommands")) {
 				resetCommands();
 			}
-			if (Stream.of(args).anyMatch(arg -> arg.equals("--updateCommands"))) {
+			if (Arrays.asList(args).contains("--updateCommands")) {
 				updateCommands();
 			}
 			
@@ -90,8 +87,8 @@ public class Avesbot {
 			
 			// prompt for shell inputs as long as thread pool is not shut down and is not ordered to exit
 			String input;
-			String[] messageParts = {};
-			String[] pars = {};
+			String[] messageParts;
+			String[] pars;
 			String order = "";
 			do {
 				input = br.readLine();
@@ -144,16 +141,16 @@ public class Avesbot {
 				Logger.getLogger(Avesbot.class.getName()).log(Level.SEVERE, null, ioe);
 			}
 		}
-		properties.computeIfAbsent("control_user", obj -> "000000000000000000");
-		properties.computeIfAbsent("db_host", obj -> "localhost");
-		properties.computeIfAbsent("db_user", obj -> "root");
-		properties.computeIfAbsent("db_pass", obj -> "root");
-		properties.computeIfAbsent("db_name", obj -> "aves");
-		properties.computeIfAbsent("db_keep_alive_interval", obj -> "6");
-		properties.computeIfAbsent("max_dice", obj -> "70");
-		properties.computeIfAbsent("application_id", obj -> "000000000000000000");
-		properties.computeIfAbsent("token", obj -> "");
-		properties.computeIfAbsent("website_host", obj -> "");
+		properties.putIfAbsent("control_user", "000000000000000000");
+		properties.putIfAbsent("db_host", "localhost");
+		properties.putIfAbsent("db_user", "root");
+		properties.putIfAbsent("db_pass", "root");
+		properties.putIfAbsent("db_name", "aves");
+		properties.putIfAbsent("db_keep_alive_interval", "6");
+		properties.putIfAbsent("max_dice", "70");
+		properties.putIfAbsent("application_id", "000000000000000000");
+		properties.putIfAbsent("token", "");
+		properties.putIfAbsent("website_host", "");
 	}
 
 	private static JDA buildJDA() {
@@ -167,7 +164,7 @@ public class Avesbot {
 	
 	/**
 	 * Get application properties.
-	 * @return 
+	 * @return the properties
 	 */
 	public static Properties getProperties() {
 		return properties;
@@ -175,7 +172,7 @@ public class Avesbot {
 	
 	/**
 	 * Get the db statement manager.
-	 * @return 
+	 * @return the statement manager
 	 */
 	public static StatementManager getStatementManager() {
 		return stmntManager;
@@ -183,7 +180,7 @@ public class Avesbot {
 	
 	/**
 	 * An Executor to handle all incoming requests.
-	 * @return 
+	 * @return the thread pool executor
 	 */
 	public static ScheduledThreadPoolExecutor getThreadPoolExecutor() {
 		return stpe;
@@ -211,7 +208,7 @@ public class Avesbot {
 	
 	private static void resetCommands() {
 		jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue(v -> System.out.println("Deleted Command " + c.getFullCommandName()))));
-		CommandBook.getInstance().getAvailableSlashCommands().stream()
+		CommandBook.getInstance().getAvailableSlashCommands()
 				.forEach(command -> jda.upsertCommand(command).queue(
 				cmd -> System.out.println("Command " + cmd.getFullCommandName() + " registered"),
 				err -> System.err.println(err.getMessage())));
@@ -220,7 +217,7 @@ public class Avesbot {
 	private static void updateCommands() {
 		CommandBook.getInstance().getRegisteredCommands().stream()
 				.map(CommandCallable::toCommandData)
-				.filter(cmd -> cmd != null)
+				.filter(Objects::nonNull)
 				.forEach(cmd -> jda.upsertCommand(cmd).queue(
 				command -> System.out.println("Command " + command.getFullCommandName() + " registered"),
 				err -> System.err.println(err.getMessage())));
