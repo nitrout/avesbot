@@ -30,7 +30,7 @@ public class CharacterImportCallable extends CharacterCallable {
 	
 	/**
 	 * Creates a new ImportCallable.
-	 * @param event 
+	 * @param event the command event
 	 */
 	public CharacterImportCallable(SlashCommandInteractionEvent event) {
 		super(event);
@@ -49,13 +49,14 @@ public class CharacterImportCallable extends CharacterCallable {
 	}
 	
 	private Optional<? extends BiFunction<Attachment, String, Boolean>> getHeroImporter(Attachment attachment) {
-		if("XML".equalsIgnoreCase(attachment.getFileExtension())) {
-			return Optional.of(new HeldenSoftwareImport());
-		} else if ("JSON".equalsIgnoreCase(attachment.getFileExtension())) {
-			return Optional.of(new OptolithImport());
-		}
-		
-		return Optional.empty();
+		var suffix = Optional.ofNullable(attachment.getFileExtension())
+				.map(String::toLowerCase)
+				.orElse("");
+		return switch(suffix) {
+			case "xml" -> Optional.of(new HeldenSoftwareImport());
+			case "json" -> Optional.of(new OptolithImport());
+			default -> Optional.empty();
+		};
 	}
 
 	@Override
