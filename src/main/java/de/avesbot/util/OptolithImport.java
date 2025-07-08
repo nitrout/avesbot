@@ -152,7 +152,7 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 	}
 
 	private static Vantage toAdvantage(OptolithCharacter character, Entry<String, Object> vantageEntry) {
-		var advantage = (Map<String, Object>) LOCALIZED_YAML_FILES.get(Pair.of(character.locale(), "Advantages.yaml")).get(vantageEntry.getKey());
+		var advantage = (Map<String, Object>) getLocalizedYaml(character.locale(), "Advantages.yaml").get(vantageEntry.getKey());
 		return new Vantage((String) advantage.get("name"), "", "");
 	}
 
