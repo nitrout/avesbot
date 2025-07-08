@@ -25,7 +25,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -51,8 +52,9 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 
 	private static Map<String, Object> loadYaml(String file) {
 		try {
-			var stream = Avesbot.getResourceStream("de/avesbot/optolith/univ/" + file);
-			return YAML_MAPPER.readValue(stream, Map.class);
+			var stream = Avesbot.getResourceStream("optolith/univ/" + file);
+			return (Map<String, Object>) YAML_MAPPER.readValue(stream, List.class).stream()
+					.collect(Collectors.toUnmodifiableMap((Map<String, Object> m) -> m.get("id"), m -> m));
 		} catch (IOException ex) {
 			Logger.getLogger(OptolithImport.class.getName()).log(Level.SEVERE, null, ex);
 			return Map.of();
@@ -64,9 +66,10 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 	}
 
 	private static Map<String, Object> loadLocalizedYaml(Pair<Locale, String> key) {
-		var stream = Avesbot.getResourceStream("de/avesbot/optolith/" + key.getLeft().toLanguageTag() + "/" + key.getRight());
 		try {
-			return YAML_MAPPER.readValue(stream, Map.class);
+			var stream = Avesbot.getResourceStream("optolith/" + key.getLeft().toLanguageTag() + "/" + key.getRight());
+			return (Map<String, Object>) YAML_MAPPER.readValue(stream, List.class).stream()
+					.collect(Collectors.toUnmodifiableMap((Map<String, Object> m) -> m.get("id"), m -> m));
 		} catch (IOException ex) {
 			Logger.getLogger(OptolithImport.class.getName()).log(Level.SEVERE, null, ex);
 			return Map.of();
