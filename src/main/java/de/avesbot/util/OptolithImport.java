@@ -210,9 +210,9 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 		var check2 = (String) ability.get("check2");
 		var check3 = (String) ability.get("check3");
 
-		var check1Pos = Integer.parseInt(check1.substring(check1.length() - 1));
-		var check2Pos = Integer.parseInt(check2.substring(check2.length() - 1));
-		var check3Pos = Integer.parseInt(check3.substring(check3.length() - 1));
+		var check1Pos = Integer.parseInt(check1.substring(check1.length() - 1))-1;
+		var check2Pos = Integer.parseInt(check2.substring(check2.length() - 1))-1;
+		var check3Pos = Integer.parseInt(check3.substring(check3.length() - 1))-1;
 
 		return new Trial(Attribute.values()[check1Pos], Attribute.values()[check2Pos], Attribute.values()[check3Pos]);
 	}
