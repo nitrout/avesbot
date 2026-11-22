@@ -13,6 +13,8 @@ import de.avesbot.model.SkillRollResult5;
 import de.avesbot.model.SymbolDice;
 import de.avesbot.model.Trial;
 import org.apache.commons.lang3.tuple.Pair;
+import static java.lang.Math.ceilDiv;
+import static java.lang.Math.clamp;
 
 /**
  * Simulator for dice rolls.
@@ -239,12 +241,11 @@ public class DiceSimulator {
 		
 		for(int i = 0; i < 3; i++) {
 			if(rolls[i].getLeft() > trialChara.getAttribute(trial.getAttributes()[i])) {
-				tap -= (rolls[i].getLeft() - trialChara.getAttribute(trial.getAttributes()[i]));
+				tap = (byte) (tap - (rolls[i].getLeft() - trialChara.getAttribute(trial.getAttributes()[i])));
 			}
 		}
 		
-		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((trialChara.isClumsy() && !spell) || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
-		&& (trialChara.getSpellcasterMod() != RoleplayCharacter.SpellcasterMod.SOLID || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && Stream.of(rolls).noneMatch(p -> p.getLeft() < 18))))
+		if(Stream.of(rolls).filter(p -> p.getLeft() >= 20).count() > 1)
 			outcome = Outcome.SLIP;
 		else if(Stream.of(rolls).filter(p -> p.getLeft() == 1).count() > 1)
 			outcome = Outcome.SPLENDOR;
@@ -252,21 +253,11 @@ public class DiceSimulator {
 			outcome = Outcome.FAILURE;
 		else
 			outcome = Outcome.SUCCESS;
-		
-		if(tap > 15) {
-			qs = 6;
-		} else if(tap > 12) {
-			qs = 5;
-		} else if(tap > 9) {
-			qs = 4;
-		} else if(tap > 6) {
-			qs = 3;
-		} else if(tap > 3) {
-			qs = 2;
-		} else if(tap > -1) {
-			qs = 1;
-		} else {
+
+		if(tap < 0) {
 			qs = 0;
+		} else {
+			qs = (byte) clamp(ceilDiv(tap, 3), 1, 6);
 		}
 		
 		return new SkillRollResult5(outcome, qs, rolls);
