@@ -1,8 +1,8 @@
 package de.avesbot.runnable;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.avesbot.model.Ruleset;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,12 +22,13 @@ public class SocketRunnable implements Runnable {
 	private record HeroImportResponse(int characterId) {}
 	
 	private final Socket socket;
-	private final ObjectMapper mapper;
+	private final JsonMapper mapper;
 
 	public SocketRunnable(Socket socket) {
 		this.socket = socket;
-		mapper = new ObjectMapper();
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+		mapper = JsonMapper.builder()
+				.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
+				.build();
 	}
 	
 	@Override

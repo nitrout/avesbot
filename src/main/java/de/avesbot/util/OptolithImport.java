@@ -1,8 +1,5 @@
 package de.avesbot.util;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.avesbot.Avesbot;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Attribute;
@@ -13,7 +10,6 @@ import de.avesbot.model.Tradition;
 import de.avesbot.model.Trial;
 import de.avesbot.model.Vantage;
 import de.avesbot.model.optolith.character.OptolithCharacter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,9 +22,11 @@ import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import org.apache.commons.lang3.tuple.Pair;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  *
@@ -36,29 +34,20 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 
-	private static final ObjectMapper JSON_MAPPER = getObjectMapper();
+	private static final JsonMapper JSON_MAPPER = getObjectMapper();
 
 	private static final ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory());
 	private static final HashMap<Pair<Locale, String>, Map<String, Object>> LOCALIZED_YAML_FILES = new HashMap<>();
 	private static final HashMap<String, Map<String, Object>> YAML_FILES = new HashMap<>();
-
-	static {
-		YAML_MAPPER.findAndRegisterModules();
-	}
 
 	private static Map<String, Object> getYaml(String file) {
 		return YAML_FILES.computeIfAbsent(file, OptolithImport::loadYaml);
 	}
 
 	private static Map<String, Object> loadYaml(String file) {
-		try {
-			var stream = Avesbot.getResourceStream("optolith/univ/" + file);
-			return (Map<String, Object>) YAML_MAPPER.readValue(stream, List.class).stream()
-					.collect(Collectors.toUnmodifiableMap((Map<String, Object> m) -> m.get("id"), m -> m));
-		} catch (IOException ex) {
-			Logger.getLogger(OptolithImport.class.getName()).log(Level.SEVERE, null, ex);
-			return Map.of();
-		}
+		var stream = Avesbot.getResourceStream("optolith/univ/" + file);
+		return (Map<String, Object>) YAML_MAPPER.readValue(stream, List.class).stream()
+				.collect(Collectors.toUnmodifiableMap((Map<String, Object> m) -> m.get("id"), m -> m));
 	}
 
 	private static Map<String, Object> getLocalizedYaml(Locale locale, String file) {
@@ -66,20 +55,15 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 	}
 
 	private static Map<String, Object> loadLocalizedYaml(Pair<Locale, String> key) {
-		try {
-			var stream = Avesbot.getResourceStream("optolith/" + key.getLeft().toLanguageTag() + "/" + key.getRight());
-			return (Map<String, Object>) YAML_MAPPER.readValue(stream, List.class).stream()
-					.collect(Collectors.toUnmodifiableMap((Map<String, Object> m) -> m.get("id"), m -> m));
-		} catch (IOException ex) {
-			Logger.getLogger(OptolithImport.class.getName()).log(Level.SEVERE, null, ex);
-			return Map.of();
-		}
+		var stream = Avesbot.getResourceStream("optolith/" + key.getLeft().toLanguageTag() + "/" + key.getRight());
+		return (Map<String, Object>) YAML_MAPPER.readValue(stream, List.class).stream()
+				.collect(Collectors.toUnmodifiableMap((Map<String, Object> m) -> m.get("id"), m -> m));
 	}
 
-	private static ObjectMapper getObjectMapper() {
-		var om = new ObjectMapper();
-		om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		return om;
+	private static JsonMapper getObjectMapper() {
+		return JsonMapper.builder()
+				.enable(tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+				.build();
 	}
 
 	@Override
@@ -90,7 +74,7 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 	private static Optional<OptolithCharacter> getOptolithCharacter(Attachment attachment) {
 		try {
 			return Optional.of(JSON_MAPPER.readValue(attachment.getProxy().download().get(), OptolithCharacter.class));
-		} catch (ExecutionException | IOException ex) {
+		} catch (ExecutionException ex) {
 			Logger.getLogger(OptolithImport.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (InterruptedException ex) {
 			Logger.getLogger(OptolithImport.class.getName()).log(Level.SEVERE, null, ex);
