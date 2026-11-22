@@ -147,7 +147,6 @@ public class DiceSimulator {
 		
 		byte tap = (byte)(taw - difficulty);
 		Pair<Integer, Integer>[] rolls = rollDice(3, 20);
-		Outcome outcome;
 		
 		RoleplayCharacter trialChara = chara.modifyAttributes(tap < 0 ? tap : 0);
 		if(tap < 0) {
@@ -159,18 +158,42 @@ public class DiceSimulator {
 				tap -= (rolls[i].getLeft() - trialChara.getAttribute(trial.getAttributes()[i]));
 			}
 		}
-		
-		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((trialChara.isClumsy() && !spell) || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
-		&& (trialChara.getSpellcasterMod() != RoleplayCharacter.SpellcasterMod.SOLID || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && !Stream.of(rolls).anyMatch(p -> p.getLeft() < 18))))
-			outcome = Outcome.SLIP;
-		else if(Stream.of(rolls).filter(p -> p.getLeft() == 1).count() > 1)
-			outcome = Outcome.SPLENDOR;
-		else if(tap < 0)
-			outcome = Outcome.FAILURE;
-		else
-			outcome = Outcome.SUCCESS;
+
+		final var outcome = spell
+				? spellOutcome4(trialChara, rolls, tap)
+				: nonSpellOutcome4(trialChara, rolls, tap);
 		
 		return new SkillRollResult4(outcome, tap <= taw ? tap : taw, rolls);
+	}
+
+	protected static Outcome spellOutcome4(RoleplayCharacter chara, Pair<Integer, Integer>[] rolls, byte tap) {
+
+		final var hasMulti20 = Stream.of(rolls).filter(p -> p.getLeft() >= 20).count() > 1;
+		final var isWildMagicSlip = chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.WILD && Stream.of(rolls).filter(p -> p.getLeft() >= 19).count() > 1;
+		final var isSlip = chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.NONE && hasMulti20;
+		final var isSolidSlip = chara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && hasMulti20 && Stream.of(rolls).noneMatch(p -> p.getLeft() < 18);
+
+		if(isWildMagicSlip || isSlip || isSolidSlip)
+			return Outcome.SLIP;
+		else if(Stream.of(rolls).filter(p -> p.getLeft() == 1).count() > 1)
+			return Outcome.SPLENDOR;
+		else if(tap < 0)
+			return Outcome.FAILURE;
+		else
+			return Outcome.SUCCESS;
+	}
+
+	protected static Outcome nonSpellOutcome4(RoleplayCharacter chara, Pair<Integer, Integer>[] rolls, byte tap) {
+		final var isSlip = Stream.of(rolls).filter(p -> p.getLeft() >= (chara.isClumsy() ? 19 : 20)).count() > 1;
+
+		if(isSlip)
+			return Outcome.SLIP;
+		else if(Stream.of(rolls).filter(p -> p.getLeft() == 1).count() > 1)
+			return Outcome.SPLENDOR;
+		else if(tap < 0)
+			return Outcome.FAILURE;
+		else
+			return Outcome.SUCCESS;
 	}
 	
 	/**
