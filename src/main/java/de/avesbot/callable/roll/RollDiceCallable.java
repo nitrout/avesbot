@@ -1,9 +1,5 @@
 package de.avesbot.callable.roll;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import de.avesbot.Avesbot;
 import de.avesbot.model.SymbolDice;
 import de.avesbot.util.Formatter;
@@ -12,6 +8,11 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A callable to execute a dice roll.
@@ -40,8 +41,7 @@ public class RollDiceCallable extends RollCallable {
 	
 	@Override
 	public String call() throws Exception {
-		
-		Optional<SymbolDice> symbolDice = Optional.empty();
+
 		Matcher matcher;
 		
 		
@@ -52,10 +52,10 @@ public class RollDiceCallable extends RollCallable {
 			Optional<Integer> dice = Optional.ofNullable(Integer.valueOf(matcher.group(2)));
 			return rollDiceExpression(num.orElse(1), dice.orElse(6));
 		}
-		
-		symbolDice = Avesbot.getStatementManager().getSymbolDice(guild, this.commandPars.get("dice").getAsString());
+
+		final var symbolDice = Avesbot.getStatementManager().getSymbolDice(guild, this.commandPars.get("dice").getAsString());
 		if(symbolDice.isPresent()) {
-			return symbolDice.map(dice -> rollSymbolDice(dice)).get();
+			return symbolDice.map(this::rollSymbolDice).get();
 		}
 		
 		return I18N.getTranslation(settings.locale(), "errorRoll");

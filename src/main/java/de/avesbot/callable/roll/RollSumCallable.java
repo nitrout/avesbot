@@ -1,8 +1,5 @@
 package de.avesbot.callable.roll;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import de.avesbot.Avesbot;
 import de.avesbot.util.Formatter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -10,6 +7,10 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A callable to roll and sum up the dices.
@@ -42,10 +43,10 @@ public class RollSumCallable extends RollCallable {
 		Matcher matcher = SUM_DICE_PATTERN.matcher(this.commandPars.get("dice").getAsString());
 		
 		if(matcher.matches()) {
-			
-			int num = matcher.group(1) != null && matcher.group(1).length() > 0 ? Integer.parseInt(matcher.group(1))  : 1;
-			int dice =  matcher.group(2) != null && matcher.group(2).length() > 0 ? Integer.parseInt(matcher.group(2)) : 6;
-			int mod =  matcher.group(3) != null && matcher.group(3).length() > 0 ? Integer.parseInt(matcher.group(3)) : 0;
+
+			int num = matcher.group(1) != null && !matcher.group(1).isEmpty() ? Integer.parseInt(matcher.group(1)) : 1;
+			int dice = matcher.group(2) != null && !matcher.group(2).isEmpty() ? Integer.parseInt(matcher.group(2)) : 6;
+			int mod = matcher.group(3) != null && !matcher.group(3).isEmpty() ? Integer.parseInt(matcher.group(3)) : 0;
 			
 			if(num <= Integer.parseInt(Avesbot.getProperties().getProperty("max_dice", "70"))) {
 				String rollResult;
