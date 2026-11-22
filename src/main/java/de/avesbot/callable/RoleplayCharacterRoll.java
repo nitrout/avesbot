@@ -15,9 +15,14 @@ import java.util.Map;
  * @author Nitrout
  */
 public interface RoleplayCharacterRoll {
-	
-	static final I18n I18N = new I18n("de.avesbot.i18n.messages");
-	
+
+	I18n I18N = new I18n("de.avesbot.i18n.messages");
+	String TAP_FORMAT = "%d %s*";
+	String OUTCOME_SLIP = "outcomeSlip";
+	String OUTCOME_SPLENDOR = "outcomeSplendor";
+	String OUTCOME_SUCCESS = "outcomeSuccess";
+	String OUTCOME_FAILURE = "outcomeFailure";
+
 	/**
 	 * Executes a skill roll.
 	 * @param settings settings of the current guild
@@ -86,7 +91,7 @@ public interface RoleplayCharacterRoll {
 		
 		SkillRollResult4 rollResult = Avesbot.getDiceSimulator().rollSkill4(chara, trial, taw, difficulty, spell);
 		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls().<Pair<Integer, Integer>>toArray(Pair[]::new));
-		String tapStr = spell ? I18N.getTranslation(settings.locale(), "spP") : I18N.getTranslation(settings.locale(), "skP");
+		String tapStr = I18N.getTranslation(settings.locale(), spell ? "spP" : "skP");
 		
 		if(settings.hideStats())
 			result.append(I18N.format(settings.locale(), "rollTde4SkillStatsHidden", chara.name(), abilityName, difficulty));
@@ -97,21 +102,21 @@ public interface RoleplayCharacterRoll {
 		result.append(rollResultStr);
 		result.append("\n");
 		switch (rollResult.outcome()) {
-			case SLIP -> result.append("**").append(I18N.getTranslation(settings.locale(), "outcomeSlip")).append("**");
+			case SLIP -> result.append("**").append(I18N.getTranslation(settings.locale(), OUTCOME_SLIP)).append("**");
 			case SPLENDOR -> {
-				result.append(String.format("%d %s*", taw > 0 ? taw : 1, tapStr));
+				result.append(String.format(TAP_FORMAT, taw > 0 ? taw : 1, tapStr));
 				result.append("\n");
-				result.append("**").append(I18N.getTranslation(settings.locale(), "outcomeSplendor")).append("**");
+				result.append("**").append(I18N.getTranslation(settings.locale(), OUTCOME_SPLENDOR)).append("**");
 			}
 			case FAILURE -> {
-				result.append(String.format("%d %s*", rollResult.tap(), tapStr));
+				result.append(String.format(TAP_FORMAT, rollResult.tap(), tapStr));
 				result.append("\n");
-				result.append("**").append(I18N.getTranslation(settings.locale(), "outcomeFailure")).append("**");
+				result.append("**").append(I18N.getTranslation(settings.locale(), OUTCOME_FAILURE)).append("**");
 			}
 			case SUCCESS -> {
-				result.append(String.format("%d %s*", rollResult.tap(), tapStr));
+				result.append(String.format(TAP_FORMAT, rollResult.tap(), tapStr));
 				result.append("\n");
-				result.append("**").append(I18N.getTranslation(settings.locale(), "outcomeSuccess")).append("**");
+				result.append("**").append(I18N.getTranslation(settings.locale(), OUTCOME_SUCCESS)).append("**");
 			}
 		}
 		
@@ -146,17 +151,18 @@ public interface RoleplayCharacterRoll {
 		result.append("\n");
 		
 		switch(rollResult.outcome()) {
-			case SLIP -> result.append("**").append(I18N.getTranslation(settings.locale(), "outcomeSlip")).append("**");
+			case SLIP -> result.append("**").append(I18N.getTranslation(settings.locale(), OUTCOME_SLIP)).append("**");
 			case SPLENDOR -> {
 				result.append(I18N.format(settings.locale(), "rollTde5SkillResult", rollResult.qs()));
 				result.append("\n");
-				result.append("**").append(I18N.getTranslation(settings.locale(), "outcomeSplendor")).append("**");
+				result.append("**").append(I18N.getTranslation(settings.locale(), OUTCOME_SPLENDOR)).append("**");
 			}
-			case FAILURE -> result.append("**").append(I18N.getTranslation(settings.locale(), "outcomeFailure")).append("**");
+			case FAILURE ->
+					result.append("**").append(I18N.getTranslation(settings.locale(), OUTCOME_FAILURE)).append("**");
 			case SUCCESS -> {
 				result.append(I18N.format(settings.locale(), "rollTde5SkillResult", rollResult.qs()));
 				result.append("\n");
-				result.append("**").append(I18N.getTranslation(settings.locale(), "outcomeSuccess")).append("**");
+				result.append("**").append(I18N.getTranslation(settings.locale(), OUTCOME_SUCCESS)).append("**");
 			}
 		}
 		
@@ -199,9 +205,9 @@ public interface RoleplayCharacterRoll {
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute4(chara, difficulty, attr);
 		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls().<Pair<Integer, Integer>>toArray(Pair[]::new));
-		String rollOutcomeStr = rollResult.outcome()== Outcome.SPLENDOR || rollResult.outcome()== Outcome.SUCCESS ? 
-				"**"+I18N.getTranslation(settings.locale(), "outcomeSuccess")+"**" : 
-				"**"+I18N.getTranslation(settings.locale(), "outcomeFailure")+"**";
+		String rollOutcomeStr = rollResult.outcome() == Outcome.SPLENDOR || rollResult.outcome() == Outcome.SUCCESS ?
+				"**" + I18N.getTranslation(settings.locale(), OUTCOME_SUCCESS) + "**" :
+				"**" + I18N.getTranslation(settings.locale(), OUTCOME_FAILURE) + "**";
 		
 		String attrAbbrStr = I18N.getTranslation(settings.locale(), attr.getAbbrevation().toLowerCase());
 		
@@ -229,10 +235,10 @@ public interface RoleplayCharacterRoll {
 		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls().<Pair<Integer, Integer>>toArray(Pair[]::new));
 		String rollOutcomeStr = "";
 		switch(rollResult.outcome()) {
-			case SLIP -> rollOutcomeStr = "**"+I18N.getTranslation(settings.locale(), "outcomeSlip")+"**";
-			case FAILURE -> rollOutcomeStr = "**"+I18N.getTranslation(settings.locale(), "outcomeFailure")+"**";
-			case SUCCESS -> rollOutcomeStr = "**"+I18N.getTranslation(settings.locale(), "outcomeSuccess")+"**";
-			case SPLENDOR -> rollOutcomeStr = "**"+I18N.getTranslation(settings.locale(), "outcomeSplendor")+"**";
+			case SLIP -> rollOutcomeStr = "**" + I18N.getTranslation(settings.locale(), OUTCOME_SLIP) + "**";
+			case FAILURE -> rollOutcomeStr = "**" + I18N.getTranslation(settings.locale(), OUTCOME_FAILURE) + "**";
+			case SUCCESS -> rollOutcomeStr = "**" + I18N.getTranslation(settings.locale(), OUTCOME_SUCCESS) + "**";
+			case SPLENDOR -> rollOutcomeStr = "**" + I18N.getTranslation(settings.locale(), OUTCOME_SPLENDOR) + "**";
 		}
 		
 		String attrAbbrStr = I18N.getTranslation(settings.locale(), attr.getAbbrevation().toLowerCase());
