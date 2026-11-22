@@ -18,12 +18,8 @@ public class DiceSimulatorTest {
 	private static final RoleplayCharacter WILD_MAGIC_HERO_4 = new RoleplayCharacter("Hero 4", Ruleset.TDE4, BASE_STATS, List.of(new Vantage("Wilde Magie", "", "")), List.of());
 	private static final RoleplayCharacter SOLID_HERO_4 = new RoleplayCharacter("Hero 4", Ruleset.TDE4, BASE_STATS, List.of(new Vantage("Feste Matrix", "", "")), List.of());
 
-	private static Pair<Integer, Integer>[] skillTrial(int a, int b, int c) {
-		return (Pair<Integer, Integer>[]) new Pair[] {
-				Pair.of(a, 20),
-				Pair.of(b, 20),
-				Pair.of(c, 20)
-		};
+	private static List<Pair<Integer, Integer>> skillTrial(int a, int b, int c) {
+		return List.of(Pair.of(a, 20), Pair.of(b, 20), Pair.of(c, 20));
 	}
 
 	@Test

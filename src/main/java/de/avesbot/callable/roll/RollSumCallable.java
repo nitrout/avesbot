@@ -1,8 +1,8 @@
 package de.avesbot.callable.roll;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import de.avesbot.Avesbot;
 import de.avesbot.util.Formatter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -49,10 +49,10 @@ public class RollSumCallable extends RollCallable {
 			
 			if(num <= Integer.parseInt(Avesbot.getProperties().getProperty("max_dice", "70"))) {
 				String rollResult;
-				Pair<Integer, Integer>[] rolls = Avesbot.getDiceSimulator().rollDice(num, dice);
-				rollResult = Formatter.formatRollResult(emoteMap, rolls);
+				List<Pair<Integer, Integer>> rolls = Avesbot.getDiceSimulator().rollDice(num, dice);
+				rollResult = Formatter.formatRollResult(emoteMap, rolls.<Pair<Integer, Integer>>toArray(Pair[]::new));
 
-				result = I18N.format(settings.locale(), "rollSumMessage", member.getEffectiveName(), rollResult, mod, Stream.of(rolls).mapToInt(roll -> roll.getLeft()).sum()+mod);
+				result = I18N.format(settings.locale(), "rollSumMessage", member.getEffectiveName(), rollResult, mod, rolls.stream().mapToInt(Pair::getLeft).sum()+mod);
 			} else {
 				result = I18N.format(settings.locale(), "errorTooManyDice", Integer.valueOf(Avesbot.getProperties().getProperty("max_dice", "70")));
 			}

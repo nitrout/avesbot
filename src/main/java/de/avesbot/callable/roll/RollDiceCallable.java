@@ -1,5 +1,6 @@
 package de.avesbot.callable.roll;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -72,8 +73,8 @@ public class RollDiceCallable extends RollCallable {
 			return I18N.format(settings.locale(), "errorTooManyDice", Integer.valueOf(Avesbot.getProperties().getProperty("max_dice", "70")));
 		
 		
-		Pair<Integer, Integer>[] rolls = Avesbot.getDiceSimulator().rollDice(num, dice);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rolls);
+		List<Pair<Integer, Integer>> rolls = Avesbot.getDiceSimulator().rollDice(num, dice);
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rolls.<Pair<Integer, Integer>>toArray(Pair[]::new));
 		return I18N.format(settings.locale(), "rollExpression", member.getEffectiveName(), rollResultStr);
 	}
 }

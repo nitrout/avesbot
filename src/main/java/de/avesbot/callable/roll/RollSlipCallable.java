@@ -5,6 +5,7 @@ import de.avesbot.util.Formatter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.apache.commons.lang3.tuple.Pair;
+import java.util.List;
 
 /**
  * A callable to execute a battle slip roll.
@@ -30,27 +31,27 @@ public class RollSlipCallable extends RollCallable {
 	public String call() throws Exception {
 		
 		String result = "";
-		Pair<Pair<Integer, Integer>[], Integer> sumResult = Avesbot.getDiceSimulator().sumDice(2, 6, 0);
-		Pair<Integer, Integer>[] rolls = sumResult.getLeft();
+		Pair<List<Pair<Integer, Integer>>, Integer> sumResult = Avesbot.getDiceSimulator().sumDice(2, 6, 0);
+		List<Pair<Integer, Integer>> rolls = sumResult.getLeft();
 		int sum = sumResult.getRight();
 		
 		if(sum == 2) {
-			result = I18N.format(settings.locale(), "slip4_2", Formatter.formatRollResult(emoteMap, rolls));
+			result = I18N.format(settings.locale(), "slip4_2", Formatter.formatRollResult(emoteMap, rolls.<Pair<Integer, Integer>>toArray(Pair[]::new)));
 		}
 		else if(sum >= 3 && sum <= 5) {
-			result = I18N.format(settings.locale(), "slip4_3", Formatter.formatRollResult(emoteMap, rolls));
+			result = I18N.format(settings.locale(), "slip4_3", Formatter.formatRollResult(emoteMap, rolls.<Pair<Integer, Integer>>toArray(Pair[]::new)));
 		}
 		else if(sum >= 6 && sum <= 8) {
-			result = I18N.format(settings.locale(), "slip4_6", Formatter.formatRollResult(emoteMap, rolls));
+			result = I18N.format(settings.locale(), "slip4_6", Formatter.formatRollResult(emoteMap, rolls.<Pair<Integer, Integer>>toArray(Pair[]::new)));
 		}
 		else if(sum >= 9 && sum <= 10) {
-			result = I18N.format(settings.locale(), "slip4_9", Formatter.formatRollResult(emoteMap, rolls));
+			result = I18N.format(settings.locale(), "slip4_9", Formatter.formatRollResult(emoteMap, rolls.<Pair<Integer, Integer>>toArray(Pair[]::new)));
 		}
 		else if(sum == 11) {
-			result = I18N.format(settings.locale(), "slip4_11", Formatter.formatRollResult(emoteMap, rolls));
+			result = I18N.format(settings.locale(), "slip4_11", Formatter.formatRollResult(emoteMap, rolls.<Pair<Integer, Integer>>toArray(Pair[]::new)));
 		}
 		else if(sum == 12) {
-			result = I18N.format(settings.locale(), "slip4_12", Formatter.formatRollResult(emoteMap, rolls));
+			result = I18N.format(settings.locale(), "slip4_12", Formatter.formatRollResult(emoteMap, rolls.<Pair<Integer, Integer>>toArray(Pair[]::new)));
 		}
 		
 		return result;

@@ -2,6 +2,8 @@ package de.avesbot.model;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.List;
+
 /**
  * Representation of a roll result of dices.
  * 
@@ -17,5 +19,5 @@ public interface RollResult {
 	/**
 	 * @return the rolls
 	 */
-	Pair<Integer, Integer>[] rolls();
+	List<Pair<Integer, Integer>> rolls();
 }
