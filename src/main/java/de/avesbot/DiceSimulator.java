@@ -49,7 +49,7 @@ public class DiceSimulator {
 		
 		Pair<Integer, Integer>[] dices = rollDice(num, dice);
 		
-		return Pair.of(dices, Stream.of(dices).mapToInt(result -> result.getLeft()).sum() + mod);
+		return Pair.of(dices, Stream.of(dices).mapToInt(Pair::getLeft).sum() + mod);
 	}
 	
 	/**
@@ -244,7 +244,7 @@ public class DiceSimulator {
 		}
 		
 		if(Stream.of(rolls).filter(p -> p.getLeft() >= ((trialChara.isClumsy() && !spell) || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.WILD && spell) ? 19 : 20)).count() > 1
-		&& (trialChara.getSpellcasterMod() != RoleplayCharacter.SpellcasterMod.SOLID || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && !Stream.of(rolls).anyMatch(p -> p.getLeft() < 18))))
+		&& (trialChara.getSpellcasterMod() != RoleplayCharacter.SpellcasterMod.SOLID || (trialChara.getSpellcasterMod() == RoleplayCharacter.SpellcasterMod.SOLID && Stream.of(rolls).noneMatch(p -> p.getLeft() < 18))))
 			outcome = Outcome.SLIP;
 		else if(Stream.of(rolls).filter(p -> p.getLeft() == 1).count() > 1)
 			outcome = Outcome.SPLENDOR;
