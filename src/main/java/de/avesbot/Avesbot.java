@@ -200,7 +200,7 @@ public class Avesbot {
 	}
 	
 	private static void resetCommands() {
-		jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue(v -> System.out.println("Deleted Command " + c.getFullCommandName()))));
+		jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue(_ -> System.out.println("Deleted Command " + c.getFullCommandName()))));
 		CommandBook.getInstance().getAvailableSlashCommands()
 				.forEach(command -> jda.upsertCommand(command).queue(
 				cmd -> System.out.println("Command " + cmd.getFullCommandName() + " registered"),
