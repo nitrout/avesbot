@@ -22,12 +22,8 @@ import de.avesbot.runnable.ExitRunnable;
 import de.avesbot.db.StatementManager;
 import de.avesbot.runnable.ActiveGuildsRunnable;
 import de.avesbot.runnable.LeaveGuildRunnable;
-import de.avesbot.runnable.ServerSocketRunnable;
 import de.avesbot.util.DatabaseKeepAlive;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import net.dv8tion.jda.api.entities.Activity;
 
 /**
@@ -55,15 +51,12 @@ public class Avesbot {
 		
 		token = properties.getProperty("token", "");
 		var keepAliveInterval = Integer.parseInt(properties.getProperty("db_keep_alive_interval"));
-		var serverSocketAddress = getSocketAddress();
-		var serverSocketPort = Integer.parseInt(properties.getProperty("socketPort", "55555"));
 		
 		// initialize thread pool executor to handle all incoming discord events
 		stpe = new ScheduledThreadPoolExecutor(4);
 		stpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 		
-		try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); var socket = new ServerSocket(serverSocketPort, 4, serverSocketAddress)) {
-			stpe.execute(new ServerSocketRunnable(socket));
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
 			// Setup database connection
 			Database.init(properties.getProperty("db_host"), properties.getProperty("db_user"), properties.getProperty("db_pass"), properties.getProperty("db_name"));
 			stmntManager = new StatementManager();
@@ -221,14 +214,5 @@ public class Avesbot {
 				.forEach(cmd -> jda.upsertCommand(cmd).queue(
 				command -> System.out.println("Command " + command.getFullCommandName() + " registered"),
 				err -> System.err.println(err.getMessage())));
-	}
-	
-	private static InetAddress getSocketAddress() {
-		try {
-			return properties.containsKey("socket") ? InetAddress.getByName(properties.getProperty("socket", "localhost")) : InetAddress.getLoopbackAddress();
-		} catch (UnknownHostException ex) {
-			Logger.getLogger(Avesbot.class.getName()).log(Level.SEVERE, null, ex);
-			return null;
-		}
 	}
 }
