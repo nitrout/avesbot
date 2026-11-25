@@ -10,8 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This class manages alle statements being exceuted by Aves.
@@ -532,10 +530,10 @@ public class StatementManager {
 	 * @param guild the guild the dice will be added for
 	 * @param dice the dice which will be added
 	 */
-	public void insertSymbolDice(Guild guild, SymbolDice dice) {
+	public void insertSymbolDice(Guild guild, SymbolDie dice) {
 		
 		String guildId = guild.getId();
-		String values = Stream.of(dice.values()).collect(Collectors.joining(","));
+		String values = String.join(",", dice.sides());
 		
 		try(PreparedStatement symbolDiceInsStmnt = Database.prepareStatement(SYMBOL_DICE_INSERT);) {
 			
@@ -558,9 +556,9 @@ public class StatementManager {
 	 * @param name the name of the dice
 	 * @return the found symbol dice or empty
 	 */
-	public Optional<SymbolDice> getSymbolDice(Guild guild, String name) {
-		
-		Optional<SymbolDice> dice = Optional.empty();
+	public Optional<SymbolDie> getSymbolDice(Guild guild, String name) {
+
+		Optional<SymbolDie> dice = Optional.empty();
 		String guildId = guild.getId();
 		
 		try(PreparedStatement symbolDiceSelectStmnt = Database.prepareStatement(SYMBOL_DICE_SELECT);) {
@@ -570,8 +568,8 @@ public class StatementManager {
 			
 			ResultSet diceResult = symbolDiceSelectStmnt.executeQuery();
 			if(diceResult.next()) {
-				
-				dice = Optional.of(new SymbolDice(diceResult.getString("name"), diceResult.getString("values").split(",")));
+
+				dice = Optional.of(new SymbolDie(diceResult.getString("name"), diceResult.getString("values").split(",")));
 			}
 			
 		} catch (SQLException ex) {

@@ -1,7 +1,7 @@
 package de.avesbot.callable.roll;
 
 import de.avesbot.Avesbot;
-import de.avesbot.model.SymbolDice;
+import de.avesbot.model.SymbolDie;
 import de.avesbot.util.Formatter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -60,8 +60,8 @@ public class RollDiceCallable extends RollCallable {
 		
 		return I18N.getTranslation(settings.locale(), "errorRoll");
 	}
-	
-	private String rollSymbolDice(SymbolDice dice) {
+
+	private String rollSymbolDice(SymbolDie dice) {
 		
 		String rollResultStr = Avesbot.getDiceSimulator().rollSymbolDice(dice);
 		return I18N.format(settings.locale(), "rollSymbol", member.getEffectiveName(), dice.name(), rollResultStr);

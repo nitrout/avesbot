@@ -52,9 +52,9 @@ public class DiceSimulator {
 	 * @param dice the symbol dice to be rolled
 	 * @return the name of the rolled symbol
 	 */
-	public String rollSymbolDice(SymbolDice dice) {
-		
-		return dice.side(this.rand.nextInt(dice.values().length));
+	public String rollSymbolDice(SymbolDie dice) {
+
+		return dice.side(this.rand.nextInt(dice.sides().size()));
 	}
 	
 	/**

@@ -1,11 +1,11 @@
 package de.avesbot.callable;
 
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
-import de.avesbot.model.SymbolDice;
+import de.avesbot.model.SymbolDie;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 /**
@@ -38,8 +38,8 @@ public class DiceCallable extends CommandCallable {
 		
 		String name = this.commandPars.get("name").getAsString();
 		String[] values = this.commandPars.get("areas").getAsString().split(",");
-		
-		SymbolDice dice = new SymbolDice(name, values);
+
+		SymbolDie dice = new SymbolDie(name, values);
 		
 		Avesbot.getStatementManager().insertSymbolDice(guild, dice);
 		
