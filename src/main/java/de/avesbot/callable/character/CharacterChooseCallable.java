@@ -1,8 +1,6 @@
 package de.avesbot.callable.character;
 
-import java.util.Optional;
 import de.avesbot.Avesbot;
-import de.avesbot.model.RoleplayCharacter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -13,8 +11,8 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
  * @author Nitrout
  */
 public class CharacterChooseCallable extends CharacterCallable {
-	
-	public static final SubcommandData SUBCOMMAND = new SubcommandData(I18N.getTranslation("characterChoose"), I18N.getTranslation("characterChooseDescription"));;
+
+	public static final SubcommandData SUBCOMMAND = new SubcommandData(I18N.getTranslation("characterChoose"), I18N.getTranslation("characterChooseDescription"));
 	
 	static {
 		SUBCOMMAND.setNameLocalizations(I18N.getLocalizations("characterChoose"));
@@ -28,7 +26,7 @@ public class CharacterChooseCallable extends CharacterCallable {
 	
 	/**
 	 * Creates a new choose character callable.
-	 * @param event
+	 * @param event the called event
 	 */
 	public CharacterChooseCallable(SlashCommandInteractionEvent event) {
 		super(event);
@@ -37,22 +35,17 @@ public class CharacterChooseCallable extends CharacterCallable {
 	/**
 	 * Executes the character selection callable.
 	 * @return the result of the selection
-	 * @throws Exception 
 	 */
 	@Override
-	public String call() throws Exception {
-		String result = "";
-		
-		String name = this.commandPars.get("name").getAsString();
-		boolean success = Avesbot.getStatementManager().enableUsersRoleplayCharacter(member, name);
-		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
-		
-		if(success && chara.isPresent())
-			result = I18N.format(settings.locale(), "characterChosen", chara.get().name());
-		else
-			result = I18N.getTranslation(settings.locale(), "errorUnknownCharacter");
-		
-		return result;
+	public String call() {
+
+		final var name = this.commandPars.get("name").getAsString();
+		final var success = Avesbot.getStatementManager().enableUsersRoleplayCharacter(member, name);
+		final var chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
+
+		return success && chara.isPresent()
+				? I18N.format(settings.locale(), "characterChosen", chara.get().name())
+				: I18N.getTranslation(settings.locale(), "errorUnknownCharacter");
 	}
 	
 }
