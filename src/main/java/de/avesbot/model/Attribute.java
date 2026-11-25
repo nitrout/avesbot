@@ -1,8 +1,10 @@
 package de.avesbot.model;
 
 import de.avesbot.i18n.I18n;
-import java.util.stream.Stream;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * The base attributes.
@@ -13,37 +15,39 @@ public enum Attribute {
 	COURAGE("COU"), SAGACITY("SGC"), INTUITION("INT"), CHARISMA("CHA"), DEXTERITY("DEX"), AGILITY("AGI"), CONSTITUTION("CON"), STRENGTH("STR");
 	
 	private static final I18n I18N = new I18n("de.avesbot.i18n.general");
-	public static final Choice[] OPTION_CHOICES = Stream.of(values())
-																.map(Attribute::getTranslatedChoice)
-																.toArray(Choice[]::new);
-	
-	private final String abbrevation;
-	
-	private Attribute(String abbrevation) {
-		this.abbrevation = abbrevation;
+	private static final List<Choice> OPTION_CHOICES = Stream.of(values()).map(Attribute::getTranslatedChoice).toList();
+
+	private final String abbreviation;
+
+	Attribute(String abbreviation) {
+		this.abbreviation = abbreviation;
 		
 	}
-	
-	public static Attribute abbrevationValueOf(String abbrevation) {
+
+	public static List<Choice> optionChoices() {
+		return OPTION_CHOICES;
+	}
+
+	public static Attribute abbreviationValueOf(String abbreviation) {
 		
 		for(Attribute a : Attribute.values()) {
-			if(a.getAbbrevation().equals(abbrevation))
+			if (a.getAbbreviation().equals(abbreviation))
 				return a;
 		}
-		
-		throw new IllegalArgumentException(String.format("\"%s\" is not a valid abbrevation.", abbrevation));
+
+		throw new IllegalArgumentException(String.format("\"%s\" is not a valid abbreviation.", abbreviation));
 	}
 
 	/**
-	 * @return the abbrevation
+	 * @return the abbreviation
 	 */
-	public String getAbbrevation() {
-		return abbrevation;
+	public String getAbbreviation() {
+		return abbreviation;
 	}
 	
 	private static Choice getTranslatedChoice(Attribute a) {
-		Choice choice = new Choice(I18N.getTranslation(a.getAbbrevation().toLowerCase()), a.name());
-		choice.setNameLocalizations(I18N.getLocalizations(a.getAbbrevation().toLowerCase()));
+		Choice choice = new Choice(I18N.getTranslation(a.getAbbreviation().toLowerCase()), a.name());
+		choice.setNameLocalizations(I18N.getLocalizations(a.getAbbreviation().toLowerCase()));
 		
 		return choice;
 	}

@@ -208,8 +208,8 @@ public interface RoleplayCharacterRoll {
 		String rollOutcomeStr = rollResult.outcome() == Outcome.SPLENDOR || rollResult.outcome() == Outcome.SUCCESS ?
 				"**" + I18N.getTranslation(settings.locale(), OUTCOME_SUCCESS) + "**" :
 				"**" + I18N.getTranslation(settings.locale(), OUTCOME_FAILURE) + "**";
-		
-		String attrAbbrStr = I18N.getTranslation(settings.locale(), attr.getAbbrevation().toLowerCase());
+
+		String attrAbbrStr = I18N.getTranslation(settings.locale(), attr.getAbbreviation().toLowerCase());
 		
 		if(settings.hideStats())
 			result.append(I18N.format(settings.locale(), "rollTde4AttributeStatsHidden", chara.name(), attrAbbrStr, rollResultStr, difficulty, rollOutcomeStr));
@@ -240,8 +240,8 @@ public interface RoleplayCharacterRoll {
 			case SUCCESS -> rollOutcomeStr = "**" + I18N.getTranslation(settings.locale(), OUTCOME_SUCCESS) + "**";
 			case SPLENDOR -> rollOutcomeStr = "**" + I18N.getTranslation(settings.locale(), OUTCOME_SPLENDOR) + "**";
 		}
-		
-		String attrAbbrStr = I18N.getTranslation(settings.locale(), attr.getAbbrevation().toLowerCase());
+
+		String attrAbbrStr = I18N.getTranslation(settings.locale(), attr.getAbbreviation().toLowerCase());
 		
 		if(settings.hideStats())
 			result.append(I18N.format(settings.locale(), "rollTde5AttributeStatsHidden", chara.name(), attrAbbrStr, difficulty, rollResultStr, rollOutcomeStr));

@@ -1,5 +1,9 @@
 package de.avesbot.db;
 
+import de.avesbot.model.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,19 +12,6 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import de.avesbot.model.Ability;
-import de.avesbot.model.Attribute;
-import de.avesbot.model.Group;
-import de.avesbot.model.GuildSetting;
-import de.avesbot.model.Tradition;
-import de.avesbot.model.RoleplayCharacter;
-import de.avesbot.model.Ruleset;
-import de.avesbot.model.Special;
-import de.avesbot.model.SymbolDice;
-import de.avesbot.model.Trial;
-import de.avesbot.model.Vantage;
 
 /**
  * This class manages alle statements being exceuted by Aves.
@@ -141,14 +132,14 @@ public class StatementManager {
 			abilityInsStmnt.setString(1, chara.id());
 			abilityInsStmnt.setString(2, ability.name());
 			abilityInsStmnt.setString(3, ability.rep().name());
-			abilityInsStmnt.setString(4, ability.trial().attribute1().getAbbrevation());
-			abilityInsStmnt.setString(5, ability.trial().attribute2().getAbbrevation());
-			abilityInsStmnt.setString(6, ability.trial().attribute3().getAbbrevation());
+			abilityInsStmnt.setString(4, ability.trial().attribute1().getAbbreviation());
+			abilityInsStmnt.setString(5, ability.trial().attribute2().getAbbreviation());
+			abilityInsStmnt.setString(6, ability.trial().attribute3().getAbbreviation());
 			abilityInsStmnt.setByte(7, ability.taw());
 			abilityInsStmnt.setString(8, ability.type().toString().toLowerCase());
-			abilityInsStmnt.setString(9, ability.trial().attribute1().getAbbrevation());
-			abilityInsStmnt.setString(10, ability.trial().attribute2().getAbbrevation());
-			abilityInsStmnt.setString(11, ability.trial().attribute3().getAbbrevation());
+			abilityInsStmnt.setString(9, ability.trial().attribute1().getAbbreviation());
+			abilityInsStmnt.setString(10, ability.trial().attribute2().getAbbreviation());
+			abilityInsStmnt.setString(11, ability.trial().attribute3().getAbbreviation());
 			abilityInsStmnt.setByte(12, ability.taw());
 			abilityInsStmnt.setString(13, ability.type().toString().toLowerCase());
 			abilityInsStmnt.execute();
@@ -395,8 +386,8 @@ public class StatementManager {
 			abilitySelectStmnt.setString(4, rep.name().toLowerCase());
 			ResultSet abilityResult = abilitySelectStmnt.executeQuery();
 			if(abilityResult.next()) {
-				
-				Trial trial = new Trial(Attribute.abbrevationValueOf(abilityResult.getString("trial1")), Attribute.abbrevationValueOf(abilityResult.getString("trial2")), Attribute.abbrevationValueOf(abilityResult.getString("trial3")));
+
+				Trial trial = new Trial(Attribute.abbreviationValueOf(abilityResult.getString("trial1")), Attribute.abbreviationValueOf(abilityResult.getString("trial2")), Attribute.abbreviationValueOf(abilityResult.getString("trial3")));
 				Ability.Type type = Ability.Type.valueOf(abilityResult.getString("type").toUpperCase());
 				Tradition abilityRep = Tradition.valueOf(abilityResult.getString("rep").toUpperCase());
 				result = Optional.of(new Ability(abilityResult.getString("ability_id"), abilityResult.getString("ability_name"), abilityRep, trial, abilityResult.getByte("sr"), type));

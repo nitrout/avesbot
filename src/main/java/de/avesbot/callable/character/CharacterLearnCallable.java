@@ -30,17 +30,17 @@ public class CharacterLearnCallable extends CharacterCallable {
 		OptionData attribute1Option = new OptionData(OptionType.STRING, I18N.getTranslation("characterAttribute1Option"), I18N.getTranslation("characterLearnAttribute1OptionDescription"), true);
 		attribute1Option.setNameLocalizations(I18N.getLocalizations("characterAttribute1Option"));
 		attribute1Option.setDescriptionLocalizations(I18N.getLocalizations("characterLearnAttribute1OptionDescription"));
-		attribute1Option.addChoices(Attribute.OPTION_CHOICES);
+		attribute1Option.addChoices(Attribute.optionChoices());
 		
 		OptionData attribute2Option = new OptionData(OptionType.STRING, I18N.getTranslation("characterAttribute2Option"), I18N.getTranslation("characterLearnAttribute2OptionDescription"), true);
 		attribute2Option.setNameLocalizations(I18N.getLocalizations("characterAttribute2Option"));
 		attribute2Option.setDescriptionLocalizations(I18N.getLocalizations("characterLearnAttribute2OptionDescription"));
-		attribute2Option.addChoices(Attribute.OPTION_CHOICES);
+		attribute2Option.addChoices(Attribute.optionChoices());
 		
 		OptionData attribute3Option = new OptionData(OptionType.STRING, I18N.getTranslation("characterAttribute3Option"), I18N.getTranslation("characterLearnAttribute3OptionDescription"), true);
 		attribute3Option.setNameLocalizations(I18N.getLocalizations("characterAttribute3Option"));
 		attribute3Option.setDescriptionLocalizations(I18N.getLocalizations("characterLearnAttribute3OptionDescription"));
-		attribute3Option.addChoices(Attribute.OPTION_CHOICES);
+		attribute3Option.addChoices(Attribute.optionChoices());
 		
 		OptionData abilityRatingOption = new OptionData(OptionType.INTEGER, I18N.getTranslation("characterAbilityRatingOption"), I18N.getTranslation("characterLearnAbilityRatingOptionDescription"), true);
 		abilityRatingOption.setNameLocalizations(I18N.getLocalizations("characterAbilityRatingOption"));
