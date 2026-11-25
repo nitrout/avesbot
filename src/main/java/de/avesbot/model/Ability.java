@@ -1,7 +1,11 @@
 package de.avesbot.model;
 
 import de.avesbot.i18n.I18n;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.Command.Choice;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * The ability of a character
@@ -13,15 +17,16 @@ public record Ability(String id, String name, Tradition rep, Trial trial, byte t
 	
 	public enum Type {
 		TALENT, SPELL, LITURGY;
-		
-		public static final Command.Choice[] OPTION_CHOICES;
-	
-		static {
-			OPTION_CHOICES = new Command.Choice[values().length];
-			for(Type t : values()) {
-				OPTION_CHOICES[t.ordinal()] = new Command.Choice(I18N.getTranslation(t.name().toLowerCase()), t.name());
-				OPTION_CHOICES[t.ordinal()].setNameLocalizations(I18N.getLocalizations(t.name().toLowerCase()));
-			}
+
+		private static final List<Choice> OPTION_CHOICES = Stream.of(values()).map(Type::toOptionChoice).toList();
+
+		public static List<Choice> optionChoices() {
+			return OPTION_CHOICES;
+		}
+
+		private static Choice toOptionChoice(Type type) {
+			return new Choice(I18N.getTranslation(type.name().toLowerCase()), type.name())
+					.setNameLocalizations(I18N.getLocalizations(type.name().toLowerCase()));
 		}
 	}
 	
@@ -42,9 +47,9 @@ public record Ability(String id, String name, Tradition rep, Trial trial, byte t
 	 * 
 	 * @return the string representation
 	 */
+	@NotNull
 	@Override
 	public String toString() {
-		
-		return String.format("%s %s%s%s\t%d", type, name, rep != Tradition.NONE ? "["+rep.name()+"]" : "", trial, taw);
+		return String.format("%s %s%s%s\t%d", type, name, rep == Tradition.NONE ? "" : "[" + rep.name() + "]", trial, taw);
 	}
 }

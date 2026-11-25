@@ -1,16 +1,13 @@
 package de.avesbot.callable.character;
 
-import java.util.Optional;
 import de.avesbot.Avesbot;
-import de.avesbot.model.Ability;
-import de.avesbot.model.Attribute;
-import de.avesbot.model.Tradition;
-import de.avesbot.model.RoleplayCharacter;
-import de.avesbot.model.Trial;
+import de.avesbot.model.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import java.util.Optional;
 
 /**
  * A callable to learn a new ability for the current character.
@@ -52,7 +49,7 @@ public class CharacterLearnCallable extends CharacterCallable {
 		OptionData typeOption = new OptionData(OptionType.STRING, I18N.getTranslation("characterTypeOption"), I18N.getTranslation("characterLearnTypeOptionDescription"));
 		typeOption.setNameLocalizations(I18N.getLocalizations("characterTypeOption"));
 		typeOption.setDescriptionLocalizations(I18N.getLocalizations("characterLearnTypeOptionDescription"));
-		typeOption.addChoices(Ability.Type.OPTION_CHOICES);
+		typeOption.addChoices(Ability.Type.optionChoices());
 		
 		OptionData traditionOption = new OptionData(OptionType.STRING, I18N.getTranslation("characterTraditionOption"), I18N.getTranslation("characterLearnTraditionOptionDescription"));
 		traditionOption.setNameLocalizations(I18N.getLocalizations("characterTraditionOption"));
