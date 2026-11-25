@@ -16,9 +16,9 @@ public abstract class CharacterCallable extends CommandCallable {
 	
 	/**
 	 * Creates a new character creation callable.
-	 * @param event
+	 * @param event the called event
 	 */
-	public CharacterCallable(SlashCommandInteractionEvent event) {
+	protected CharacterCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 }
