@@ -1,17 +1,18 @@
 package de.avesbot.callable.roll;
 
-import java.util.Optional;
 import de.avesbot.Avesbot;
-import de.avesbot.model.Ability;
-import de.avesbot.model.Tradition;
-import de.avesbot.model.RoleplayCharacter;
-import de.avesbot.util.LevenshteinHelper;
 import de.avesbot.callable.RoleplayCharacterRoll;
 import de.avesbot.i18n.I18n;
+import de.avesbot.model.Ability;
+import de.avesbot.model.RoleplayCharacter;
+import de.avesbot.model.Tradition;
+import de.avesbot.util.LevenshteinHelper;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import java.util.Optional;
 
 /**
  * A callable to execute a trial for a character's skill.
@@ -30,7 +31,7 @@ public class RollSkillCallable extends RollCallable implements RoleplayCharacter
 		OptionData difficultyOption = buildTranslatedOption(I18N, OptionType.INTEGER, "difficultyOption", "difficultyOptionDescription", false);
 		OptionData coverageOption = buildTranslatedOption(I18N, OptionType.STRING, "coverageOption", "coverageOptionDescription", false);
 		OptionData traditionOption = buildTranslatedOption(I18N, OptionType.STRING, "traditionOption", "traditionOptionDescription", false);
-		traditionOption.addChoices(Tradition.OPTION_CHOICES);
+		traditionOption.addChoices(Tradition.optionChoices());
 		
 		SUBCOMMAND.addOptions(skillOption, difficultyOption, coverageOption, traditionOption);
 	}

@@ -54,7 +54,7 @@ public class CharacterLearnCallable extends CharacterCallable {
 		OptionData traditionOption = new OptionData(OptionType.STRING, I18N.getTranslation("characterTraditionOption"), I18N.getTranslation("characterLearnTraditionOptionDescription"));
 		traditionOption.setNameLocalizations(I18N.getLocalizations("characterTraditionOption"));
 		traditionOption.setDescriptionLocalizations(I18N.getLocalizations("characterLearnTraditionOptionDescription"));
-		traditionOption.addChoices(Tradition.OPTION_CHOICES);
+		traditionOption.addChoices(Tradition.optionChoices());
 		
 		SUBCOMMAND.addOptions(
 			abilityOption,

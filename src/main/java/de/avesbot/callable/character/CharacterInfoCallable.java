@@ -1,14 +1,15 @@
 package de.avesbot.callable.character;
 
-import java.util.Optional;
 import de.avesbot.Avesbot;
 import de.avesbot.model.Ability;
-import de.avesbot.model.Tradition;
 import de.avesbot.model.RoleplayCharacter;
+import de.avesbot.model.Tradition;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import java.util.Optional;
 
 /**
  * A callable to print character's or one of his abilitie's information.
@@ -31,7 +32,7 @@ public class CharacterInfoCallable extends CharacterCallable {
 		OptionData traditionOption = new OptionData(OptionType.STRING, I18N.getTranslation("characterTraditionOption"), I18N.getTranslation("characterInfoTraditionOptionDescription"));
 		traditionOption.setNameLocalizations(I18N.getLocalizations("characterTraditionOption"));
 		traditionOption.setDescriptionLocalizations(I18N.getLocalizations("characterInfoTraditionOptionDescription"));
-		traditionOption.addChoices(Tradition.OPTION_CHOICES);
+		traditionOption.addChoices(Tradition.optionChoices());
 		
 		SUBCOMMAND.addOptions(abilityOption, traditionOption);
 	}

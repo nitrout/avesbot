@@ -1,10 +1,12 @@
 package de.avesbot.model;
 
 import de.avesbot.i18n.I18n;
+import net.dv8tion.jda.api.interactions.commands.Command.Choice;
+
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Stream;
-import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 
 /**
  * The dsa magic representations.
@@ -24,11 +26,15 @@ public enum Tradition {
 	OTHER;
 	
 	private static final I18n I18N = new I18n("de.avesbot.i18n.general");
-	public static final Choice[] OPTION_CHOICES = Stream.of(values())
+	private static final List<Choice> OPTION_CHOICES = Stream.of(values())
 																.map(Tradition::getTranslatedChoice)
-																.toArray(Choice[]::new);;
-	
-	HashSet<String> mappings;
+			.toList();
+
+	public static List<Choice> optionChoices() {
+		return OPTION_CHOICES;
+	}
+
+	final HashSet<String> mappings;
 	
 	Tradition(String...mappings) {
 		this.mappings = new HashSet<>();
