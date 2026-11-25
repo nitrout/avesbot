@@ -1,19 +1,20 @@
 package de.avesbot.callable.group;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import de.avesbot.Avesbot;
+import de.avesbot.callable.RoleplayCharacterRoll;
 import de.avesbot.model.Attribute;
 import de.avesbot.model.Group;
 import de.avesbot.model.RoleplayCharacter;
-import de.avesbot.callable.RoleplayCharacterRoll;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * A callable to execute an attribute trial for all members of a group.
@@ -29,7 +30,7 @@ public class GroupAttributeCallable extends GroupCallable implements RoleplayCha
 		SUBCOMMAND = buildTranslatedSubcommand(GroupCallable.I18N, "groupAttribute", "groupAttributeDescription");
 		
 		OptionData attributeOpption = buildTranslatedOption(GroupCallable.I18N, OptionType.STRING, "attributeOption", "attributeOptionDescription", true);
-		attributeOpption.addChoices(Attribute.OPTION_CHOICES);
+		attributeOpption.addChoices(Attribute.optionChoices());
 		
 		OptionData difficultyOption = buildTranslatedOption(GroupCallable.I18N, OptionType.INTEGER, "difficultyOption", "difficultyOptionDescription", false);
 		

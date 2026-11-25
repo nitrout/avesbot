@@ -1,17 +1,18 @@
 package de.avesbot.callable.roll;
 
-import java.util.Optional;
 import de.avesbot.Avesbot;
-import de.avesbot.model.Attribute;
-import de.avesbot.model.Tradition;
-import de.avesbot.model.RoleplayCharacter;
-import de.avesbot.model.Trial;
 import de.avesbot.callable.RoleplayCharacterRoll;
 import de.avesbot.i18n.I18n;
+import de.avesbot.model.Attribute;
+import de.avesbot.model.RoleplayCharacter;
+import de.avesbot.model.Tradition;
+import de.avesbot.model.Trial;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import java.util.Optional;
 
 /**
  * A callable to execute a custom trial for a character.
@@ -26,13 +27,13 @@ public class RollTrialCallable extends RollCallable implements RoleplayCharacter
 		SUBCOMMAND = buildTranslatedSubcommand(I18N, "rollTrial", "rollTrialDescription");
 		
 		OptionData attribute1Option = buildTranslatedOption(I18N, OptionType.STRING, "attribute1Option", "attribute1OptionDescription", true);
-		attribute1Option.addChoices(Attribute.OPTION_CHOICES);
+		attribute1Option.addChoices(Attribute.optionChoices());
 		
 		OptionData attribute2Option = buildTranslatedOption(I18N, OptionType.STRING, "attribute2Option", "attribute2OptionDescription", true);
-		attribute2Option.addChoices(Attribute.OPTION_CHOICES);
+		attribute2Option.addChoices(Attribute.optionChoices());
 		
 		OptionData attribute3Option = buildTranslatedOption(I18N, OptionType.STRING, "attribute3Option", "attribute3OptionDescription", true);
-		attribute3Option.addChoices(Attribute.OPTION_CHOICES);
+		attribute3Option.addChoices(Attribute.optionChoices());
 		
 		OptionData skillRatingOption = buildTranslatedOption(I18N, OptionType.INTEGER, "skillRatingOption", "skillRatingOptionDescription", true);
 		

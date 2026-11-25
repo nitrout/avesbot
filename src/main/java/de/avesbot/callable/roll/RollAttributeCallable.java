@@ -1,6 +1,5 @@
 package de.avesbot.callable.roll;
 
-import java.util.Optional;
 import de.avesbot.Avesbot;
 import de.avesbot.callable.RoleplayCharacterRoll;
 import de.avesbot.i18n.I18n;
@@ -10,6 +9,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import java.util.Optional;
 
 /**
  * Executes an attribute trial for the character.
@@ -24,7 +25,7 @@ public class RollAttributeCallable extends RollCallable implements RoleplayChara
 		SUBCOMMAND = buildTranslatedSubcommand(I18N, "rollAttribute", "rollAttributeDescription");
 
 		OptionData attributeOption = buildTranslatedOption(I18N, OptionType.STRING, "attributeOption", "attributeOptionDescription", true);
-		attributeOption.addChoices(Attribute.OPTION_CHOICES);
+		attributeOption.addChoices(Attribute.optionChoices());
 		
 		OptionData difficultyOption = buildTranslatedOption(I18N, OptionType.INTEGER, "difficultyOption", "difficultyOptionDescription", false);
 
