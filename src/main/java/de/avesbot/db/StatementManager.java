@@ -1,5 +1,6 @@
 package de.avesbot.db;
 
+import de.avesbot.Avesbot;
 import de.avesbot.model.*;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -90,7 +91,7 @@ public class StatementManager {
 				}
 			}
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return insertId;
@@ -112,7 +113,7 @@ public class StatementManager {
 			updatedRows = charDelStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return updatedRows > 0;
@@ -142,7 +143,7 @@ public class StatementManager {
 			abilityInsStmnt.setString(13, ability.type().toString().toLowerCase());
 			abilityInsStmnt.execute();
 		} catch(SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 	}
 	
@@ -163,7 +164,7 @@ public class StatementManager {
 			vantageInsStmnt.setString(6, vantage.attribute2());
 			vantageInsStmnt.execute();
 		} catch(SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 	}
 	
@@ -186,7 +187,7 @@ public class StatementManager {
 			specialInsStmnt.setString(8, special.attribute3());
 			specialInsStmnt.execute();
 		} catch(SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 	}
 	
@@ -217,7 +218,7 @@ public class StatementManager {
 															vantages, specials));
 			}
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return result;
@@ -253,7 +254,7 @@ public class StatementManager {
 															vantages, specials));
 			}
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return result;
@@ -286,7 +287,7 @@ public class StatementManager {
 													vantages, specials));
 			}
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return result.toArray(RoleplayCharacter[]::new);
@@ -309,7 +310,7 @@ public class StatementManager {
 			}
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return vantageList.toArray(Vantage[]::new);
@@ -332,7 +333,7 @@ public class StatementManager {
 			}
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return specialList.toArray(Special[]::new);
@@ -359,7 +360,7 @@ public class StatementManager {
 			updatedRows = charEnableStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return updatedRows > 0;
@@ -391,7 +392,7 @@ public class StatementManager {
 				result = Optional.of(new Ability(abilityResult.getString("ability_id"), abilityResult.getString("ability_name"), abilityRep, trial, abilityResult.getByte("sr"), type));
 			}
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return result;
@@ -415,7 +416,7 @@ public class StatementManager {
 				result.add(abilityResult.getString("ability_name"));
 			}
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return result.toArray(String[]::new);
@@ -439,7 +440,7 @@ public class StatementManager {
 				result.add(abilityResult.getString("ability_name"));
 			}
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return result.toArray(String[]::new);
@@ -470,7 +471,7 @@ public class StatementManager {
 			guildInsStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 	}
 	
@@ -498,7 +499,7 @@ public class StatementManager {
 			}
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return guildSetting;
@@ -520,7 +521,7 @@ public class StatementManager {
 			guildPrefixUpdateStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 	}
 	
@@ -545,7 +546,7 @@ public class StatementManager {
 			symbolDiceInsStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 	}
 	
@@ -573,7 +574,7 @@ public class StatementManager {
 			}
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return dice;
@@ -597,7 +598,7 @@ public class StatementManager {
 			groupInsStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 	}
 	
@@ -623,7 +624,7 @@ public class StatementManager {
 				result = Optional.of(new Group(groupResult.getString("group_id"), groupResult.getString("user_id"), groupResult.getString("guild_id"), groupResult.getString("name")));
 			}
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return result;
@@ -653,7 +654,7 @@ public class StatementManager {
 			updatedRows = groupEnableStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return updatedRows > 0;
@@ -681,7 +682,7 @@ public class StatementManager {
 				result = Optional.of(new Group(groupResult.getString("group_id"), groupResult.getString("user_id"), groupResult.getString("guild_id"), groupResult.getString("name")));
 			}
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return result;
@@ -703,7 +704,7 @@ public class StatementManager {
 			updatedRows = groupMemberInsStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return updatedRows > 0;
@@ -725,7 +726,7 @@ public class StatementManager {
 			updatedRows = groupMemberDelStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return updatedRows > 0;
@@ -760,7 +761,7 @@ public class StatementManager {
 			}
 			
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 		
 		return result.toArray(RoleplayCharacter[]::new);
