@@ -3,7 +3,6 @@ package de.avesbot.callable.group;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import de.avesbot.Avesbot;
 import de.avesbot.model.Ability;
 import de.avesbot.model.Group;
@@ -45,7 +44,7 @@ public class GroupSkillCallable extends GroupCallable implements RoleplayCharact
 	 */
 	public GroupSkillCallable(SlashCommandInteractionEvent event) {
 		super(event);
-		guild.getEmojis().stream().forEach(emote -> emoteMap.put(emote.getName(), emote));
+		guild.getEmojis().forEach(emote -> emoteMap.put(emote.getName(), emote));
 	}
 	
 	@Override
@@ -83,7 +82,7 @@ public class GroupSkillCallable extends GroupCallable implements RoleplayCharact
 				}
 			}
 			
-			return results.stream().collect(Collectors.joining("\n\n"));
+			return String.join("\n\n", results);
 		}
 	}
 }

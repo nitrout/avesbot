@@ -14,7 +14,7 @@ public abstract class GroupCallable extends CommandCallable {
 	protected static final I18n I18N = new I18n("de.avesbot.i18n.group");
 	public static final SlashCommandData COMMAND = buildTranslatedSlashCommand(I18N, "group", "groupDescription");
 
-	public GroupCallable(SlashCommandInteractionEvent event) {
+	protected GroupCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 }

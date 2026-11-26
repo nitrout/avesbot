@@ -16,8 +16,8 @@ public class ActiveGuildsRunnable implements Runnable {
 		
 		List<Guild> guildList = Avesbot.getJda().getGuilds();
 		guildList.forEach(g -> {
-			Avesbot.getLogger().info(String.format("%s %s", g.getId(), g.getName()));
+			Avesbot.getLogger().info(() -> String.format("%s %s", g.getId(), g.getName()));
 		});
-		Avesbot.getLogger().info(String.format("Total: %d guilds", guildList.size()));
+		Avesbot.getLogger().info(() -> String.format("Total: %d guilds", guildList.size()));
 	}
 }
