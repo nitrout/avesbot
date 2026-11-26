@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * A callable to execute an attribute trial for all members of a group.
@@ -44,8 +43,8 @@ public class GroupAttributeCallable extends GroupCallable implements RoleplayCha
 	 */
 	public GroupAttributeCallable(SlashCommandInteractionEvent event) {
 		super(event);
-		
-		guild.getEmojis().stream().forEach(emote -> emoteMap.put(emote.getName(), emote));
+
+		guild.getEmojis().forEach(emote -> emoteMap.put(emote.getName(), emote));
 	}
 	
 	@Override
@@ -73,8 +72,8 @@ public class GroupAttributeCallable extends GroupCallable implements RoleplayCha
 			for(RoleplayCharacter chara : charas) {
 				results.add(rollAttribute(settings, emoteMap, chara, attribute.get(), difficulty));
 			}
-			
-			return results.stream().collect(Collectors.joining("\n\n"));
+
+			return String.join("\n\n", results);
 		}
 	}
 }

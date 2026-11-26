@@ -1,11 +1,8 @@
 package de.avesbot.db;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import org.mariadb.jdbc.MariaDbDataSource;
+
+import java.sql.*;
 
 /**
  * The database connection.
@@ -13,6 +10,10 @@ import org.mariadb.jdbc.MariaDbDataSource;
  * @author nitrout
  */
 public class Database {
+
+	private Database() {
+		throw new IllegalStateException("Database shall not be instantiated");
+	}
 	
 	public static Connection connection;
 	public static MariaDbDataSource dataSource;
@@ -31,7 +32,6 @@ public class Database {
 		dataSource.setUser(user);
 		dataSource.setPassword(password);
 		connection = dataSource.getConnection();
-		//connection = DriverManager.getConnection("jdbc:mariadb://"+host+"/"+database+"?autoReconnect=true", user, password);
 	}
 	
 	private static Connection getConnection() throws SQLException {
@@ -42,17 +42,6 @@ public class Database {
 	}
 	
 	/**
-	 * Creates a new stement.
-	 * 
-	 * @return the statement
-	 * @throws SQLException 
-	 */
-	public static Statement getNewStatement() throws SQLException {
-		Statement stmt = getConnection().createStatement();
-		return stmt;
-	}
-	
-	/**
 	 * Creates a new prepared statement.
 	 * 
 	 * @param stmt the sql string for the prepared statement
@@ -60,8 +49,7 @@ public class Database {
 	 * @throws SQLException 
 	 */
 	public static PreparedStatement prepareStatement(String stmt) throws SQLException {
-		PreparedStatement prepStmt = getConnection().prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
-		return prepStmt;
+		return getConnection().prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
 	}
 	
 	/**
@@ -72,8 +60,9 @@ public class Database {
 	 * @throws SQLException 
 	 */
 	public static int update(String query) throws SQLException {
-		Statement stmt = getConnection().createStatement();
-		return stmt.executeUpdate(query);
+		try (Statement stmt = getConnection().createStatement()) {
+			return stmt.executeUpdate(query);
+		}
 	}
 	
 	/**

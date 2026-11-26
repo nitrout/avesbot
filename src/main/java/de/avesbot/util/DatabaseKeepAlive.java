@@ -1,7 +1,9 @@
 package de.avesbot.util;
 
-import java.sql.SQLException;
+import de.avesbot.Avesbot;
 import de.avesbot.db.Database;
+
+import java.sql.SQLException;
 
 /**
  *
@@ -11,11 +13,10 @@ public class DatabaseKeepAlive implements Runnable {
 
 	@Override
 	public void run() {
-		
-		try {
-			Database.query("SELECT NOW()");
+
+		try (final var _ = Database.query("SELECT NOW()")) {
 		} catch (SQLException ex) {
-			System.err.println(ex.getMessage());
+			Avesbot.getLogger().severe(ex::getMessage);
 		}
 	}
 	
