@@ -1,40 +1,25 @@
 package de.avesbot;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Optional;
 import de.avesbot.callable.CommandCallable;
 import de.avesbot.callable.DiceCallable;
-import de.avesbot.callable.character.CharacterChooseCallable;
-import de.avesbot.callable.character.CharacterCreateCallable;
-import de.avesbot.callable.character.CharacterDeleteCallable;
-import de.avesbot.callable.character.CharacterImportCallable;
-import de.avesbot.callable.character.CharacterInfoCallable;
-import de.avesbot.callable.character.CharacterLearnCallable;
-import de.avesbot.callable.character.CharacterListCallable;
-import de.avesbot.callable.group.GroupAttributeCallable;
-import de.avesbot.callable.group.GroupChooseCallable;
-import de.avesbot.callable.group.GroupCreateCallable;
-import de.avesbot.callable.group.GroupJoinCallable;
-import de.avesbot.callable.group.GroupLeaveCallable;
-import de.avesbot.callable.group.GroupSkillCallable;
-import de.avesbot.callable.roll.RollAttributeCallable;
-import de.avesbot.callable.roll.RollDiceCallable;
-import de.avesbot.callable.roll.RollSkillCallable;
-import de.avesbot.callable.roll.RollSlipCallable;
-import de.avesbot.callable.roll.RollSumCallable;
-import de.avesbot.callable.roll.RollTrialCallable;
+import de.avesbot.callable.character.*;
+import de.avesbot.callable.group.*;
+import de.avesbot.callable.roll.*;
 import de.avesbot.callable.settings.SettingsLanguageCallable;
 import de.avesbot.callable.settings.SettingsStatsCallable;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class for managing the available commands.
@@ -130,7 +115,7 @@ public class CommandBook {
 		return Optional.ofNullable(this.commandMap.get(commandName)).map(cc -> {
 			CommandCallable cmd = null;
 			try {
-				cmd = (CommandCallable)cc.getConstructor(SlashCommandInteractionEvent.class).newInstance(event);
+				cmd = cc.getConstructor(SlashCommandInteractionEvent.class).newInstance(event);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 				Logger.getLogger(CommandBook.class.getName()).log(Level.SEVERE, null, ex);
 			}

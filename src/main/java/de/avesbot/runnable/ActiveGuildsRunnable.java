@@ -1,8 +1,9 @@
 package de.avesbot.runnable;
 
-import java.util.List;
-import net.dv8tion.jda.api.entities.Guild;
 import de.avesbot.Avesbot;
+import net.dv8tion.jda.api.entities.Guild;
+
+import java.util.List;
 
 /**
  *
@@ -15,8 +16,8 @@ public class ActiveGuildsRunnable implements Runnable {
 		
 		List<Guild> guildList = Avesbot.getJda().getGuilds();
 		guildList.forEach(g -> {
-			System.out.println(String.format("%s %s", g.getId(), g.getName()));
+			Avesbot.getLogger().info(String.format("%s %s", g.getId(), g.getName()));
 		});
-		System.out.println(String.format("Total: %d guilds", guildList.size()));
+		Avesbot.getLogger().info(String.format("Total: %d guilds", guildList.size()));
 	}
 }

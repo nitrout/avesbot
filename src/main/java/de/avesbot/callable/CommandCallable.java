@@ -1,36 +1,32 @@
 package de.avesbot.callable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Callable;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import de.avesbot.Avesbot;
 import de.avesbot.i18n.I18n;
 import de.avesbot.model.GuildSetting;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.*;
 import org.apache.commons.lang3.reflect.FieldUtils;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.logging.Level;
 
 /**
  *
  * @author Nitrout
  */
 public abstract class CommandCallable implements Callable<String> {
-	
-	//public static final SlashCommandData COMMAND = null;
+
 	public static final int TIMEOUT = 2;
 	
 	protected final Guild guild;
@@ -60,7 +56,9 @@ public abstract class CommandCallable implements Callable<String> {
 		event.getOptions().forEach(e -> this.commandPars.put(e.getName(), e));
 		
 		this.attachments = List.of();
-		this.settings = Avesbot.getStatementManager().getGuildSetting(guild).orElse(GuildSetting.DEFAULT);
+		this.settings = Optional.ofNullable(guild)
+				.flatMap(Avesbot.getStatementManager()::getGuildSetting)
+				.orElse(GuildSetting.DEFAULT);
 	}
 	
 	public int getTimeout() {
@@ -107,7 +105,7 @@ public abstract class CommandCallable implements Callable<String> {
 		try {
 			return (CommandData)FieldUtils.readStaticField(callableClass, "COMMAND");
 		} catch(IllegalAccessException ex) {
-			Logger.getLogger(CommandCallable.class.getName()).log(Level.SEVERE, callableClass.getName()+" has no accesible static field COMMAND", ex);
+			Avesbot.getLogger().log(Level.SEVERE, String.format("%s has no accessible static field COMMAND", callableClass.getName()), ex);
 			return null;
 		}
 	}

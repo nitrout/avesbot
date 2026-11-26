@@ -2,12 +2,16 @@ package de.avesbot;
 
 import de.avesbot.callable.CommandCallable;
 import de.avesbot.db.Database;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import de.avesbot.db.StatementManager;
+import de.avesbot.runnable.ActiveGuildsRunnable;
+import de.avesbot.runnable.ExitRunnable;
+import de.avesbot.runnable.LeaveGuildRunnable;
+import de.avesbot.util.DatabaseKeepAlive;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
+
+import java.io.*;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -16,15 +20,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import de.avesbot.runnable.ExitRunnable;
-import de.avesbot.db.StatementManager;
-import de.avesbot.runnable.ActiveGuildsRunnable;
-import de.avesbot.runnable.LeaveGuildRunnable;
-import de.avesbot.util.DatabaseKeepAlive;
-import java.io.InputStream;
-import net.dv8tion.jda.api.entities.Activity;
 
 /**
  * @author nitrout
@@ -38,6 +33,7 @@ public class Avesbot {
 	private static DiceSimulator diceSimulator;
 	private static ScheduledThreadPoolExecutor stpe;
 	private static final File CONFIG = new File("aves.conf");
+	private static final Logger logger = Logger.getLogger(Avesbot.class.getName());
 
 	/**
 	 * 
@@ -55,8 +51,8 @@ public class Avesbot {
 		// initialize thread pool executor to handle all incoming discord events
 		stpe = new ScheduledThreadPoolExecutor(4);
 		stpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
-		
-		try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
+
+		try {
 			// Setup database connection
 			Database.init(properties.getProperty("db_host"), properties.getProperty("db_user"), properties.getProperty("db_pass"), properties.getProperty("db_name"));
 			stmntManager = new StatementManager();
@@ -84,7 +80,7 @@ public class Avesbot {
 			String[] pars;
 			String order = "";
 			do {
-				input = br.readLine();
+				input = IO.readln();
 				
 				if(input != null) {
 					messageParts = input.split(" ");
@@ -96,8 +92,7 @@ public class Avesbot {
 						case "exit" -> stpe.submit(new ExitRunnable());
 						case "leave" ->
 							stpe.submit(new LeaveGuildRunnable(pars));
-						default ->
-							System.out.println("Unknown command!");
+						default -> getLogger().warning("Unknown command!");
 					}
 				}
 				
@@ -105,8 +100,8 @@ public class Avesbot {
 			
 			// close DB connection after shutdown
 			Database.close();
-		} catch (SQLException | IOException ex) {
-			Logger.getLogger(Avesbot.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (SQLException ex) {
+			getLogger().log(Level.SEVERE, null, ex);
 		} finally {
 			// ensure to close api connection and thread pool executor
 			if(getJda() != null)
@@ -116,11 +111,15 @@ public class Avesbot {
 			try(FileOutputStream fos = new FileOutputStream(CONFIG)) {
 				properties.store(fos, "");
 			} catch (IOException ex) {
-				Logger.getLogger(Avesbot.class.getName()).log(Level.SEVERE, null, ex);
+				getLogger().log(Level.SEVERE, null, ex);
 			}
 		}
 	}
-	
+
+	public static Logger getLogger() {
+		return logger;
+	}
+
 	/**
 	 * Load properties from config file aves.conf or set up a default config file.
 	 */
@@ -131,7 +130,7 @@ public class Avesbot {
 				properties.load(fis);
 			}
 			catch(IOException ioe) {
-				Logger.getLogger(Avesbot.class.getName()).log(Level.SEVERE, null, ioe);
+				getLogger().log(Level.SEVERE, null, ioe);
 			}
 		}
 		properties.putIfAbsent("control_user", "000000000000000000");
@@ -200,11 +199,12 @@ public class Avesbot {
 	}
 	
 	private static void resetCommands() {
-		jda.retrieveCommands().queue(cmdList -> cmdList.forEach(c -> c.delete().queue(_ -> System.out.println("Deleted Command " + c.getFullCommandName()))));
+		jda.retrieveCommands()
+				.queue(cmdList -> cmdList.forEach(c -> c.delete().queue(_ -> getLogger().info(String.format("Deleted Command %s", c.getFullCommandName())))));
 		CommandBook.getInstance().getAvailableSlashCommands()
 				.forEach(command -> jda.upsertCommand(command).queue(
-				cmd -> System.out.println("Command " + cmd.getFullCommandName() + " registered"),
-				err -> System.err.println(err.getMessage())));
+						cmd -> getLogger().info(String.format("Command %s registered", cmd.getFullCommandName())),
+						err -> getLogger().severe(err.getMessage())));
 	}
 	
 	private static void updateCommands() {
@@ -212,7 +212,7 @@ public class Avesbot {
 				.map(CommandCallable::toCommandData)
 				.filter(Objects::nonNull)
 				.forEach(cmd -> jda.upsertCommand(cmd).queue(
-				command -> System.out.println("Command " + command.getFullCommandName() + " registered"),
-				err -> System.err.println(err.getMessage())));
+						command -> getLogger().info(String.format("Command %s registered", command.getFullCommandName())),
+						err -> getLogger().severe(err.getMessage())));
 	}
 }
