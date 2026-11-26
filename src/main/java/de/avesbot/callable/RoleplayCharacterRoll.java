@@ -5,7 +5,6 @@ import de.avesbot.i18n.I18n;
 import de.avesbot.model.*;
 import de.avesbot.util.Formatter;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 import java.util.Map;
@@ -90,7 +89,7 @@ public interface RoleplayCharacterRoll {
 		}
 		
 		SkillRollResult4 rollResult = Avesbot.getDiceSimulator().rollSkill4(chara, trial, taw, difficulty, spell);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls().<Pair<Integer, Integer>>toArray(Pair[]::new));
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls());
 		String tapStr = I18N.getTranslation(settings.locale(), spell ? "spP" : "skP");
 		
 		if(settings.hideStats())
@@ -140,7 +139,7 @@ public interface RoleplayCharacterRoll {
 		
 		StringBuilder result = new StringBuilder();
 		SkillRollResult5 rollResult = Avesbot.getDiceSimulator().rollSkill5(chara, trial, taw, difficulty, spell);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls().<Pair<Integer, Integer>>toArray(Pair[]::new));
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls());
 		
 		if(settings.hideStats())
 			result.append(I18N.format(settings.locale(), "rollTde5SkillStatsHidden", chara.name(), abilityName, difficulty));
@@ -204,7 +203,7 @@ public interface RoleplayCharacterRoll {
 		
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute4(chara, difficulty, attr);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls().<Pair<Integer, Integer>>toArray(Pair[]::new));
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls());
 		String rollOutcomeStr = rollResult.outcome() == Outcome.SPLENDOR || rollResult.outcome() == Outcome.SUCCESS ?
 				"**" + I18N.getTranslation(settings.locale(), OUTCOME_SUCCESS) + "**" :
 				"**" + I18N.getTranslation(settings.locale(), OUTCOME_FAILURE) + "**";
@@ -232,7 +231,7 @@ public interface RoleplayCharacterRoll {
 		
 		StringBuilder result = new StringBuilder();
 		RollResult rollResult = Avesbot.getDiceSimulator().rollAttribute5(chara, difficulty, attr);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls().<Pair<Integer, Integer>>toArray(Pair[]::new));
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rollResult.rolls());
 		String rollOutcomeStr = "";
 		switch(rollResult.outcome()) {
 			case SLIP -> rollOutcomeStr = "**" + I18N.getTranslation(settings.locale(), OUTCOME_SLIP) + "**";

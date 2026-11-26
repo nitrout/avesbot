@@ -51,7 +51,7 @@ public class RollSumCallable extends RollCallable {
 			if(num <= Integer.parseInt(Avesbot.getProperties().getProperty("max_dice", "70"))) {
 				String rollResult;
 				List<Pair<Integer, Integer>> rolls = Avesbot.getDiceSimulator().rollDice(num, dice);
-				rollResult = Formatter.formatRollResult(emoteMap, rolls.<Pair<Integer, Integer>>toArray(Pair[]::new));
+				rollResult = Formatter.formatRollResult(emoteMap, rolls);
 
 				result = I18N.format(settings.locale(), "rollSumMessage", member.getEffectiveName(), rollResult, mod, rolls.stream().mapToInt(Pair::getLeft).sum()+mod);
 			} else {

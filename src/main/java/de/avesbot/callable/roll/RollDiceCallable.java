@@ -74,7 +74,7 @@ public class RollDiceCallable extends RollCallable {
 		
 		
 		List<Pair<Integer, Integer>> rolls = Avesbot.getDiceSimulator().rollDice(num, dice);
-		String rollResultStr = Formatter.formatRollResult(emoteMap, rolls.<Pair<Integer, Integer>>toArray(Pair[]::new));
+		String rollResultStr = Formatter.formatRollResult(emoteMap, rolls);
 		return I18N.format(settings.locale(), "rollExpression", member.getEffectiveName(), rollResultStr);
 	}
 }
