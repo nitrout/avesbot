@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 public record Ability(String id, String name, Tradition rep, Trial trial, byte taw, Type type) {
 	
 	private static final I18n I18N = new I18n("de.avesbot.i18n.general");
+	public static final String NAME_FIELD = "ability_name";
 	
 	public enum Type {
 		TALENT, SPELL, LITURGY;

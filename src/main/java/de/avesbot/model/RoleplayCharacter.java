@@ -7,11 +7,15 @@ import java.util.List;
  *
  * @author nitrout
  */
-public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte cou, byte sgc, byte intu, byte cha, byte dex, byte agi, byte con, byte str,
+public record RoleplayCharacter(Long id, String name, Ruleset ruleset, byte cou, byte sgc, byte intu, byte cha,
+                                byte dex, byte agi, byte con, byte str,
 		List<Vantage> vantages, List<Special> specials) {
 
+	public static final String ID_FIELD = "character_id";
+	public static final String RULESET_FIELD = "ruleset";
+
 	public RoleplayCharacter(String name, Ruleset ruleset, byte[] attributes, List<Vantage> vantages, List<Special> specials) {
-		this("0", name, ruleset, attributes[0], attributes[1], attributes[2], attributes[3], attributes[4], attributes[5], attributes[6], attributes[7], vantages, specials);
+		this(0L, name, ruleset, attributes[0], attributes[1], attributes[2], attributes[3], attributes[4], attributes[5], attributes[6], attributes[7], vantages, specials);
 	}
 
 	/**
@@ -41,7 +45,7 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	 * @param vantages the (dis)advantages of the character
 	 * @param specials the special abilities of the character
 	 */
-	public RoleplayCharacter(String id, String name, Ruleset rule, byte cou, byte sgc, byte intu, byte cha, byte dex, byte agi, byte con, byte str,
+	public RoleplayCharacter(Long id, String name, Ruleset rule, byte cou, byte sgc, byte intu, byte cha, byte dex, byte agi, byte con, byte str,
 			Vantage[] vantages, Special[] specials) {
 		this(id, name, rule, cou, sgc, intu, cha, dex, agi, con, str, List.of(vantages), List.of(specials));
 	}
@@ -64,7 +68,7 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	 */
 	public RoleplayCharacter(String name, Ruleset rule, byte cou, byte sgc, byte intu, byte cha, byte dex, byte agi, byte con, byte str, Vantage[] vantages,
 			Special[] specials) {
-		this("0", name, rule, cou, sgc, intu, cha, dex, agi, con, str, vantages, specials);
+		this(0L, name, rule, cou, sgc, intu, cha, dex, agi, con, str, vantages, specials);
 	}
 
 	/**
@@ -77,7 +81,7 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	 * @param specials the special abilities of the character
 	 * @param attributes the character attributes intuition order: courage, sagacity, intuition, charisma, dexterity, agility, constitution, strength
 	 */
-	public RoleplayCharacter(String id, String name, Ruleset rule, Vantage[] vantages, Special[] specials, byte... attributes) {
+	public RoleplayCharacter(Long id, String name, Ruleset rule, Vantage[] vantages, Special[] specials, byte... attributes) {
 		this(id, name, rule,
 				attributes[Attribute.COURAGE.ordinal()], attributes[Attribute.SAGACITY.ordinal()], attributes[Attribute.INTUITION.ordinal()], attributes[Attribute.CHARISMA.ordinal()],
 				attributes[Attribute.DEXTERITY.ordinal()], attributes[Attribute.AGILITY.ordinal()], attributes[Attribute.CONSTITUTION.ordinal()], attributes[Attribute.STRENGTH.ordinal()],
@@ -94,7 +98,7 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	 * @param attributes the character attributes intuition order: courage, sagacity, intuition, charisma, dexterity, agility, constitution, strength
 	 */
 	public RoleplayCharacter(String name, Ruleset rule, Vantage[] vantages, Special[] specials, byte... attributes) {
-		this("0", name, rule, vantages, specials, attributes);
+		this(0L, name, rule, vantages, specials, attributes);
 	}
 
 	/**
@@ -107,7 +111,7 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	 * @param specials the special abilities of the character
 	 * @param attributes the character attributes intuition order: courage, sagacity, intuition, charisma, dexterity, agility, constitution, strength
 	 */
-	public RoleplayCharacter(String id, String name, Ruleset rule, Vantage[] vantages, Special[] specials, Byte... attributes) {
+	public RoleplayCharacter(Long id, String name, Ruleset rule, Vantage[] vantages, Special[] specials, Byte... attributes) {
 		this(id, name, rule,
 				attributes[Attribute.COURAGE.ordinal()], attributes[Attribute.SAGACITY.ordinal()],
 				attributes[Attribute.INTUITION.ordinal()], attributes[Attribute.CHARISMA.ordinal()],
@@ -126,7 +130,7 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	 * @param attributes the character attributes intuition order: courage, sagacity, intuition, charisma, dexterity, agility, constitution, strength
 	 */
 	public RoleplayCharacter(String name, Ruleset rule, Vantage[] vantages, Special[] specials, Byte... attributes) {
-		this("0", name, rule, vantages, specials, attributes);
+		this(0L, name, rule, vantages, specials, attributes);
 	}
 
 	/**
@@ -135,7 +139,7 @@ public record RoleplayCharacter(String id, String name, Ruleset ruleset, byte co
 	 * @param id the new id
 	 * @param chara original character
 	 */
-	public RoleplayCharacter(String id, RoleplayCharacter chara) {
+	public RoleplayCharacter(Long id, RoleplayCharacter chara) {
 		this(id, chara.name, chara.ruleset, chara.cou, chara.sgc, chara.intu, chara.cha, chara.dex, chara.agi, chara.con, chara.str, chara.vantages.toArray(Vantage[]::new), chara.specials.toArray(Special[]::new));
 	}
 

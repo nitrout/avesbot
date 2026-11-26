@@ -1,32 +1,21 @@
 package de.avesbot.util;
 
 import de.avesbot.Avesbot;
-import de.avesbot.model.Ability;
-import de.avesbot.model.Attribute;
-import de.avesbot.model.RoleplayCharacter;
-import de.avesbot.model.Ruleset;
-import de.avesbot.model.Special;
-import de.avesbot.model.Tradition;
-import de.avesbot.model.Trial;
-import de.avesbot.model.Vantage;
+import de.avesbot.model.*;
 import de.avesbot.model.optolith.character.OptolithCharacter;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.function.BiFunction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import org.apache.commons.lang3.tuple.Pair;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.dataformat.yaml.YAMLFactory;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.function.BiFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -85,7 +74,7 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 
 	private static Boolean importCharacter(OptolithCharacter character, String memberId) {
 		var chara = createRoleplayCharacter(character);
-		Optional<String> insertedId = Avesbot.getStatementManager().insertRoleplayCharacter(memberId, chara);
+		final var insertedId = Avesbot.getStatementManager().insertRoleplayCharacter(memberId, chara);
 		if (insertedId.isEmpty()) {
 			return false;
 		}

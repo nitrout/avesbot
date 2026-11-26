@@ -1,6 +1,5 @@
 package de.avesbot.callable.character;
 
-import java.util.Optional;
 import de.avesbot.Avesbot;
 import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Ruleset;
@@ -104,7 +103,7 @@ public class CharacterCreateCallable extends CharacterCallable {
 		byte strength = (byte)this.commandPars.get("str").getAsLong();
 		
 		RoleplayCharacter chara = new RoleplayCharacter(name, ruleset, courage, sagacity, intuition, charisma, dexterity, agility, constitution, strength, new Vantage[]{}, new Special[]{});
-		Optional<String> charaId = Avesbot.getStatementManager().insertRoleplayCharacter(member.getId(), chara);
+		final var charaId = Avesbot.getStatementManager().insertRoleplayCharacter(member.getId(), chara);
 		
 		if(charaId.isPresent())
 			return I18N.format(settings.locale(), "characterCreated", chara);

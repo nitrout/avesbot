@@ -12,8 +12,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Optional;
 
+import static de.avesbot.model.Ability.NAME_FIELD;
+import static de.avesbot.model.GuildSetting.GUILD_ID_FIELD;
+import static de.avesbot.model.RoleplayCharacter.ID_FIELD;
+import static de.avesbot.model.RoleplayCharacter.RULESET_FIELD;
+
 /**
- * This class manages alle statements being exceuted by Aves.
+ * This class manages all statements being executed by Aves.
  * You should only use the prepared statements of this class to work with the db.
  *
  * @author Nitrout
@@ -50,25 +55,15 @@ public class StatementManager {
 	private static final String GROUP_MEMBER_LIST_SELECT = "SELECT `character`.* FROM `character` JOIN `group_member` USING(`character_id`) WHERE `group_id` = ?";
 	
 	/**
-	 * Prepares alle available Statements
-	 * @throws SQLException 
-	 */
-	public StatementManager()  throws SQLException {
-		
-	}
-	
-	/**
 	 * Adds a new character to the database for the given user or updates an existing one with the same name.
 	 * 
 	 * @param memberId is of the user
 	 * @param chara the character information
 	 * @return the id of the inserted/updated character
 	 */
-	public Optional<String> insertRoleplayCharacter(String memberId, RoleplayCharacter chara) {
-		
-		Optional<String> insertId = Optional.empty();
-		
-		try(PreparedStatement charInsStmnt = Database.prepareStatement(CHAR_INSERT); PreparedStatement charNameSelectStmnt = Database.prepareStatement(CHAR_NAME_SELECT);) {
+	public Optional<Long> insertRoleplayCharacter(String memberId, RoleplayCharacter chara) {
+
+		try (final var charInsStmnt = Database.prepareStatement(CHAR_INSERT); final var charNameSelectStmnt = Database.prepareStatement(CHAR_NAME_SELECT);) {
 			charInsStmnt.setString(1, memberId);
 			charInsStmnt.setString(2, chara.name());
 			for(int i = 0; i < Attribute.values().length; i++) {
@@ -80,21 +75,21 @@ public class StatementManager {
 			charInsStmnt.executeUpdate();
 			ResultSet insertResult = charInsStmnt.getGeneratedKeys();
 			if(insertResult.next()) {
-				insertId = Optional.ofNullable(insertResult.getString(1));
+				return Optional.ofNullable(insertResult.getString(1)).map(Long::parseUnsignedLong);
 			}
 			else {
 				charNameSelectStmnt.setString(1, memberId);
 				charNameSelectStmnt.setString(2, chara.name());
 				ResultSet updateResult = charNameSelectStmnt.executeQuery();
 				if(updateResult.next()) {
-					insertId = Optional.ofNullable(updateResult.getString("character_id"));
+					return Optional.ofNullable(updateResult.getString(ID_FIELD)).map(Long::parseUnsignedLong);
 				}
 			}
 		} catch (SQLException ex) {
 			Avesbot.getLogger().severe(ex::getMessage);
 		}
-		
-		return insertId;
+
+		return Optional.empty();
 	}
 	
 	/**
@@ -108,8 +103,8 @@ public class StatementManager {
 		int updatedRows = 0;
 		
 		try(PreparedStatement charDelStmnt = Database.prepareStatement(CHAR_DELETE)) {
-			
-			charDelStmnt.setString(1, chara.id());
+
+			charDelStmnt.setString(1, Long.toUnsignedString(chara.id()));
 			updatedRows = charDelStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
@@ -128,7 +123,7 @@ public class StatementManager {
 	public void insertAbility(RoleplayCharacter chara, Ability ability) {
 		
 		try(PreparedStatement abilityInsStmnt = Database.prepareStatement(ABILITY_INSERT);) {
-			abilityInsStmnt.setString(1, chara.id());
+			abilityInsStmnt.setString(1, Long.toUnsignedString(chara.id()));
 			abilityInsStmnt.setString(2, ability.name());
 			abilityInsStmnt.setString(3, ability.rep().name());
 			abilityInsStmnt.setString(4, ability.trial().attribute1().getAbbreviation());
@@ -156,7 +151,7 @@ public class StatementManager {
 	public void insertVantage(RoleplayCharacter chara, Vantage vantage) {
 		
 		try(PreparedStatement vantageInsStmnt = Database.prepareStatement(VANTAGE_INSERT);) {
-			vantageInsStmnt.setString(1, chara.id());
+			vantageInsStmnt.setString(1, Long.toUnsignedString(chara.id()));
 			vantageInsStmnt.setString(2, vantage.name());
 			vantageInsStmnt.setString(3, vantage.attribute1());
 			vantageInsStmnt.setString(4, vantage.attribute2());
@@ -177,7 +172,7 @@ public class StatementManager {
 	public void insertSpecial(RoleplayCharacter chara, Special special) {
 		
 		try(PreparedStatement specialInsStmnt = Database.prepareStatement(SPECIAL_INSERT);) {
-			specialInsStmnt.setString(1, chara.id());
+			specialInsStmnt.setString(1, Long.toUnsignedString(chara.id()));
 			specialInsStmnt.setString(2, special.name());
 			specialInsStmnt.setString(3, special.attribute1());
 			specialInsStmnt.setString(4, special.attribute2());
@@ -206,13 +201,13 @@ public class StatementManager {
 			ResultSet charaResult = charSelectStmnt.executeQuery();
 			
 			if(charaResult.next()) {
-				
-				Ruleset ruleset = Ruleset.valueOf(charaResult.getString("ruleset").toUpperCase());
-				
-				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString("character_id"));
-				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString("character_id"));
-				
-				result = Optional.of(new RoleplayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
+
+				Ruleset ruleset = Ruleset.valueOf(charaResult.getString(RULESET_FIELD).toUpperCase());
+
+				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString(ID_FIELD));
+				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString(ID_FIELD));
+
+				result = Optional.of(new RoleplayCharacter(Long.parseUnsignedLong(charaResult.getString(ID_FIELD)), charaResult.getString("name"), ruleset,
 															charaResult.getByte("cou"), charaResult.getByte("sgc"), charaResult.getByte("int"), charaResult.getByte("cha"),
 															charaResult.getByte("dex"), charaResult.getByte("agi"), charaResult.getByte("con"), charaResult.getByte("str"),
 															vantages, specials));
@@ -242,13 +237,13 @@ public class StatementManager {
 			ResultSet charaResult = charNameSelectStmnt.executeQuery();
 			
 			if(charaResult.next()) {
-				
-				Ruleset ruleset = Ruleset.valueOf(charaResult.getString("ruleset").toUpperCase());
-				
-				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString("character_id"));
-				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString("character_id"));
-				
-				result = Optional.of(new RoleplayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
+
+				Ruleset ruleset = Ruleset.valueOf(charaResult.getString(RULESET_FIELD).toUpperCase());
+
+				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString(ID_FIELD));
+				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString(ID_FIELD));
+
+				result = Optional.of(new RoleplayCharacter(Long.parseUnsignedLong(charaResult.getString(ID_FIELD)), charaResult.getString("name"), ruleset,
 															charaResult.getByte("cou"), charaResult.getByte("sgc"), charaResult.getByte("int"), charaResult.getByte("cha"),
 															charaResult.getByte("dex"), charaResult.getByte("agi"), charaResult.getByte("con"), charaResult.getByte("str"),
 															vantages, specials));
@@ -275,13 +270,13 @@ public class StatementManager {
 			ResultSet charaResult = charListSelectStmnt.executeQuery();
 			
 			while(charaResult.next()) {
-				
-				Ruleset ruleset = Ruleset.valueOf(charaResult.getString("ruleset").toUpperCase());
-				
-				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString("character_id"));
-				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString("character_id"));
-				
-				result.add(new RoleplayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
+
+				Ruleset ruleset = Ruleset.valueOf(charaResult.getString(RULESET_FIELD).toUpperCase());
+
+				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString(ID_FIELD));
+				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString(ID_FIELD));
+
+				result.add(new RoleplayCharacter(Long.parseUnsignedLong(charaResult.getString(ID_FIELD)), charaResult.getString("name"), ruleset,
 													charaResult.getByte("cou"), charaResult.getByte("sgc"), charaResult.getByte("int"), charaResult.getByte("cha"),
 													charaResult.getByte("dex"), charaResult.getByte("agi"), charaResult.getByte("con"), charaResult.getByte("str"),
 													vantages, specials));
@@ -378,8 +373,8 @@ public class StatementManager {
 		
 		Optional<Ability> result = Optional.empty();
 		try(PreparedStatement abilitySelectStmnt = Database.prepareStatement(ABILITY_SELECT);) {
-			
-			abilitySelectStmnt.setString(1, chara.id());
+
+			abilitySelectStmnt.setString(1, Long.toUnsignedString(chara.id()));
 			abilitySelectStmnt.setString(2, abilityName+"%");
 			abilitySelectStmnt.setString(3, rep.name().toLowerCase());
 			abilitySelectStmnt.setString(4, rep.name().toLowerCase());
@@ -389,7 +384,7 @@ public class StatementManager {
 				Trial trial = new Trial(Attribute.abbreviationValueOf(abilityResult.getString("trial1")), Attribute.abbreviationValueOf(abilityResult.getString("trial2")), Attribute.abbreviationValueOf(abilityResult.getString("trial3")));
 				Ability.Type type = Ability.Type.valueOf(abilityResult.getString("type").toUpperCase());
 				Tradition abilityRep = Tradition.valueOf(abilityResult.getString("rep").toUpperCase());
-				result = Optional.of(new Ability(abilityResult.getString("ability_id"), abilityResult.getString("ability_name"), abilityRep, trial, abilityResult.getByte("sr"), type));
+				result = Optional.of(new Ability(abilityResult.getString("ability_id"), abilityResult.getString(NAME_FIELD), abilityRep, trial, abilityResult.getByte("sr"), type));
 			}
 		} catch (SQLException ex) {
 			Avesbot.getLogger().severe(ex::getMessage);
@@ -409,11 +404,11 @@ public class StatementManager {
 		ArrayList<String> result = new ArrayList<>();
 		
 		try(PreparedStatement charAbilityListSelectStmnt = Database.prepareStatement(CHAR_ABILITY_LIST_SELECT);) {
-			
-			charAbilityListSelectStmnt.setString(1, chara.id());
+
+			charAbilityListSelectStmnt.setString(1, Long.toUnsignedString(chara.id()));
 			ResultSet abilityResult = charAbilityListSelectStmnt.executeQuery();
 			while(abilityResult.next()) {
-				result.add(abilityResult.getString("ability_name"));
+				result.add(abilityResult.getString(NAME_FIELD));
 			}
 		} catch (SQLException ex) {
 			Avesbot.getLogger().severe(ex::getMessage);
@@ -437,7 +432,7 @@ public class StatementManager {
 			groupAbilityListSelectStmnt.setString(1, group.groupId());
 			ResultSet abilityResult = groupAbilityListSelectStmnt.executeQuery();
 			while(abilityResult.next()) {
-				result.add(abilityResult.getString("ability_name"));
+				result.add(abilityResult.getString(NAME_FIELD));
 			}
 		} catch (SQLException ex) {
 			Avesbot.getLogger().severe(ex::getMessage);
@@ -492,8 +487,8 @@ public class StatementManager {
 			
 			ResultSet guildResult = guildSelectStmnt.executeQuery();
 			if(guildResult.next()) {
-				
-				guildSetting = Optional.of(new GuildSetting(guildResult.getString("guild_id"), guildResult.getString("name"), guildResult.getString("description"),
+
+				guildSetting = Optional.of(new GuildSetting(guildResult.getString(GUILD_ID_FIELD), guildResult.getString("name"), guildResult.getString("description"),
 															guildResult.getString("icon"), guildResult.getString("promote").equals("y"), guildResult.getString("locale"),
 															guildResult.getString("hide_stats").equals("y")));
 			}
@@ -620,8 +615,8 @@ public class StatementManager {
 			ResultSet groupResult = groupActiveSelectStmnt.executeQuery();
 			
 			if(groupResult.next()) {
-				
-				result = Optional.of(new Group(groupResult.getString("group_id"), groupResult.getString("user_id"), groupResult.getString("guild_id"), groupResult.getString("name")));
+
+				result = Optional.of(new Group(groupResult.getString("group_id"), groupResult.getString("user_id"), groupResult.getString(GUILD_ID_FIELD), groupResult.getString("name")));
 			}
 		} catch (SQLException ex) {
 			Avesbot.getLogger().severe(ex::getMessage);
@@ -678,8 +673,8 @@ public class StatementManager {
 			ResultSet groupResult = groupNameSelectStmnt.executeQuery();
 			
 			if(groupResult.next()) {
-				
-				result = Optional.of(new Group(groupResult.getString("group_id"), groupResult.getString("user_id"), groupResult.getString("guild_id"), groupResult.getString("name")));
+
+				result = Optional.of(new Group(groupResult.getString("group_id"), groupResult.getString("user_id"), groupResult.getString(GUILD_ID_FIELD), groupResult.getString("name")));
 			}
 		} catch (SQLException ex) {
 			Avesbot.getLogger().severe(ex::getMessage);
@@ -700,7 +695,7 @@ public class StatementManager {
 		try(PreparedStatement groupMemberInsStmnt = Database.prepareStatement(GROUP_MEMBER_INSERT);) {
 			
 			groupMemberInsStmnt.setString(1, group.groupId());
-			groupMemberInsStmnt.setString(2, character.id());
+			groupMemberInsStmnt.setString(2, Long.toUnsignedString(character.id()));
 			updatedRows = groupMemberInsStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
@@ -722,7 +717,7 @@ public class StatementManager {
 		try(PreparedStatement groupMemberDelStmnt = Database.prepareStatement(GROUP_MEMBER_DELETE);) {
 			
 			groupMemberDelStmnt.setString(1, group.groupId());
-			groupMemberDelStmnt.setString(2, character.id());
+			groupMemberDelStmnt.setString(2, Long.toUnsignedString(character.id()));
 			updatedRows = groupMemberDelStmnt.executeUpdate();
 			
 		} catch (SQLException ex) {
@@ -748,13 +743,13 @@ public class StatementManager {
 			ResultSet charaResult = groupMemberListSelectStmnt.executeQuery();
 			
 			while(charaResult.next()) {
-				
-				Ruleset ruleset = Ruleset.valueOf(charaResult.getString("ruleset").toUpperCase());
-				
-				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString("character_id"));
-				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString("character_id"));
-				
-				result.add(new RoleplayCharacter(	charaResult.getString("character_id"), charaResult.getString("name"), ruleset,
+
+				Ruleset ruleset = Ruleset.valueOf(charaResult.getString(RULESET_FIELD).toUpperCase());
+
+				Vantage[] vantages = this.getRoleplayCharacterVantages(charaResult.getString(ID_FIELD));
+				Special[] specials = this.getRoleplayCharacterSpecials(charaResult.getString(ID_FIELD));
+
+				result.add(new RoleplayCharacter(Long.parseUnsignedLong(charaResult.getString(ID_FIELD)), charaResult.getString("name"), ruleset,
 													charaResult.getByte("cou"), charaResult.getByte("sgc"), charaResult.getByte("int"), charaResult.getByte("cha"),
 													charaResult.getByte("dex"), charaResult.getByte("agi"), charaResult.getByte("con"), charaResult.getByte("str"),
 													vantages, specials));

@@ -1,14 +1,17 @@
 package de.avesbot.util;
 
 import de.avesbot.Avesbot;
-import de.avesbot.model.Ability;
-import de.avesbot.model.Attribute;
-import de.avesbot.model.RoleplayCharacter;
-import de.avesbot.model.Ruleset;
-import de.avesbot.model.Special;
-import de.avesbot.model.Tradition;
-import de.avesbot.model.Trial;
-import de.avesbot.model.Vantage;
+import de.avesbot.model.*;
+import net.dv8tion.jda.api.entities.Message.Attachment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -21,15 +24,6 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import net.dv8tion.jda.api.entities.Message.Attachment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -75,7 +69,7 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 
 	private static Boolean importCharacter(Document doc, String memberId) {
 		var chara = toRoleplayCharacter(doc);
-		Optional<String> insertedId = Avesbot.getStatementManager().insertRoleplayCharacter(memberId, chara);
+		final var insertedId = Avesbot.getStatementManager().insertRoleplayCharacter(memberId, chara);
 		if (insertedId.isEmpty()) {
 			return false;
 		}
