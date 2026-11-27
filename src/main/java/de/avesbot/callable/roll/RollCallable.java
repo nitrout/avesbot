@@ -1,11 +1,12 @@
 package de.avesbot.callable.roll;
 
-import java.util.HashMap;
 import de.avesbot.callable.CommandCallable;
 import de.avesbot.i18n.I18n;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+
+import java.util.HashMap;
 
 /**
  * Abstract class for roll callables.
@@ -18,9 +19,9 @@ public abstract class RollCallable extends CommandCallable {
 	
 	protected final HashMap<String, Emoji> emoteMap;
 
-	public RollCallable(SlashCommandInteractionEvent event) {
+	protected RollCallable(SlashCommandInteractionEvent event) {
 		super(event);
 		emoteMap = new HashMap<>();
-		guild.getEmojis().stream().forEach(emote -> emoteMap.put(emote.getName(), emote));
+		guild.getEmojis().forEach(emote -> emoteMap.put(emote.getName(), emote));
 	}
 }

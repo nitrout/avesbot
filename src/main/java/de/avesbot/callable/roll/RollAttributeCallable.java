@@ -49,17 +49,14 @@ public class RollAttributeCallable extends RollCallable implements RoleplayChara
 	public String call() throws Exception {
 		
 		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
-		Optional<Attribute> attribute = Optional.empty();
 		byte difficulty = 0;
-		
-		attribute = Optional.of(Attribute.valueOf(this.commandPars.get("attribute").getAsString().toUpperCase()));
+
+		final var attribute = Optional.of(Attribute.valueOf(this.commandPars.get("attribute").getAsString().toUpperCase()));
 		if(this.commandPars.containsKey("difficulty"))
-			difficulty = (byte)this.commandPars.get("difficulty").getAsLong();
+			difficulty = (byte) this.commandPars.get("difficulty").getAsInt();
 		
 		if(chara.isEmpty())
 			return I18N.getTranslation(settings.locale(), "errorNoActiveCharacter");
-		if(attribute.isEmpty())
-			return I18N.getTranslation(settings.locale(), "errorNoAttribute");
 		
 		return rollAttribute(settings, emoteMap, chara.get(), attribute.get(), difficulty);
 	}
