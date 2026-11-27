@@ -1,8 +1,5 @@
 package de.avesbot;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Optional;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
@@ -11,6 +8,10 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
 
 /**
  * Listener to handle necessary actions, when Avesbot joins a new guild.
@@ -40,10 +41,10 @@ public class JoinListener extends ListenerAdapter {
 						createEmoji.queue();
 					}
 				} catch (IOException ex) {
-					System.err.println(ex.getMessage());
+					Avesbot.getLogger().severe(ex::getMessage);
 				}
 			} else {
-				System.out.println("No permissions to create new emotes!");
+				Avesbot.getLogger().warning("No permissions to create new emotes!");
 			}
 		});
 		
