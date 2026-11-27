@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.MatchResult;
@@ -29,12 +29,13 @@ import java.util.stream.Stream;
  *
  * @author Nitrout
  */
-public class HeldenSoftwareImport implements BiFunction<Attachment, String, Boolean> {
-	
+public class HeldenSoftwareImport implements BiPredicate<Attachment, String> {
+
 	private static final Pattern TRIAL_PATTERN = Pattern.compile("MU|KL|IN|CH|FF|GE|KO|KK", Pattern.CASE_INSENSITIVE);
 	private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile("Mut|Klugheit|Intuition|Charisma|Fingerfertigkeit|Gewandtheit|Konstitution|Körperkraft", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.CANON_EQ);
 
 	private static final DocumentBuilder DOCUMENT_BUILDER = getDocumentBuilder();
+	public static final String VALUE_ITEM = "value";
 
 	private static DocumentBuilder getDocumentBuilder() {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -51,7 +52,7 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 	}
 
 	@Override
-	public Boolean apply(Attachment attachment, String memberId) {
+	public boolean test(Attachment attachment, String memberId) {
 		return getXmlFile(attachment).map(doc -> importCharacter(doc, memberId)).orElse(Boolean.FALSE);
 	}
 
@@ -110,7 +111,7 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 		Byte[] attributes = Stream.of(attributeNodes)
 			.filter(node -> ATTRIBUTE_PATTERN.asMatchPredicate().test(node.getAttributes().getNamedItem("name").getNodeValue()))
 			.limit(8)
-			.map(node -> (byte)(Byte.valueOf(node.getAttributes().getNamedItem("value").getNodeValue()) + Byte.valueOf(node.getAttributes().getNamedItem("mod").getNodeValue())))
+				.map(node -> (byte) (Byte.parseByte(node.getAttributes().getNamedItem(VALUE_ITEM).getNodeValue()) + Byte.parseByte(node.getAttributes().getNamedItem("mod").getNodeValue())))
 			.toArray(Byte[]::new);
 		
 		return new RoleplayCharacter(name, Ruleset.TDE4, new Vantage[]{}, new Special[]{}, attributes);
@@ -127,17 +128,17 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 	
 	private static Vantage toVantage(Node node) {
 		var name = node.getAttributes().getNamedItem("name").getNodeValue();
-		var attribute1 = Optional.ofNullable(node.getAttributes().getNamedItem("value")).map(Node::getNodeValue).orElse("");
+		var attribute1 = Optional.ofNullable(node.getAttributes().getNamedItem(VALUE_ITEM)).map(Node::getNodeValue).orElse("");
 		var attribute2 = "";
 
 		if(node.hasChildNodes()) {
-			attribute1 = node.getChildNodes().item(0).getAttributes().getNamedItem("value").getNodeValue();
-			attribute2 = node.getChildNodes().item(1).getAttributes().getNamedItem("value").getNodeValue();
+			attribute1 = node.getChildNodes().item(0).getAttributes().getNamedItem(VALUE_ITEM).getNodeValue();
+			attribute2 = node.getChildNodes().item(1).getAttributes().getNamedItem(VALUE_ITEM).getNodeValue();
 		}
 
 		if(name.equals("Schlechte Eigenschaft")) {
-			name = node.getChildNodes().item(2).getAttributes().getNamedItem("value").getNodeValue();
-			attribute1 = node.getChildNodes().item(1).getAttributes().getNamedItem("value").getNodeValue();
+			name = node.getChildNodes().item(2).getAttributes().getNamedItem(VALUE_ITEM).getNodeValue();
+			attribute1 = node.getChildNodes().item(1).getAttributes().getNamedItem(VALUE_ITEM).getNodeValue();
 			attribute2 = "";
 		}
 
@@ -160,7 +161,7 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 		var attribute3 = "";
 
 		if(node.hasChildNodes() && node.getChildNodes().item(0).hasAttributes()) {
-			attribute1 = Optional.ofNullable(node.getChildNodes().item(0).getAttributes().getNamedItem("name")).map(valueNode -> valueNode.getNodeValue()).orElse("");
+			attribute1 = Optional.ofNullable(node.getChildNodes().item(0).getAttributes().getNamedItem("name")).map(Node::getNodeValue).orElse("");
 		}
 
 		if(name.startsWith("Talentspezialisierung")) {
@@ -174,9 +175,9 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 			attribute3 = Optional.ofNullable(node.getChildNodes().item(1)).map(attributeNode -> attributeNode.getAttributes().getNamedItem("name").getNodeValue()).orElse("");
 		} else if(node.hasChildNodes() && !node.getChildNodes().item(0).hasAttributes()) {
 			NodeList attributeList = node.getChildNodes().item(0).getChildNodes();
-			attribute1 = Optional.ofNullable(attributeList.item(0)).map(attributeNode -> attributeNode.getAttributes().getNamedItem("value").getNodeValue()).orElse("");
-			attribute2 = Optional.ofNullable(attributeList.item(1)).map(attributeNode -> attributeNode.getAttributes().getNamedItem("value").getNodeValue()).orElse("");
-			attribute3 = Optional.ofNullable(attributeList.item(2)).map(attributeNode -> attributeNode.getAttributes().getNamedItem("value").getNodeValue()).orElse("");
+			attribute1 = Optional.ofNullable(attributeList.item(0)).map(attributeNode -> attributeNode.getAttributes().getNamedItem(VALUE_ITEM).getNodeValue()).orElse("");
+			attribute2 = Optional.ofNullable(attributeList.item(1)).map(attributeNode -> attributeNode.getAttributes().getNamedItem(VALUE_ITEM).getNodeValue()).orElse("");
+			attribute3 = Optional.ofNullable(attributeList.item(2)).map(attributeNode -> attributeNode.getAttributes().getNamedItem(VALUE_ITEM).getNodeValue()).orElse("");
 		}
 
 		return new Special(name, attribute1, attribute2, attribute3);
@@ -211,9 +212,8 @@ public class HeldenSoftwareImport implements BiFunction<Attachment, String, Bool
 		var trial = new Trial(triialAttributes[0], triialAttributes[1], triialAttributes[2]);
 
 		try {
-			taw = Byte.parseByte(node.getAttributes().getNamedItem("value").getNodeValue());
-		}
-		catch(NumberFormatException nfe) {
+			taw = Byte.parseByte(node.getAttributes().getNamedItem(VALUE_ITEM).getNodeValue());
+		} catch (NumberFormatException _) {
 			taw = 0;
 		}
 

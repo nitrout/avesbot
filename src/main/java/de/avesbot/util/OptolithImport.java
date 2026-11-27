@@ -12,7 +12,7 @@ import tools.jackson.dataformat.yaml.YAMLFactory;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  *
  * @author Nitrout
  */
-public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
+public class OptolithImport implements BiPredicate<Attachment, String> {
 
 	private static final JsonMapper JSON_MAPPER = getObjectMapper();
 
@@ -56,7 +56,7 @@ public class OptolithImport implements BiFunction<Attachment, String, Boolean> {
 	}
 
 	@Override
-	public Boolean apply(Attachment attachment, String memberId) {
+	public boolean test(Attachment attachment, String memberId) {
 		return getOptolithCharacter(attachment).map(character -> importCharacter(character, memberId)).orElse(Boolean.FALSE);
 	}
 
