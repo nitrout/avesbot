@@ -1,21 +1,22 @@
 package de.avesbot.callable.settings;
 
-import net.dv8tion.jda.api.Permission;
 import de.avesbot.Avesbot;
 import de.avesbot.model.GuildSetting;
-import java.util.regex.Pattern;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import java.util.regex.Pattern;
 
 /**
  * Callable to set a new localisation for the guild.
  * @author Nitrout
  */
 public class SettingsLanguageCallable extends SettingsCallable {
-	
-	private final static Pattern LOCALE_PATTERN = Pattern.compile("^[a-z]{2}(_[A-Z]{2})?$");
+
+	private static final Pattern LOCALE_PATTERN = Pattern.compile("^[a-z]{2}(_[A-Z]{2})?$");
 	public static final SubcommandData SUBCOMMAND;
 	
 	static {

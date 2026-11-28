@@ -52,8 +52,7 @@ public enum Tradition {
 		
 		try {
 			result = valueOf(str);
-		}
-		catch(IllegalArgumentException ex) {
+		} catch (IllegalArgumentException _) {
 			result = Stream.of(values()).filter(e -> e.mappings.contains(str)).findAny().orElse(OTHER);
 		}
 		

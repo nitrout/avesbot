@@ -25,6 +25,10 @@ public class BroadcastListener extends ListenerAdapter {
 			t.getTextChannels().stream().filter(GuildMessageChannel::canTalk).findAny().ifPresent(channel -> channel.sendMessage(broadcastMessage).queue());
 		}
 	}
+
+	private static void setBroadcastMessage(String message) {
+		broadcastMessage = message;
+	}
 	
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
@@ -37,7 +41,7 @@ public class BroadcastListener extends ListenerAdapter {
 			if("!broadcast".equals(message)) {
 				Avesbot.getJda().getGuilds().forEach(BroadcastListener::broadcast);
 			} else {
-				broadcastMessage = message;
+				setBroadcastMessage(message);
 				event.getChannel().sendMessage(message).submit();
 			}
 		}

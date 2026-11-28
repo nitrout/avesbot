@@ -13,8 +13,8 @@ public abstract class SettingsCallable extends CommandCallable {
 	
 	protected static final I18n I18N = new I18n("de.avesbot.i18n.settings");
 	public static final SlashCommandData COMMAND = buildTranslatedSlashCommand(I18N, "settings", "settingsDescription");
-	
-	public SettingsCallable(SlashCommandInteractionEvent event) {
+
+	protected SettingsCallable(SlashCommandInteractionEvent event) {
 		super(event);
 	}
 }
