@@ -8,6 +8,7 @@ import de.avesbot.model.RoleplayCharacter;
 import de.avesbot.model.Tradition;
 import de.avesbot.util.LevenshteinHelper;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -38,7 +39,7 @@ public class RollSkillCallable extends RollCallable implements RoleplayCharacter
 	
 	/**
 	 * Creates a new RollSkillCallable.
-	 * @param event 
+	 * @param event command event
 	 */
 	public RollSkillCallable(SlashCommandInteractionEvent event) {
 		super(event);
@@ -48,34 +49,34 @@ public class RollSkillCallable extends RollCallable implements RoleplayCharacter
 	public String call() throws Exception {
 		
 		Optional<RoleplayCharacter> chara = Avesbot.getStatementManager().getUsersActiveRolePlayCharacter(member);
-		String fullSearch = "";
-		Tradition rep = Tradition.NONE;
-		String[] coverages = new String[]{};
-		byte difficulty = 0;
-		
-		fullSearch = this.commandPars.get("skill").getAsString();
-		if(this.commandPars.containsKey("difficulty"))
-			difficulty = (byte)this.commandPars.get("difficulty").getAsLong();
-		if(this.commandPars.containsKey("coverage"))
-			coverages = this.commandPars.get("coverage").getAsString().split(" ");
-		if(this.commandPars.containsKey("tradition"))
-			rep = Tradition.valueOf(this.commandPars.get("tradition").getAsString().toUpperCase());
-		
 		if(chara.isEmpty())
 			return I18N.getTranslation(settings.locale(), "errorNoActiveCharacter");
-		if(fullSearch.length() == 0)
+
+		final var fullSearch = this.commandPars.get("skill").getAsString();
+		if (fullSearch.isEmpty())
 			return I18N.getTranslation(settings.locale(), "errorEmptySkill");
-		
-		String[] skillbook = Avesbot.getStatementManager().getCharacterAbilityList(chara.get());
+
+		final var difficulty = Optional.ofNullable(this.commandPars.get("difficulty"))
+				.map(OptionMapping::getAsInt)
+				.map(Integer::byteValue)
+				.orElse((byte) 0);
+		final var coverages = Optional.ofNullable(this.commandPars.get("coverage"))
+				.map(OptionMapping::getAsString)
+				.map(cover -> cover.split("\\s"))
+				.orElse(new String[0]);
+		final var rep = Optional.ofNullable(this.commandPars.get("tradition"))
+				.map(OptionMapping::getAsString)
+				.map(String::toUpperCase)
+				.map(Tradition::valueOf)
+				.orElse(Tradition.NONE);
+
+		String[] skills = Avesbot.getStatementManager().getCharacterAbilityList(chara.get());
 
 		// get the closest skill
-		String skillStr = LevenshteinHelper.geteClosestSubjectIgnoreCase(fullSearch, skillbook);
+		String skillStr = LevenshteinHelper.geteClosestSubjectIgnoreCase(fullSearch, skills);
 		Optional<Ability> ability = Avesbot.getStatementManager().getCharacterAbility(chara.get(), skillStr, rep);
 
-		if(ability.isPresent()) {
-			return rollSKill(settings, emoteMap, chara.get(), ability.get(), difficulty, coverages);
-		} else {
-			return I18N.getTranslation(settings.locale(), "errorUnknownAbility");
-		}
+		return ability.map(a -> rollSkill(settings, emoteMap, chara.get(), a, difficulty, coverages))
+				.orElse(I18N.getTranslation(settings.locale(), "errorUnknownAbility"));
 	}
 }
