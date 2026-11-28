@@ -32,7 +32,7 @@ public interface RoleplayCharacterRoll {
 	 * @param coverage the coverages used in the trial
 	 * @return the string result of the roll
 	 */
-	default String rollSKill(GuildSetting settings, Map<String, Emoji> emoteMap, RoleplayCharacter chara, Ability ability, byte difficulty, String...coverage) {
+	default String rollSkill(GuildSetting settings, Map<String, Emoji> emoteMap, RoleplayCharacter chara, Ability ability, byte difficulty, String... coverage) {
 		
 		return rollSkill(settings, emoteMap, chara, ability.name(), ability.rep(), ability.trial(), ability.type() == Ability.Type.SPELL, ability.taw(), difficulty, coverage);
 	}

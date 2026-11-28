@@ -1,21 +1,22 @@
 package de.avesbot.callable.group;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Optional;
 import de.avesbot.Avesbot;
-import de.avesbot.model.Ability;
-import de.avesbot.model.Group;
-import de.avesbot.model.Tradition;
-import de.avesbot.model.RoleplayCharacter;
-import de.avesbot.util.LevenshteinHelper;
 import de.avesbot.callable.RoleplayCharacterRoll;
 import de.avesbot.i18n.I18n;
+import de.avesbot.model.Ability;
+import de.avesbot.model.Group;
+import de.avesbot.model.RoleplayCharacter;
+import de.avesbot.model.Tradition;
+import de.avesbot.util.LevenshteinHelper;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * A callable to execute a skill trial for all members of a group.
@@ -78,7 +79,7 @@ public class GroupSkillCallable extends GroupCallable implements RoleplayCharact
 			for(RoleplayCharacter chara : charas) {
 				Optional<Ability> ability = Avesbot.getStatementManager().getCharacterAbility(chara, skillStr, rep);
 				if(ability.isPresent()) {
-					results.add(rollSKill(settings, emoteMap, chara, ability.get(), difficulty, pars));
+					results.add(rollSkill(settings, emoteMap, chara, ability.get(), difficulty, pars));
 				}
 			}
 			
