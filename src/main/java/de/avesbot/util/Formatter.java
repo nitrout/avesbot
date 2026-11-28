@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class Formatter {
 
 	private Formatter() {
-		throw new IllegalStateException("Formatter shall not be instantiated");
+		throw new UnsupportedOperationException("Instantiation not allowed");
 	}
 
 	private static String formatEmojilessRollResult(List<Pair<Integer, Integer>> rolls) {

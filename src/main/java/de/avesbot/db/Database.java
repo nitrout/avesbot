@@ -12,7 +12,7 @@ import java.sql.*;
 public class Database {
 
 	private Database() {
-		throw new IllegalStateException("Database shall not be instantiated");
+		throw new UnsupportedOperationException("Instantiation not allowed");
 	}
 	
 	public static Connection connection;

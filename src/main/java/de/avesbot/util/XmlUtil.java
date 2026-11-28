@@ -1,14 +1,19 @@
 package de.avesbot.util;
 
-import java.util.Optional;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.util.Optional;
 
 /**
  *
  * @author nitrout
  */
 public class XmlUtil {
+
+	private XmlUtil() {
+		throw new UnsupportedOperationException("Instantiation not allowed");
+	}
 	
 	public static Node[] getChildrenNodes(Node t) {
 		return nodeList2NodeArray(t.getChildNodes());

@@ -1,13 +1,18 @@
 package de.avesbot.util;
 
-import java.util.stream.Stream;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+
+import java.util.stream.Stream;
 
 /**
  *
  * @author Nitrout
  */
 public class LevenshteinHelper {
+
+	private LevenshteinHelper() {
+		throw new UnsupportedOperationException("Instantiation not allowed");
+	}
 	
 	/**
 	 * Get the most  case insesnitive similar subject to search.
